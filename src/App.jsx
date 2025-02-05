@@ -6,7 +6,11 @@ import Route from "./routes";
 //imoprt Route
 function App() {
   useEffect(() => {
-    if (location.pathname.startsWith("/admin")) {
+    if (
+      location.pathname.startsWith("/admin") ||
+      location.pathname.startsWith("/login") ||
+      location.pathname.startsWith("/register")
+    ) {
       import("./assets/scss/themes.scss");
     } else {
       import("./index.css");

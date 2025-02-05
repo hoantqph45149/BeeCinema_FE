@@ -3,6 +3,11 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      colors: {
+        primary: "#FFFFFF", // Màu chính (trắng)
+        secondary: "#333333", // Màu phụ (xanh trắng)
+        accent: "#337AB7", // Màu nổi bật (xanh dương)
+      },
       container: {
         center: true,
         padding: {
@@ -10,7 +15,7 @@ export default {
           sm: "2rem",
           lg: "4rem",
           xl: "5rem",
-          "2xl": "12rem",
+          "2xl": "10rem",
         },
       },
     },
