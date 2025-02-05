@@ -1,45 +1,44 @@
+import { Facebook, Instagram, Youtube } from "lucide-react";
 import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-10">
-      <div className="container mx-auto px-4">
+    <footer className="bg-primary text-secondary border-t-2  py-10">
+      <div className="container ">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {/* Language Movies */}
           <div>
-            <h2 className="text-lg font-semibold mb-3">LANGUAGE MOVIES</h2>
+            <img
+              src="https://betacinemas.vn/Assets/Common/logo/logo.png"
+              alt=""
+              className="w-32 mb-4"
+            />
             <ul className="space-y-2">
-              {[
-                "English movie",
-                "Tamil movie",
-                "Punjabi Movie",
-                "Hindi movie",
-                "Malyalam movie",
-                "English Action movie",
-                "Hindi Action movie",
-              ].map((movie, index) => (
-                <li key={index} className="flex items-center">
-                  <span className="text-blue-400 text-sm mr-2">●</span>
-                  <a href="#" className="hover:text-blue-400">
-                    {movie}
-                  </a>
-                </li>
-              ))}
+              {["Chính sách", "Gía vé", "Tin tức", "Liên hệ"].map(
+                (movie, index) => (
+                  <li key={index} className="flex items-center">
+                    <span className="text-blue-400 text-sm mr-2">●</span>
+                    <a href="#" className="hover:text-blue-400">
+                      {movie}
+                    </a>
+                  </li>
+                )
+              )}
             </ul>
           </div>
 
           {/* Movies by Presenter */}
           <div>
-            <h2 className="text-lg font-semibold mb-3">MOVIES BY PRESENTER</h2>
+            <h2 className="text-lg font-semibold mb-3">Cụm Rạp BEECINEMA</h2>
             <ul className="space-y-2">
               {[
-                "Action movie",
-                "Romantic movie",
-                "Adult movie",
-                "Comedy movie",
-                "Drama movie",
-                "Musical movie",
-                "Classical movie",
+                "Hà Nội",
+                "Hồ Chí Minh",
+                "Thái Nguyên",
+                "Hải Phòng",
+                "Đà Nẵng",
+                "Nha Trang",
+                "Vũng Tàu",
               ].map((movie, index) => (
                 <li key={index} className="flex items-center">
                   <span className="text-blue-400 text-sm mr-2">●</span>
@@ -53,18 +52,34 @@ const Footer = () => {
 
           {/* Booking Online */}
           <div>
-            <h2 className="text-lg font-semibold mb-3">BOOKING ONLINE</h2>
+            <h2 className="text-lg font-semibold mb-3">
+              Kết Nối Với Chúng Tôi
+            </h2>
             <ul className="space-y-2">
               {[
-                "www.example.com",
-                "www.hello.com",
-                "www.example.com",
-                "www.hello.com",
-              ].map((link, index) => (
+                {
+                  icon: <Facebook size={16} strokeWidth={1.5} />,
+                  link: "www.Facebook.com",
+                },
+                {
+                  icon: <Instagram size={16} strokeWidth={1.5} />,
+                  link: "www.Instagram.com",
+                },
+                {
+                  icon: <Youtube size={16} strokeWidth={1.5} />,
+                  link: "www.Youtube.com",
+                },
+                {
+                  icon: <Facebook size={16} strokeWidth={1.5} />,
+                  link: "www.Tiktok.com",
+                },
+              ].map((item, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="text-blue-400 text-sm mr-2">●</span>
+                  <span className="text-blue-400 text-sm mr-2">
+                    {item.icon}
+                  </span>
                   <a href="#" className="hover:text-blue-400">
-                    {link}
+                    {item.link}
                   </a>
                 </li>
               ))}
@@ -73,42 +88,52 @@ const Footer = () => {
 
           {/* App Download */}
           <div>
-            <h2 className="text-lg font-semibold mb-3">App Available On</h2>
-            <p className="text-sm mb-4">
-              Download App and Get Free Movie Ticket!
+            <h2 className="text-lg font-semibold mb-3">Thông Tin</h2>
+            <p className="text-sm font-semibold text-[#595f65] mb-4">
+              CÔNG TY TNHH BEECINEMA VIỆT NAM
             </p>
-            <div className="flex space-x-4">
-              <a href="#">
-                <img
-                  src="images/content/f1.jpg"
-                  alt="footer_img"
-                  className="w-24"
-                />
-              </a>
-              <a href="#">
-                <img
-                  src="images/content/f2.jpg"
-                  alt="footer_img"
-                  className="w-24"
-                />
-              </a>
-            </div>
-            <h5 className="mt-4 text-yellow-400 font-semibold">
-              <span className="text-lg">$50</span> Payback on App Download
-            </h5>
+            <ul className="space-y-2">
+              {[
+                {
+                  icon: "Địa chỉ",
+                  link: "Tầng 5, Tòa nhà Hanoi Group, 442 Đội Cấn, Ba Đình, Hà Nội",
+                },
+                {
+                  icon: "Hotline",
+                  link: "1900 0000",
+                },
+                {
+                  icon: "Email",
+                  link: "Beecinema@fpt.vn.com",
+                },
+                {
+                  icon: "Website",
+                  link: "www.Beecinema.com",
+                },
+              ].map((item, index) => (
+                <li key={index} className="flex items-center">
+                  <span className="text-blue-400  mr-2">
+                    {item.icon}:{" "}
+                    <span className="text-secondary font-semibold">
+                      {item.link}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         {/* Bottom Footer */}
         <div className="mt-10 border-t border-gray-700 pt-6 flex flex-col md:flex-row items-center justify-between text-sm">
           <p>
-            Copyright 2022-23{" "}
+            Bản Quyền{" "}
             <a href="#" className="text-blue-400">
-              Movie Pro
+              Beecinema
             </a>
-            . All rights reserved - Design by{" "}
+            .Cung cấp{" "}
             <a href="#" className="text-blue-400">
-              Webstrot
+              FPT Software
             </a>
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
