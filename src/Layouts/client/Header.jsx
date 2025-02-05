@@ -22,7 +22,7 @@ const Header = () => {
   }, []);
   return (
     <header className="flex flex-col">
-      <div className="text-white bg-gray-900">
+      <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
             {/* <div className="flex">
@@ -37,7 +37,7 @@ const Header = () => {
         </div>
       </div>
       <nav
-        className={`bg-white border-b shadow-lg w-full h-[83px] ${
+        className={`bg-primary border-b shadow-lg w-full h-[83px] ${
           isFixed ? "fixed top-0 z-50" : ""
         }`}
       >
