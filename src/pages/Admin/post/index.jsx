@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Post = () => {
+  const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -34,22 +35,22 @@ const Post = () => {
     },
     {
       header: "Người tạo",
-      accessorKey: "phone",
+      accessorKey: "userName",
       enableColumnFilter: false,
     },
     {
       header: "Lượt xem",
-      accessorKey: "phone",
+      accessorKey: "viewCount",
       enableColumnFilter: false,
     },
     {
       header: "Ngày tạo",
-      accessorKey: "phone",
+      accessorKey: "DateCreate",
       enableColumnFilter: false,
     },
     {
       header: "Hoạt động",
-      accessorKey: "date",
+      accessorKey: "online",
       enableColumnFilter: false,
     },
     {
@@ -109,10 +110,7 @@ const Post = () => {
                           type="button"
                           className="btn btn-success add-btn"
                           id="create-btn"
-                          onClick={() => {
-                            setIsEdit(false);
-                            toggle();
-                          }}
+                          onClick={() => nav("/admin/post/add")}
                         >
                           <i className="ri-add-line align-bottom me-1"></i> Thêm
                           bài viết
