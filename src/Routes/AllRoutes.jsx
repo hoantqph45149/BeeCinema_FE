@@ -21,6 +21,8 @@ import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
 import AddCinema from "../pages/Admin/cinema/AddCinema";
+import AddPost from "../pages/Admin/post/AddPost";
+import UpdatePost from "../pages/Admin/post/UpdatePost";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -58,6 +60,8 @@ const authProtectedRoutes = [
 
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },
+  { path: "/admin/post/add", component: <AddPost /> },
+  { path: "/admin/post/edit", component: <UpdatePost /> },
 
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
