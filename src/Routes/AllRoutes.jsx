@@ -23,6 +23,8 @@ import Home from "../pages/Client/Home";
 import AddCinema from "../pages/Admin/cinema/AddCinema";
 import AddPost from "../pages/Admin/post/AddPost";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
+import AddVoucher from "../pages/Admin/voucher/AddVoucher";
+import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -57,6 +59,9 @@ const authProtectedRoutes = [
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
+  // quản lý giảm giá
+  { path: "/admin/voucher/add", component: <AddVoucher /> },
+  { path: "/admin/voucher/edit", component: <EditVoucher /> },
 
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },
