@@ -35,7 +35,7 @@ export default function LocationSelect() {
       </button>
 
       {isOpen && (
-        <div className="absolute md:left-0 mt-2 sm:w-full w-[180px] bg-primary border-t-[3px] border-accent shadow-lg">
+        <div className="absolute md:left-0 mt-2 sm:w-full w-[180px] bg-primary border-t-[3px] border-accent shadow-lg z-[9999]">
           {locations.map((location) => (
             <div key={location.name} className="relative group">
               <button
