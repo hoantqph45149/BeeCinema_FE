@@ -25,7 +25,7 @@ function MenuDropdown() {
       </MenuButton>
       <MenuItems
         anchor="bottom"
-        className="w-64 bg-white border rounded-lg shadow-lg"
+        className="w-64 bg-white border rounded-lg shadow-lg z-[99999]"
       >
         <MenuItem>
           <Link

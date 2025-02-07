@@ -21,7 +21,7 @@ const Header = () => {
     };
   }, []);
   return (
-    <header className="flex flex-col">
+    <header className="flex flex-col font-oswald">
       <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
@@ -53,32 +53,32 @@ const Header = () => {
                 <LocationSelect />
               </div>
             </div>
-            <div className="lg:hidden p-4">
+            <div className="lg:hidden p-4 z-">
               <MenuDropdown />
             </div>
             <ul className="items-center space-x-5 text-secondary font-bold h-full hidden lg:flex ">
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Lịch chiếu theo rạp
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Phim
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Chính sách
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Giá vé
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Tin tức
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Liên hệ
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Giới thiệu
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 Thành viên
               </li>
             </ul>
