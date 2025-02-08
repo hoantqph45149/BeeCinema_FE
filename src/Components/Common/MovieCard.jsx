@@ -15,7 +15,7 @@ const MovieCard = ({ movie, showInfo = true }) => {
         isOpen={openModalShowtimes}
         onClose={() => setOpenModalShowtimes(false)}
         onSubmit={() => alert("Submitted!")}
-        title="Lịch chiếu - Vùng Đất Câm Lặng 2"
+        title={`Lịch chiếu - Phim: ${movie.name}`}
         isFooter={false}
       >
         <TabShowtime idMovie={idMovie} />
@@ -24,13 +24,13 @@ const MovieCard = ({ movie, showInfo = true }) => {
         isOpen={openModalTrailer}
         onClose={() => setOpenModalTrailer(false)}
         onSubmit={() => alert("Submitted!")}
-        title="Trailer - Bộ tứ báo thủ"
+        title={`Trailer - ${movie.name}`}
         isFooter={false}
       >
         <iframe
           className="w-full md:w-[800px]"
           height="400"
-          src="https://www.youtube.com/embed/miC9FrfpwtY?rel=0&showinfo=0&autoplay=1"
+          src={`https://www.youtube.com/embed/${movie.trailer_url}?rel=0&showinfo=0&autoplay=1`}
           allow="autoplay; encrypted-media"
           title="Video"
         ></iframe>
@@ -39,8 +39,8 @@ const MovieCard = ({ movie, showInfo = true }) => {
         {/* Movie Poster */}
         <div className="relative group ">
           <img
-            src={movie.image}
-            alt={movie.title}
+            src={movie.img_thumbnail}
+            alt={movie.name}
             className="w-full rounded-xl"
           />
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-xl"></div>
@@ -54,14 +54,14 @@ const MovieCard = ({ movie, showInfo = true }) => {
           </div>
 
           {/* Age Rating */}
-          {movie.ageRating && (
+          {movie.rating && (
             <span className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-md">
-              {movie.ageRating}
+              {movie.rating}
             </span>
           )}
 
           {/* Hot Badge */}
-          {movie.isHot && (
+          {movie.is_hot && (
             <span className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md rotate-12">
               HOT
             </span>
@@ -73,11 +73,10 @@ const MovieCard = ({ movie, showInfo = true }) => {
           <>
             <div>
               <h3 className="text-lg font-bold text-accent truncate py-3 font-oswald">
-                {movie.title}
+                {movie.name}
               </h3>
               <p className="text-sm py-1 font-lato">
-                <span className="font-bold">Thể loại:</span>{" "}
-                {movie.genres.join(", ")}
+                <span className="font-bold">Thể loại:</span> {movie.category}
               </p>
               <p className="text-sm font-lato">
                 <span className="font-bold">Thời lượng:</span> {movie.duration}{" "}
@@ -86,17 +85,19 @@ const MovieCard = ({ movie, showInfo = true }) => {
             </div>
 
             {/* Buy Ticket Button */}
-            <div className="py-4 ">
-              <Button
-                showIcon={true}
-                onClick={() => {
-                  setIdMovie(movie.title);
-                  setOpenModalShowtimes(true);
-                }}
-              >
-                MUA VÉ
-              </Button>
-            </div>
+            {movie.showtimes_count > 0 && (
+              <div className="py-4">
+                <Button
+                  showIcon={true}
+                  onClick={() => {
+                    setIdMovie(movie.id);
+                    setOpenModalShowtimes(true);
+                  }}
+                >
+                  MUA VÉ
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>
