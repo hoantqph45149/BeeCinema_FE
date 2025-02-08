@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import LocationSelect from "./LocationSelect";
 import MenuDropdown from "./MenuDropdown";
 import ProfileDropdownClient from "./ProfileDropdownClient";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isFixed, setIsFixed] = useState(false);
@@ -44,11 +45,13 @@ const Header = () => {
         <div className="container h-full">
           <div className="flex justify-between items-center py-3 h-full">
             <div className="flex items-center space-x-4">
-              <img
-                src="https://betacinemas.vn/Assets/Common/logo/logo.png"
-                alt="Poly Cinemas"
-                className="h-10 mr-4"
-              />
+              <Link to={"/"}>
+                <img
+                  src="https://betacinemas.vn/Assets/Common/logo/logo.png"
+                  alt="Poly Cinemas"
+                  className="h-10 mr-4"
+                />
+              </Link>
               <div>
                 <LocationSelect />
               </div>
@@ -58,28 +61,28 @@ const Header = () => {
             </div>
             <ul className="items-center space-x-5 text-secondary font-bold h-full hidden lg:flex ">
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Lịch chiếu theo rạp
+                <Link to={"/showtime"}>Lịch chiếu theo rạp</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Phim
+                <Link to={"/#"}>Phim</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Chính sách
+                <Link to={"/#"}>Chính sách</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Giá vé
+                <Link to={"/#"}>Giá vé</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Tin tức
+                <Link to={"/#"}>Tin tức</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Liên hệ
+                <Link to={"/#"}>Liên hệ</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Giới thiệu
+                <Link to={"/#"}>Giới thiệu</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                Thành viên
+                <Link to={"/#"}>Thành viên</Link>
               </li>
             </ul>
           </div>

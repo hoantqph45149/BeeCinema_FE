@@ -25,6 +25,7 @@ import AddPost from "../pages/Admin/post/AddPost";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
 import EditVoucher from "../pages/Admin/voucher/EditVoucher";
+import ShowtimeClient from "../pages/Client/showtime";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -99,6 +100,11 @@ const clientRoutes = [
   {
     path: "/",
     component: <Home />,
+  },
+
+  {
+    path: "/showtime",
+    component: <ShowtimeClient />,
   },
 
   {
