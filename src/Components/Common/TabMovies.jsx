@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Tabs({ tabs, defaultTab, onTabChange }) {
+export default function TabMovies({ tabs, defaultTab, onTabChange }) {
   const [activeTab, setActiveTab] = useState(defaultTab || tabs[0].label);
 
   const handleTabClick = (tab) => {

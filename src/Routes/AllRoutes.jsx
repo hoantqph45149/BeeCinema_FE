@@ -2,29 +2,29 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 //Dashboard
-import DashboardEcommerce from "../pages/Admin/overview/index";
 
 // //Ecommerce Pages
+import Account from "../pages/Admin/account";
+import Banner from "../pages/Admin/banner";
 import Branch from "../pages/Admin/branch/index";
-import Ticket from "../pages/Admin/ticket";
-import Room from "../pages/Admin/room/index";
-import Showtime from "../pages/Admin/showtime";
+import AddCinema from "../pages/Admin/cinema/AddCinema";
 import Cinema from "../pages/Admin/cinema/index";
+import Combo from "../pages/Admin/combo";
+import Food from "../pages/Admin/food";
 import Movie from "../pages/Admin/movie/index";
 import Overview from "../pages/Admin/overview/index";
-import Food from "../pages/Admin/food";
-import Combo from "../pages/Admin/combo";
-import Account from "../pages/Admin/account";
 import Post from "../pages/Admin/post";
-import Banner from "../pages/Admin/banner";
+import AddPost from "../pages/Admin/post/AddPost";
+import UpdatePost from "../pages/Admin/post/UpdatePost";
+import Room from "../pages/Admin/room/index";
+import Showtime from "../pages/Admin/showtime";
+import Ticket from "../pages/Admin/ticket";
+import AddVoucher from "../pages/Admin/voucher/AddVoucher";
+import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
-import AddCinema from "../pages/Admin/cinema/AddCinema";
-import AddPost from "../pages/Admin/post/AddPost";
-import UpdatePost from "../pages/Admin/post/UpdatePost";
-import AddVoucher from "../pages/Admin/voucher/AddVoucher";
-import EditVoucher from "../pages/Admin/voucher/EditVoucher";
+import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
 const authProtectedRoutes = [
   // quản lý chi nhánh
@@ -108,6 +108,11 @@ const clientRoutes = [
   },
 
   {
+    path: "/movies",
+    component: <MoviesClient />,
+  },
+
+  {
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
@@ -115,4 +120,4 @@ const clientRoutes = [
   { path: "*", component: <Navigate to="/" /> },
 ];
 
-export { authProtectedRoutes, publicRoutes, clientRoutes };
+export { authProtectedRoutes, clientRoutes, publicRoutes };

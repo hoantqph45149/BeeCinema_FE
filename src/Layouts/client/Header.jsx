@@ -64,7 +64,7 @@ const Header = () => {
                 <Link to={"/showtime"}>Lịch chiếu theo rạp</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Phim</Link>
+                <Link to={"/movies"}>Phim</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 <Link to={"/#"}>Chính sách</Link>
