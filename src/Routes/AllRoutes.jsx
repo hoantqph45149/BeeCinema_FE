@@ -1,9 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-//Dashboard
-
-// //Ecommerce Pages
 import Account from "../pages/Admin/account";
 import Banner from "../pages/Admin/banner";
 import Branch from "../pages/Admin/branch/index";
@@ -33,6 +30,7 @@ import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
 
+import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -123,10 +121,16 @@ const clientRoutes = [
   },
 
   {
+    path: "/choose-seat",
+    component: <ChooseSeat />,
+  },
+
+  {
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
   },
+
   { path: "*", component: <Navigate to="/" /> },
 ];
 
