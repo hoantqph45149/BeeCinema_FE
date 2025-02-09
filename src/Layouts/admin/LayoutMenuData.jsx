@@ -105,14 +105,21 @@ const Navdata = () => {
       subItems: [
         {
           id: 1,
-          label: "Thống kê doanh thu",
-          link: "/#",
+          label: "Thống kê doanh thu ",
+          link: "/admin/thongkeDoanhthu",
           parentId: "thongke",
         },
+
         {
           id: 2,
           label: "Thống kê phim",
-          link: "/#",
+          link: "/admin/thongkePhim",
+          parentId: "thongke",
+        },
+        {
+          id: 3,
+          label: "Thống kê combo",
+          link: "/admin/thongkeCombo",
           parentId: "thongke",
         },
         {

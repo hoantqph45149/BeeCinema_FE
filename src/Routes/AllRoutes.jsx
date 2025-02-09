@@ -24,8 +24,20 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
+
+import AddCinema from "../pages/Admin/cinema/AddCinema";
+import AddPost from "../pages/Admin/post/AddPost";
+import UpdatePost from "../pages/Admin/post/UpdatePost";
+import AddVoucher from "../pages/Admin/voucher/AddVoucher";
+import EditVoucher from "../pages/Admin/voucher/EditVoucher";
+
+import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
+import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
+import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
+
 import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
+ 
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -71,7 +83,10 @@ const authProtectedRoutes = [
 
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
-
+  // thống kê
+  { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
+  { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
+  { path: "/admin/thongkePhim", component: <ThongkePhim /> },
   // trang chủ
   {
     path: "/admin/overview",
