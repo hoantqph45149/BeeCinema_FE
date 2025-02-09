@@ -2,30 +2,28 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 //Dashboard
+import DashboardEcommerce from "../pages/Admin/overview/index";
 
 // //Ecommerce Pages
-import Account from "../pages/Admin/account";
-import Banner from "../pages/Admin/banner";
 import Branch from "../pages/Admin/branch/index";
-import AddCinema from "../pages/Admin/cinema/AddCinema";
-import Cinema from "../pages/Admin/cinema/index";
-import Combo from "../pages/Admin/combo";
-import Food from "../pages/Admin/food";
-import Movie from "../pages/Admin/movie/index";
-import Overview from "../pages/Admin/overview/index";
-import Post from "../pages/Admin/post";
-import AddPost from "../pages/Admin/post/AddPost";
-import UpdatePost from "../pages/Admin/post/UpdatePost";
+import Ticket from "../pages/Admin/ticket";
 import Room from "../pages/Admin/room/index";
 import Showtime from "../pages/Admin/showtime";
-import Ticket from "../pages/Admin/ticket";
-import AddVoucher from "../pages/Admin/voucher/AddVoucher";
-import EditVoucher from "../pages/Admin/voucher/EditVoucher";
+import Cinema from "../pages/Admin/cinema/index";
+import Movie from "../pages/Admin/movie/index";
+import Overview from "../pages/Admin/overview/index";
+import Food from "../pages/Admin/food";
+import Combo from "../pages/Admin/combo";
+import Account from "../pages/Admin/account";
+import Post from "../pages/Admin/post";
+import Banner from "../pages/Admin/banner";
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
-import MoviesClient from "../pages/Client/movie";
-import ShowtimeClient from "../pages/Client/showtime";
+import AddCinema from "../pages/Admin/cinema/AddCinema";
+import Add from "../pages/Admin/movie/add";
+import Addshowtime from "../pages/Admin/showtime/Addshowtime";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -44,6 +42,9 @@ const authProtectedRoutes = [
     path: "/admin/showtime",
     component: <Showtime />,
   },
+  {path : "/admin/showtime/add", component: <Addshowtime />},
+  {path : "/admin/showtime/edit", component: <Updateshowtime />},
+  
 
   // quản lý rạp
   { path: "/admin/cinema", component: <Cinema /> },
@@ -51,6 +52,7 @@ const authProtectedRoutes = [
 
   // quản lý phim
   { path: "/admin/movie", component: <Movie /> },
+  { path: "/admin/movie/add", component: <Add /> },
 
   // quản lý đồ ăn
   { path: "/admin/food", component: <Food /> },
@@ -60,14 +62,9 @@ const authProtectedRoutes = [
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
-  // quản lý giảm giá
-  { path: "/admin/voucher/add", component: <AddVoucher /> },
-  { path: "/admin/voucher/edit", component: <EditVoucher /> },
 
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },
-  { path: "/admin/post/add", component: <AddPost /> },
-  { path: "/admin/post/edit", component: <UpdatePost /> },
 
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
@@ -103,16 +100,6 @@ const clientRoutes = [
   },
 
   {
-    path: "/showtime",
-    component: <ShowtimeClient />,
-  },
-
-  {
-    path: "/movies",
-    component: <MoviesClient />,
-  },
-
-  {
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
@@ -120,4 +107,4 @@ const clientRoutes = [
   { path: "*", component: <Navigate to="/" /> },
 ];
 
-export { authProtectedRoutes, clientRoutes, publicRoutes };
+export { authProtectedRoutes, publicRoutes, clientRoutes };
