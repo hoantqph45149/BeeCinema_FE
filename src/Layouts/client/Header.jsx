@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import LocationSelect from "./LocationSelect";
 import MenuDropdown from "./MenuDropdown";
 import ProfileDropdownClient from "./ProfileDropdownClient";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isFixed, setIsFixed] = useState(false);
@@ -21,7 +22,7 @@ const Header = () => {
     };
   }, []);
   return (
-    <header className="flex flex-col">
+    <header className="flex flex-col font-oswald">
       <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
@@ -44,42 +45,44 @@ const Header = () => {
         <div className="container h-full">
           <div className="flex justify-between items-center py-3 h-full">
             <div className="flex items-center space-x-4">
-              <img
-                src="https://betacinemas.vn/Assets/Common/logo/logo.png"
-                alt="Poly Cinemas"
-                className="h-10 mr-4"
-              />
+              <Link to={"/"}>
+                <img
+                  src="https://betacinemas.vn/Assets/Common/logo/logo.png"
+                  alt="Poly Cinemas"
+                  className="h-10 mr-4"
+                />
+              </Link>
               <div>
                 <LocationSelect />
               </div>
             </div>
-            <div className="lg:hidden p-4">
+            <div className="lg:hidden p-4 z-">
               <MenuDropdown />
             </div>
             <ul className="items-center space-x-5 text-secondary font-bold h-full hidden lg:flex ">
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Lịch chiếu theo rạp
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/showtime"}>Lịch chiếu theo rạp</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Phim
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/movies"}>Phim</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Chính sách
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Chính sách</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Giá vé
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Giá vé</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Tin tức
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Tin tức</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Liên hệ
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Liên hệ</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Giới thiệu
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Giới thiệu</Link>
               </li>
-              <li className="hover:text-accent xl:text-base lg:text-xs cursor-pointer">
-                Thành viên
+              <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
+                <Link to={"/#"}>Thành viên</Link>
               </li>
             </ul>
           </div>

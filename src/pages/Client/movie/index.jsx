@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
-import Banner from "./Banner";
 
-const Home = () => {
+const MoviesClient = () => {
   const [phimDangChieu, setPhimDangChieu] = useState([]);
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
@@ -63,10 +62,6 @@ const Home = () => {
   ];
   return (
     <>
-      <div className="hidden md:block">
-        <Banner />
-      </div>
-
       <div className="my-10">
         <TabMovies
           tabs={movieTabs}
@@ -80,4 +75,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default MoviesClient;

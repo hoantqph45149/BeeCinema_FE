@@ -25,12 +25,12 @@ function MenuDropdown() {
       </MenuButton>
       <MenuItems
         anchor="bottom"
-        className="w-64 bg-white border rounded-lg shadow-lg"
+        className="w-64 bg-white border rounded-lg shadow-lg z-[99999]"
       >
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/settings"
+            href="/showtime"
           >
             <CalendarCheck size={16} strokeWidth={1.5} className="mr-2" /> Lịch
             Chiếu Theo Rạp
@@ -48,7 +48,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            href="/movies"
           >
             <Clapperboard size={16} strokeWidth={1.5} className="mr-2" /> Phim
           </Link>
