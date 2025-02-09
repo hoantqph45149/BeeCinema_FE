@@ -7,20 +7,15 @@ import { Navigate } from "react-router-dom";
 import Account from "../pages/Admin/account";
 import Banner from "../pages/Admin/banner";
 import Branch from "../pages/Admin/branch/index";
-import AddCinema from "../pages/Admin/cinema/AddCinema";
 import Cinema from "../pages/Admin/cinema/index";
 import Combo from "../pages/Admin/combo";
 import Food from "../pages/Admin/food";
 import Movie from "../pages/Admin/movie/index";
 import Overview from "../pages/Admin/overview/index";
 import Post from "../pages/Admin/post";
-import AddPost from "../pages/Admin/post/AddPost";
-import UpdatePost from "../pages/Admin/post/UpdatePost";
 import Room from "../pages/Admin/room/index";
 import Showtime from "../pages/Admin/showtime";
 import Ticket from "../pages/Admin/ticket";
-import AddVoucher from "../pages/Admin/voucher/AddVoucher";
-import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
@@ -37,7 +32,7 @@ import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 
 import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
- 
+
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
