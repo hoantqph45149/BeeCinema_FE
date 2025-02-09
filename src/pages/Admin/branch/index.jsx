@@ -18,7 +18,7 @@ import {
 // RangeSlider
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { Price } from "./BranchCol";
+// import { Price } from "./BranchCol";
 
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
