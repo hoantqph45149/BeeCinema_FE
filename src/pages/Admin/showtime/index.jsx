@@ -1,33 +1,26 @@
 import React, { useMemo, useState } from "react";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
   Col,
+  Container,
   Form,
   Input,
-  Button,
-  Container,
-  Modal,
-  ModalHeader,
+  Label,
   Row,
   Table,
-  Label,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
-import Select from "react-select";
-import Flatpickr from "react-flatpickr";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Showtime = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
+  const nav = useNavigate();
 
   // Column
   const columns = useMemo(() => [
@@ -188,8 +181,7 @@ const Showtime = () => {
                         className="btn btn-success add-btn"
                         id="create-btn"
                         onClick={() => {
-                          setIsEdit(false);
-                          toggle();
+                          nav("/admin/showtime/add");
                         }}
                       >
                         <i className="ri-add-line align-bottom me-1"></i>
@@ -303,12 +295,6 @@ const Showtime = () => {
                     </tbody>
                   </Table>
                 </div>
-                <Modal id="showModal" isOpen={modal} toggle={true} centered>
-                  <ModalHeader
-                    className="bg-light p-3"
-                    toggle={toggle}
-                  ></ModalHeader>
-                </Modal>
                 <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>

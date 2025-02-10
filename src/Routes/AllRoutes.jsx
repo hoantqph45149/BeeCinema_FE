@@ -31,6 +31,8 @@ import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
 
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
+import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -49,6 +51,14 @@ const authProtectedRoutes = [
     path: "/admin/showtime",
     component: <Showtime />,
   },
+  {
+    path: "/admin/showtime/add",
+    component: <Addshowtime />,
+  },
+  {
+    path: "/admin/showtime/edit",
+    component: <Updateshowtime />,
+  },
 
   // quản lý rạp
   { path: "/admin/cinema", component: <Cinema /> },
@@ -65,6 +75,7 @@ const authProtectedRoutes = [
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
+
   // quản lý giảm giá
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/edit", component: <EditVoucher /> },

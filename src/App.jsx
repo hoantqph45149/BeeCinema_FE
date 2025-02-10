@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 
 //import Scss
 
 import Route from "./routes";
 //imoprt Route
 function App() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (
       location.pathname.startsWith("/admin") ||
       location.pathname.startsWith("/login") ||

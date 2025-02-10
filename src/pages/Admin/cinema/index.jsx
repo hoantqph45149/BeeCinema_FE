@@ -1,17 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {
-  Card,
-  CardHeader,
-  Col,
-  Container,
-  Form,
-  Input,
-  Label,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  Row,
-} from "reactstrap";
+import { Card, CardHeader, Col, Container, Row } from "reactstrap";
 
 import { Link, useNavigate } from "react-router-dom";
 
