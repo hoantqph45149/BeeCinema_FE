@@ -23,16 +23,18 @@ import UpdatePost from "../pages/Admin/post/UpdatePost";
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
 import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 
-import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
+import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 
 import MoviesClient from "../pages/Client/movie";
 import ShowtimeClient from "../pages/Client/showtime";
 
+import AddMovie from "../pages/Admin/movie/AddMovie";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
+import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -63,9 +65,11 @@ const authProtectedRoutes = [
   // quản lý rạp
   { path: "/admin/cinema", component: <Cinema /> },
   { path: "/admin/cinema/add", component: <AddCinema /> },
+  { path: "/admin/cinema/:id/update", component: <UpdateCinema /> },
 
   // quản lý phim
   { path: "/admin/movie", component: <Movie /> },
+  { path: "/admin/movie/add", component: <AddMovie /> },
 
   // quản lý đồ ăn
   { path: "/admin/food", component: <Food /> },

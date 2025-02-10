@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
@@ -14,12 +15,14 @@ import {
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { useNavigate } from "react-router-dom";
 
-const AddCinema = () => {
+const UpdateCinema = () => {
   const nav = useNavigate();
+  const { id } = useParams();
   const { data: branches } = useFetch(["branches"], "/branches");
-  const { create: createCinema } = useCRUD();
+  const { data: cinema } = useFetch(["cinema"], `/cinemas/${id}`);
+  console.log(cinema);
+  const { patch: patchCinema } = useCRUD();
 
   //  Xác thực dữ liệu với Yup
   const validationSchema = Yup.object({
@@ -31,17 +34,21 @@ const AddCinema = () => {
 
   //  Quản lý form với Formik
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      name: "",
-      branch_id: "",
-      address: "",
-      description: "",
-      is_active: true,
+      name: (cinema && cinema?.name) || "",
+      branch_id: (cinema && cinema?.branch_id) || "",
+      address: (cinema && cinema?.address) || "",
+      description: (cinema && cinema?.description) || "",
+      is_active: (cinema && cinema?.is_active === 1 ? true : false) || "",
     },
     validationSchema,
     onSubmit: (values) => {
-      // console.log(values);
-      createCinema.mutate({ url: "/cinemas", data: values });
+      console.log(values);
+      patchCinema.mutate({
+        url: `/cinemas/${id}`,
+        data: { ...values, is_active: values.is_active === true ? 1 : 0 },
+      });
       nav("/admin/cinema");
     },
   });
@@ -181,7 +188,9 @@ const AddCinema = () => {
                     role="switch"
                     id="is_active"
                     checked={formik.values.is_active}
-                    onChange={formik.handleChange}
+                    onChange={(e) =>
+                      formik.setFieldValue("is_active", e.target.checked)
+                    }
                   />
                 </div>
               </CardBody>
@@ -193,4 +202,4 @@ const AddCinema = () => {
   );
 };
 
-export default AddCinema;
+export default UpdateCinema;

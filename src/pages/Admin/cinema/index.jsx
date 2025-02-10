@@ -1,97 +1,147 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Row } from "reactstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Label,
+  Row,
+} from "reactstrap";
 
 import { Link, useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
 import TableContainer from "../../../Components/Common/TableContainer";
 
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Cinema = () => {
+  const { data } = useFetch(["cinemas"], "/cinemas");
+  const { delete: deleteCinema } = useCRUD(["cinemas"]);
+  const { patch: patchCinema } = useCRUD();
   const nav = useNavigate();
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [cinemas, setCinemas] = useState([]);
+  const [cinema, setCinema] = useState({});
+  useEffect(() => {
+    if (data) {
+      setCinemas(data);
+    }
+  }, [data]);
 
-  const toggle = () => setModal(!modal);
-  // Customers Column
+  const handleDeleteCinema = (cinema) => {
+    showConfirm(
+      "Xóa Rạp Chiếu",
+      `Bạn có chắc muốn xóa rạp ${cinema.name} không?`,
+      () => {
+        deleteCinema.mutate(`/cinemas/${cinema.id}`);
+      }
+    );
+    setCinema({});
+  };
+
+  const handleUpdateActive = (cinema) => {
+    showConfirm(
+      "Thay đổi trạng thái",
+      "Bạn có chắc muốn thay đổi trạng thái không",
+      () => {
+        patchCinema.mutate({
+          url: `/cinemas/${cinema.id}`,
+          data: {
+            ...cinema,
+            is_active: cinema.is_active == 1 ? 0 : 1,
+          },
+        });
+      }
+    );
+    setCinema({});
+  };
+
+  // colunms của Table
   const columns = useMemo(() => [
     {
-      header: (
-        <input
-          type="checkbox"
-          id="checkBoxAll"
-          className="form-check-input"
-          onClick={() => checkedAll()}
-        />
-      ),
-      cell: (cell) => {
-        return (
-          <input
-            type="checkbox"
-            className="customerCheckBox form-check-input"
-            value={cell.getValue()}
-            onChange={() => deleteCheckbox()}
-          />
-        );
-      },
-      id: "#",
+      header: "#",
       accessorKey: "id",
       enableColumnFilter: false,
-      enableSorting: false,
+      enableSorting: true,
     },
     {
       header: "Tên rạp",
-      accessorKey: "customer",
+      accessorKey: "name",
       enableColumnFilter: false,
     },
     {
       header: "Chi nhánh",
-      accessorKey: "email",
+      accessorKey: "branch.name",
       enableColumnFilter: false,
     },
     {
       header: "Địa chỉ",
-      accessorKey: "phone",
+      accessorKey: "address",
       enableColumnFilter: false,
     },
     {
       header: "Hoạt động",
-      accessorKey: "date",
+      accessorKey: "is_active",
       enableColumnFilter: false,
+      cell: (cell) => {
+        // console.log(cell);
+        return (
+          <>
+            <div className="form-check form-switch form-check-right">
+              <Input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckRightDisabled"
+                defaultChecked={cell.row.original.is_active == 1 ? true : false}
+                onChange={() => handleUpdateActive(cell.row.original)}
+              />
+              <Label
+                className="form-check-label"
+                for="flexSwitchCheckRightDisabled"
+              >
+                Hoạt động:
+              </Label>
+            </div>
+          </>
+        );
+      },
     },
     {
       header: "Action",
-      cell: (cellProps) => {
+      cell: (cell) => {
         return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
-          </ul>
+          <>
+            <ul className="list-inline hstack gap-2 mb-0">
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    nav(`/admin/cinema/${cell.row.original.id}/update`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    handleDeleteCinema(cell.row.original);
+                    setCinema(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            </ul>
+          </>
         );
       },
     },
@@ -132,7 +182,7 @@ const Cinema = () => {
                   <div>
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={cinemas}
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}
@@ -140,8 +190,6 @@ const Cinema = () => {
                       SearchPlaceholder="Search for customer, email, phone, status or something..."
                     />
                   </div>
-
-                  <ToastContainer closeButton={false} limit={1} />
                 </div>
               </Card>
             </Col>

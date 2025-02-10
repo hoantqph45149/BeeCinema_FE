@@ -21,7 +21,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 
-// ✅ Định nghĩa Schema để validate dữ liệu nhập vào
+//  Định nghĩa Schema để validate dữ liệu nhập vào
 const branchSchema = Yup.object().shape({
   name: Yup.string()
     .required("Tên chi nhánh không được để trống")
@@ -260,7 +260,7 @@ const Branch = () => {
           </Col>
         </Row>
 
-        {/* 🟢 Modal chỉnh sửa chi nhánh */}
+        {/* Modal chỉnh sửa chi nhánh */}
         <Modal isOpen={modal} toggle={toggle} centered>
           <ModalHeader className="bg-light p-3" toggle={toggle}>
             {isEdit ? "Sửa chi nhánh" : "Thêm chi nhánh"}
