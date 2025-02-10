@@ -1,27 +1,34 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Card,
-  CardHeader,
+  CardBody,
   Col,
   Container,
   Form,
   Input,
   Label,
-  Modal,
-  ModalBody,
-  ModalHeader,
   Row,
-  Table,
 } from "reactstrap";
 
 // RangeSlider
-import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
 const Updateshowtime = () => {
+  const columns = useMemo(() => [
+    {
+      header: "Thời gian",
+      accessorKey: "customer",
+      enableColumnFilter: false,
+    },
+    {
+      header: "Phòng",
+      accessorKey: "customer",
+      enableColumnFilter: false,
+    },
+  ]);
   return (
     <div className="page-content">
       <ToastContainer closeButton={false} limit={1} />
@@ -77,12 +84,15 @@ const Updateshowtime = () => {
                     <Row>
                       <Col lg={4}>
                         <div className="mb-3">
-                          <Label className="form-label">Têm chi nhánh</Label>
-                          <Input
-                            type="text"
-                            className="form-control"
-                            placeholder="Nhập chi nhánh"
-                          />
+                          <Label className="form-label">Tên chi nhánh</Label>
+                          <select
+                            className="form-select mb-3"
+                            aria-label="Default select example"
+                          >
+                            <option defaultValue="1">Hà Nội </option>
+                            <option defaultValue="2">Thuyết minh </option>
+                            <option defaultValue="3">Phụ đề</option>
+                          </select>
                         </div>
                       </Col>
                       <Col lg={4}>
@@ -164,31 +174,22 @@ const Updateshowtime = () => {
               </Card>
             </div>
             <Card>
-              <CardHeader>
-                <div className="d-flex mb-3">
-                  <div className="flex-grow-1">
-                    <div className="card-body border-bottom border-light d-flex justify-content-start">
-                      <Button color="primary" className="mr-3">
-                        Lưu nháp
-                      </Button>
-                      <Button color="primary">Xuất bản</Button>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
+              <div className="card-body">
+                <Button color="primary">Xuất bản</Button>
+              </div>
             </Card>
           </Col>
 
           <Col xl={4} lg={5}>
             <Card>
-              <CardHeader>
-                <div className="d-flex mb-3">
+              <CardBody>
+                <div className="d-flex">
                   <div className="flex-grow-1">
-                    <Row className="justify-content-center">
+                    <Row className="justify-content-center ">
                       <Col>
                         <div className="mt-4 mt-md-0">
                           <div>
-                            <div className="form-check form-switch form-check-right mb-2">
+                            <div className="form-check form-switch form-check-right">
                               <Input
                                 className="form-check-input"
                                 type="checkbox"
@@ -209,25 +210,18 @@ const Updateshowtime = () => {
                     </Row>
                   </div>
                 </div>
-              </CardHeader>
+              </CardBody>
             </Card>
             <Card>
-              <div className="table-responsive">
-                <Table className="table-bordered align-middle table-nowrap mb-0">
-                  <thead>
-                    <tr>
-                      <th scope="col">Thời gian</th>
-                      <th scope="col">Phòng</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="fw-medium">01</td>
-                      <td>Implement new UX</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
+              <CardBody>
+                <TableContainer
+                  columns={columns}
+                  data={[]}
+                  isAddUserList={false}
+                  customPageSize={8}
+                  className="custom-header-css"
+                />
+              </CardBody>
             </Card>
           </Col>
         </Row>

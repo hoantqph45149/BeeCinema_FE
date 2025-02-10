@@ -66,7 +66,7 @@ const Layout = (props) => {
     layoutThemeType,
     layoutThemeColorType,
   } = useSelector(selectLayoutProperties);
-  console.log(leftsidbarSizeType);
+  // console.log(leftsidbarSizeType);
   /*
     layout settings
     */

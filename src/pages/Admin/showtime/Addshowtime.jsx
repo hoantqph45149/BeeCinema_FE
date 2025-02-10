@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Card,
@@ -8,70 +8,18 @@ import {
   Form,
   Input,
   Label,
-  Modal,
-  ModalBody,
-  ModalHeader,
   Row,
   Table,
 } from "reactstrap";
 
 // RangeSlider
-import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import TableContainer from "../../../Components/Common/TableContainer";
+import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 const Addshowtime = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
-
-  const toggle = () => setModal(!modal);
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-      enableSorting: false,
-    },
-    {
-      header: "Tên chi nhánh",
-      accessorKey: "name",
-      enableColumnFilter: false,
-      enableSorting: true,
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "acctive",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Ngày tạo",
-      accessorKey: "createdAt",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Ngày cập nhật",
-      accessorKey: "updatedAt",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Action",
-      cell: (cell) => {
-        return (
-          <>
-            <Link
-              className="action-icon"
-              onClick={() => {
-                setIsEdit(true);
-                toggle();
-              }}
-            >
-              <i className="ri-pencil-fill"></i>
-            </Link>
-          </>
-        );
-      },
-    },
+  const [isAuto, setIsAuto] = useState(false);
+  const [showtimes, setShowtimes] = useState([
+    { start_time: "", end_time: "" },
   ]);
   document.title = "";
 
@@ -103,11 +51,14 @@ const Addshowtime = () => {
                       <Col lg={8}>
                         <div className="mb-3">
                           <Label className="form-label">Tên phim</Label>
-                          <Input
-                            type="text"
-                            className="form-control"
-                            placeholder="Nhập tên phim"
-                          />
+                          <select
+                            className="form-select mb-3"
+                            aria-label="Default select example"
+                          >
+                            <option defaultValue="1">Hà Nội </option>
+                            <option defaultValue="2">Thuyết minh </option>
+                            <option defaultValue="3">Phụ đề</option>
+                          </select>
                         </div>
                       </Col>
                       <Col lg={4}>
@@ -127,12 +78,15 @@ const Addshowtime = () => {
                     <Row>
                       <Col lg={4}>
                         <div className="mb-3">
-                          <Label className="form-label">Têm chi nhánh</Label>
-                          <Input
-                            type="text"
-                            className="form-control"
-                            placeholder="Nhập chi nhánh"
-                          />
+                          <Label className="form-label">Tên chi nhánh </Label>
+                          <select
+                            className="form-select mb-3"
+                            aria-label="Default select example"
+                          >
+                            <option defaultValue="1">Hà Nội </option>
+                            <option defaultValue="2">Thuyết minh </option>
+                            <option defaultValue="3">Phụ đề</option>
+                          </select>
                         </div>
                       </Col>
                       <Col lg={4}>
@@ -165,65 +119,132 @@ const Addshowtime = () => {
                     <Row>
                       <Col lg={8}>
                         <div>
-                          <Label
-                            htmlFor="exampleInputdate"
-                            className="form-label"
-                          >
+                          <Label htmlFor="ngaychieu" className="form-label">
                             Ngày khởi chiếu
                           </Label>
                           <Input
                             type="date"
                             className="form-control"
-                            id="exampleInputdate"
+                            id="ngaychieu"
                           />
                         </div>
                       </Col>
                       <Col lg={4}>
                         <div>
-                          <Button color="primary" className="mt-4">
-                            <i className="ri-time-fill me-2">Thêm giờ chiếu</i>
+                          <Button
+                            onClick={() =>
+                              setShowtimes([
+                                ...showtimes,
+                                { start_time: "", end_time: "" },
+                              ])
+                            }
+                            color="primary"
+                            className="mt-4"
+                          >
+                            Thêm giờ chiếu
                           </Button>
                         </div>
                       </Col>
                     </Row>
+                    <div className="form-check py-2">
+                      <Input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="autotaosuatchieu"
+                        onChange={() => setIsAuto(!isAuto)}
+                      />{" "}
+                      <Label
+                        className="form-check-label"
+                        for="autotaosuatchieu"
+                      >
+                        Tự động tạo xuất chiếu trong ngày
+                      </Label>
+                    </div>
                     <Row>
-                      <Col lg={4}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="exampleInputtime"
-                            className="form-label"
-                          >
-                            Input Time
-                          </Label>
-                          <Input
-                            type="time"
-                            className="form-control"
-                            id="exampleInputtime"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={4}>
-                        <div className="mb-3">
-                          <Label
-                            htmlFor="exampleInputtime"
-                            className="form-label"
-                          >
-                            Input Time
-                          </Label>
-                          <Input
-                            type="time"
-                            className="form-control"
-                            id="exampleInputtime"
-                          />
-                        </div>
-                      </Col>
-                      <Col lg={4}>
-                        <div>
-                          <Button color="primary" className="mt-4">
-                            <i className="ri-fill me-2 ">Xóa</i>
-                          </Button>
-                        </div>
-                      </Col>
+                      {isAuto ? (
+                        <>
+                          <Col lg={6}>
+                            <div className="mb-3">
+                              <Label htmlFor="giomocua" className="form-label">
+                                Giờ Mở Cửa
+                              </Label>
+                              <Input
+                                type="time"
+                                className="form-control"
+                                id="giomocua"
+                              />
+                            </div>
+                          </Col>
+                          <Col lg={6}>
+                            <div className="mb-3">
+                              <Label
+                                htmlFor="giodongcua"
+                                className="form-label"
+                              >
+                                Giờ Đóng Cửa
+                              </Label>
+                              <Input
+                                type="time"
+                                className="form-control"
+                                id="giodongcua"
+                              />
+                            </div>
+                          </Col>
+                        </>
+                      ) : (
+                        <>
+                          {showtimes.map((showtime, index) => (
+                            <>
+                              <Col lg={5}>
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="giochieu"
+                                    className="form-label"
+                                  >
+                                    Giờ Chiếu
+                                  </Label>
+                                  <Input
+                                    type="time"
+                                    className="form-control"
+                                    id="giochieu"
+                                  />
+                                </div>
+                              </Col>
+                              <Col lg={5}>
+                                <div className="mb-3">
+                                  <Label
+                                    htmlFor="gioketthuc"
+                                    className="form-label"
+                                  >
+                                    Giờ Kết Thúc
+                                  </Label>
+                                  <Input
+                                    type="time"
+                                    className="form-control"
+                                    id="gioketthuc"
+                                  />
+                                </div>
+                              </Col>
+
+                              <Col lg={2}>
+                                <div>
+                                  <Button
+                                    onClick={() =>
+                                      setShowtimes(
+                                        showtimes.filter((_, i) => i !== index)
+                                      )
+                                    }
+                                    color="danger"
+                                    className="mt-4"
+                                  >
+                                    Xóa
+                                  </Button>
+                                </div>
+                              </Col>
+                            </>
+                          ))}
+                        </>
+                      )}
                     </Row>
                   </Form>
                 </div>
@@ -233,7 +254,7 @@ const Addshowtime = () => {
               <CardHeader>
                 <div className="d-flex mb-3">
                   <div className="flex-grow-1">
-                    <div className="card-body border-bottom border-light d-flex justify-content-start">
+                    <div className="card-body border-bottom border-light d-flex justify-content-start gap-2">
                       <Button color="primary" className="mr-3">
                         Lưu nháp
                       </Button>
