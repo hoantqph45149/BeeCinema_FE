@@ -57,6 +57,7 @@ export const useCRUD = (key) => {
       showAlert("Thành công!", "Thay Đổi Thành công!");
     },
     onError: (error) => {
+      console.log(error);
       showAlert(
         "Thất Bại",
         `${
