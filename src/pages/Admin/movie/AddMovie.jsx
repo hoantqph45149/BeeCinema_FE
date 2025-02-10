@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import TableContainer from "../../../Components/Common/TableContainer";
 
-const Add = () => {
+const AddMovie = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -375,16 +375,16 @@ const Add = () => {
             </Card>
             <Card>
               <CardHeader>
-              <div className="accordion accordion-flush">
-                <div className="card-body">
-                  <Label className="form-label">Code Youtube</Label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    placeholder="Nhập code"
-                  />
+                <div className="accordion accordion-flush">
+                  <div className="card-body">
+                    <Label className="form-label">Code Youtube</Label>
+                    <Input
+                      type="text"
+                      className="form-control"
+                      placeholder="Nhập code"
+                    />
+                  </div>
                 </div>
-              </div> 
               </CardHeader>
             </Card>
           </Col>
@@ -393,4 +393,4 @@ const Add = () => {
     </div>
   );
 };
-export default Add;
+export default AddMovie;

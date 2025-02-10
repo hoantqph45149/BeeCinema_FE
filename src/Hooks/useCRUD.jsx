@@ -19,7 +19,15 @@ export const useCRUD = (key) => {
       showAlert("Thành công!", "Thêm Thành công!");
     },
     onError: (error) => {
-      showAlert("Thất Bại", `${error.response.data.message}`, "error");
+      showAlert(
+        "Thất Bại",
+        `${
+          error?.response?.data?.message
+            ? error?.response?.data?.message
+            : "Thêm Thất Bại"
+        }`,
+        "error"
+      );
     },
   });
 
@@ -30,7 +38,15 @@ export const useCRUD = (key) => {
       showAlert("Thành công!", "Thay Đổi Thành công!");
     },
     onError: (error) => {
-      showAlert("Thất Bại", `${error.response.data.message}`, "error");
+      showAlert(
+        "Thất Bại",
+        `${
+          error?.response?.data?.message
+            ? error?.response?.data?.message
+            : "Thay Đổi Thất Bại"
+        }`,
+        "error"
+      );
     },
   });
 
@@ -41,7 +57,15 @@ export const useCRUD = (key) => {
       showAlert("Thành công!", "Thay Đổi Thành công!");
     },
     onError: (error) => {
-      showAlert("Thất Bại", `${error.response.data.message}`, "error");
+      showAlert(
+        "Thất Bại",
+        `${
+          error?.response?.data?.message
+            ? error?.response?.data?.message
+            : "Thay Đổi Thất Bại"
+        }`,
+        "error"
+      );
     },
   });
 
@@ -52,7 +76,15 @@ export const useCRUD = (key) => {
       showAlert("Thành công!", "Xóa Thành công!");
     },
     onError: (error) => {
-      showAlert("Thất Bại", `${error.response.data.message}`, "error");
+      showAlert(
+        "Thất Bại",
+        `${
+          error?.response?.data?.message
+            ? error?.response?.data?.message
+            : "Xóa Thất Bại"
+        }`,
+        "error"
+      );
     },
   });
 
