@@ -6,11 +6,15 @@ import {
   CardHeader,
   Col,
   Container,
+  Label,
   Modal,
+  ModalBody,
+  ModalHeader,
   Nav,
   NavItem,
   NavLink,
   Row,
+  Button,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
@@ -169,12 +173,92 @@ const Room = () => {
                     SearchPlaceholder="Search for order ID, customer, order status or something..."
                   />
                 </div>
-                <Modal
-                  id="showModal"
-                  isOpen={modal}
-                  toggle={toggle}
-                  centered
-                ></Modal>
+                <Modal id="showModal" isOpen={modal} toggle={toggle} centered>
+                  <ModalHeader toggle={toggle} className="bg-light">
+                    {isEdit ? "Sửa phòng chiếu" : "Thêm phòng chiếu"}
+                  </ModalHeader>
+                  <form>
+                    <ModalBody>
+                      <div className="mb-3">
+                        <label className="form-label">Tên chi nhánh</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Nhập tên chi nhánh"
+                        />
+                      </div>
+                      <Row>
+                        <Col lg={6}>
+                        <div className="mb-3">
+                            <Label className="form-label">Chi Nhánh</Label>
+                            <select
+                              className="form-select mb-3"
+                              aria-label="Default select example"
+                            >
+                              <option defaultValue="2">Hà Nội </option>
+                              <option defaultValue="3">Đà Nẵng</option>
+                              <option defaultValue="3">Hải Phòng</option>
+                              <option defaultValue="3">Bình Dương</option>
+                            </select>
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label className="form-label">Rạp Chiếu</Label>
+                            <select
+                              className="form-select mb-3"
+                              aria-label="Default select example"
+                            >
+                              <option defaultValue="1">Giải Phóng </option>
+                              <option defaultValue="2">Thanh Xuân </option>
+                              <option defaultValue="3">Mỹ Đình</option>
+                            </select>
+                          </div>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label className="form-label">
+                              Loại Phòng Chiếu
+                            </Label>
+                            <select
+                              className="form-select mb-3"
+                              aria-label="Default select example"
+                            >
+                              <option defaultValue="1">2D </option>
+                              <option defaultValue="2">3D </option>
+                              <option defaultValue="3">4D</option>
+                            </select>
+                          </div>
+                        </Col>
+                        <Col lg={6}>
+                          <div className="mb-3">
+                            <Label className="form-label">Mẫu Sơ Đồ Ghế</Label>
+                            <select
+                              className="form-select mb-3"
+                              aria-label="Default select example"
+                            >
+                              <option defaultValue="1">
+                                Template Standard{" "}
+                              </option>
+                              <option defaultValue="2">Loại 1 </option>
+                              <option defaultValue="3">Loại 2</option>
+                            </select>
+                          </div>
+                        </Col>
+                      </Row>
+                      <div className="modal-footer">
+                        <Button type="button" color="light" onClick={toggle}>
+                          Đóng
+                        </Button>
+                        <Button type="submit" color="success">
+                          {isEdit ? "Sửa" : "Thêm "}
+                        </Button>
+                      </div>
+                    </ModalBody>
+                  </form>
+                </Modal>
                 <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
