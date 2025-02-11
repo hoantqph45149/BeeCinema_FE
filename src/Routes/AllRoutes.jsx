@@ -35,6 +35,7 @@ import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
+import Addcombo from "../pages/Admin/combo/Addcombo";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -76,6 +77,7 @@ const authProtectedRoutes = [
 
   // quản lý combo
   { path: "/admin/combo", component: <Combo /> },
+  { path: "/admin/combo/add", component: <Addcombo /> },
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
