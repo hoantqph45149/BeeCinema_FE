@@ -35,6 +35,8 @@ import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
+import priceManage from "./../pages/Admin/pricemanage/price-manage";
+import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -88,7 +90,8 @@ const authProtectedRoutes = [
   { path: "/admin/post", component: <Post /> },
   { path: "/admin/post/add", component: <AddPost /> },
   { path: "/admin/post/edit", component: <UpdatePost /> },
-
+  // quản lý giá vé
+  { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
   // thống kê
