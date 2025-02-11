@@ -37,6 +37,7 @@ import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 import priceManage from "./../pages/Admin/pricemanage/price-manage";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
+import AddSlideShow from "../pages/Admin/banner/AddSlideShow";
 const authProtectedRoutes = [
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -94,6 +95,7 @@ const authProtectedRoutes = [
   { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
+  { path: "/admin/banner/add", component: <AddSlideShow /> },
   // thống kê
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
