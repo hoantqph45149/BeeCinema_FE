@@ -37,6 +37,8 @@ import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 import Addcombo from "../pages/Admin/combo/Addcombo";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
+import AddSlideShow from "../pages/Admin/banner/AddSlideShow";
+import AddAccount from "../pages/Admin/account/AddAccount";
 
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
@@ -90,6 +92,10 @@ const authProtectedRoutes = [
   { path: "/admin/combo", component: <Combo /> },
   { path: "/admin/combo/add", component: <Addcombo /> },
 
+  // quản lý tài khoản
+  { path: "/admin/account", component: <Account /> },
+  { path: "/admin/account/add", component: <AddAccount /> },
+
   // quản lý giảm giá
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/edit", component: <EditVoucher /> },
@@ -102,6 +108,7 @@ const authProtectedRoutes = [
   { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
   { path: "/admin/banner", component: <Banner /> },
+  { path: "/admin/banner/add", component: <AddSlideShow /> },
   // thống kê
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
