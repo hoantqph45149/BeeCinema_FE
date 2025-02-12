@@ -38,6 +38,7 @@ import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 import Addcombo from "../pages/Admin/combo/Addcombo";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddSlideShow from "../pages/Admin/banner/AddSlideShow";
+import AddAccount from "../pages/Admin/account/AddAccount";
 
 const authProtectedRoutes = [
   // quản lý chi nhánh
@@ -84,6 +85,7 @@ const authProtectedRoutes = [
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
+  { path: "/admin/account/add", component: <AddAccount /> },
 
   // quản lý giảm giá
   { path: "/admin/voucher/add", component: <AddVoucher /> },
