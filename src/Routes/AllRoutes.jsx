@@ -40,9 +40,11 @@ import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddSlideShow from "../pages/Admin/banner/AddSlideShow";
 import AddAccount from "../pages/Admin/account/AddAccount";
 
+import SeatTemplate from "../pages/Admin/seat-template";
+import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 const authProtectedRoutes = [
-  // quản lý chi nhánh
-  { path: "/admin/Branch", component: <Branch /> },
+  // quản lý tài khoản
+  { path: "/admin/account", component: <Account /> },
 
   // quản lý vé
   {
@@ -50,8 +52,24 @@ const authProtectedRoutes = [
     component: <Ticket />,
   },
 
+  // quản lý chi nhánh
+  { path: "/admin/Branch", component: <Branch /> },
+
+  // quản lý rạp
+  { path: "/admin/cinema", component: <Cinema /> },
+  { path: "/admin/cinema/add", component: <AddCinema /> },
+  { path: "/admin/cinema/:id/update", component: <UpdateCinema /> },
+
   // quản lý phòng chiếu
   { path: "/admin/room", component: <Room /> },
+
+  // quản lý mẫu sơ đồ ghế
+  { path: "/admin/seat-template", component: <SeatTemplate /> },
+  { path: "/admin/seat-template/:id/edit", component: <EditSeatTemplate /> },
+
+  // quản lý phim
+  { path: "/admin/movie", component: <Movie /> },
+  { path: "/admin/movie/add", component: <AddMovie /> },
 
   // quản lý suất chiếu
   {
@@ -66,15 +84,6 @@ const authProtectedRoutes = [
     path: "/admin/showtime/edit",
     component: <Updateshowtime />,
   },
-
-  // quản lý rạp
-  { path: "/admin/cinema", component: <Cinema /> },
-  { path: "/admin/cinema/add", component: <AddCinema /> },
-  { path: "/admin/cinema/:id/update", component: <UpdateCinema /> },
-
-  // quản lý phim
-  { path: "/admin/movie", component: <Movie /> },
-  { path: "/admin/movie/add", component: <AddMovie /> },
 
   // quản lý đồ ăn
   { path: "/admin/food", component: <Food /> },
@@ -114,7 +123,7 @@ const authProtectedRoutes = [
     exact: true,
     component: <Navigate to="/admin/overview" />,
   },
-  { path: "*", component: <Navigate to="/admin/overview" /> },
+  { path: "/admin", component: <Navigate to="/admin/overview" /> },
 ];
 
 const publicRoutes = [

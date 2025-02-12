@@ -12,6 +12,17 @@ export const showAlert = (title, text, icon = "success") => {
   });
 };
 
+export const showLoadingAlert = () => {
+  Swal.fire({
+    title: "Đang xử lý...",
+    text: "Vui lòng chờ trong giây lát.",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+};
+
 export const showConfirm = (title, text, confirmCallback) => {
   return MySwal.fire({
     title,

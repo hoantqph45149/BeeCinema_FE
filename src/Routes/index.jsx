@@ -7,7 +7,7 @@ import NonAuthLayout from "../Layouts/admin/NonAuthLayout";
 import VerticalLayout from "../Layouts/admin/index";
 
 //routes
-import { authProtectedRoutes, publicRoutes, clientRoutes } from "./allRoutes";
+import { authProtectedRoutes, publicRoutes, clientRoutes } from "./AllRoutes";
 import { AuthProtected } from "./AuthProtected";
 
 const Index = () => {

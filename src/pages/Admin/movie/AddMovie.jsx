@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
   Button,
   Card,
+  CardBody,
   CardHeader,
   Col,
   Container,
@@ -296,64 +297,61 @@ const AddMovie = () => {
           <Col xl={4} lg={5}>
             <Card>
               <CardHeader>
-                <div className="d-flex mb-3">
-                  <div className="flex-grow-1">
-                    <h5 className="fs-16">Thêm mới </h5>
-                  </div>
-                </div>
+                <h5 className="fs-16">Thêm mới </h5>
               </CardHeader>
-              <Row>
-                <Col>
-                  <div className="mt-4 mt-md-0">
-                    <div>
-                      <div className="form-check form-switch form-check-right mb-2">
-                        <Input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="flexSwitchCheckRightDisabled"
-                          defaultChecked
-                        />
-                        <Label
-                          className="form-check-label"
-                          for="flexSwitchCheckRightDisabled"
-                        >
-                          Hoạt động:
-                        </Label>
+              <CardBody>
+                <Row>
+                  <Col lg={6}>
+                    <div className="mt-4 mt-md-0">
+                      <div>
+                        <div className="form-check form-switch form-check-right mb-2">
+                          <Input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="flexSwitchCheckRightDisabled"
+                            defaultChecked
+                          />
+                          <Label
+                            className="form-check-label"
+                            for="flexSwitchCheckRightDisabled"
+                          >
+                            Hoạt động:
+                          </Label>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="mt-4 mt-md-0">
-                    <div>
-                      <div className="form-check form-switch form-check-right mb-2">
-                        <Input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="flexSwitchCheckRightDisabled"
-                          defaultChecked
-                        />
-                        <Label
-                          className="form-check-label"
-                          for="flexSwitchCheckRightDisabled"
-                        >
-                          Nổi bật:
-                        </Label>
+                  </Col>
+
+                  <Col lg={6}>
+                    <div className="mt-4 mt-md-0">
+                      <div>
+                        <div className="form-check form-switch form-check-right mb-2">
+                          <Input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id="flexSwitchCheckRightDisabled"
+                            defaultChecked
+                          />
+                          <Label
+                            className="form-check-label"
+                            for="flexSwitchCheckRightDisabled"
+                          >
+                            Nổi bật:
+                          </Label>
+                        </div>
                       </div>
                     </div>
+                  </Col>
+                  <div className="card-body border-bottom border-light get-end d-flex justify-content-end gap-2">
+                    <Button color="primary" className="mr-3">
+                      Lưu nháp
+                    </Button>
+                    <Button color="primary">Xuất bản</Button>
                   </div>
-                </Col>
-                <div className="card-body border-bottom border-light get-end d-flex justify-content-end">
-                  <Button color="primary" className="mr-3">
-                    Lưu nháp
-                  </Button>
-                  <Button color="primary">Xuất bản</Button>
-                </div>
-              </Row>
+                </Row>
+              </CardBody>
             </Card>
             <Card>
               <CardHeader>

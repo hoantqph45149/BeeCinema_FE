@@ -15,18 +15,13 @@ import {
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
-// Formik
-
-//redux
-
-//Import actions
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Movie = () => {
+  const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -139,8 +134,7 @@ const Movie = () => {
                         className="btn btn-success add-btn"
                         id="create-btn"
                         onClick={() => {
-                          setIsEdit(false);
-                          toggle();
+                          nav("/admin/movie/add");
                         }}
                       >
                         <i className="ri-add-line align-bottom me-1"></i>

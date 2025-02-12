@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiService } from "../apis/axios";
-import { showAlert } from "../Components/Common/showAlert";
+import { showAlert, showLoadingAlert } from "../Components/Common/showAlert";
+import Swal from "sweetalert2";
 
 export const useFetch = (key, url, params) => {
   return useQuery({
@@ -13,12 +14,19 @@ export const useCRUD = (key) => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async ({ url, data }) => await apiService.post(url, data),
+    mutationFn: async ({ url, data }) => {
+      showLoadingAlert();
+      const res = await apiService.post(url, data);
+      return res;
+    },
     onSuccess: () => {
+      Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
       showAlert("Thành công!", "Thêm Thành công!");
     },
     onError: (error) => {
+      console.log(error);
+      Swal.close();
       showAlert(
         "Thất Bại",
         `${
@@ -32,12 +40,18 @@ export const useCRUD = (key) => {
   });
 
   const putMutation = useMutation({
-    mutationFn: async ({ url, data }) => await apiService.put(url, data),
+    mutationFn: async ({ url, data }) => {
+      showLoadingAlert();
+      const res = await apiService.put(url, data);
+      return res;
+    },
     onSuccess: () => {
+      Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
       showAlert("Thành công!", "Thay Đổi Thành công!");
     },
     onError: (error) => {
+      Swal.close();
       showAlert(
         "Thất Bại",
         `${
@@ -51,13 +65,19 @@ export const useCRUD = (key) => {
   });
 
   const patchMutation = useMutation({
-    mutationFn: async ({ url, data }) => await apiService.patch(url, data),
+    mutationFn: async ({ url, data }) => {
+      showLoadingAlert();
+      const res = await apiService.patch(url, data);
+      return res;
+    },
     onSuccess: () => {
+      Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
       showAlert("Thành công!", "Thay Đổi Thành công!");
     },
     onError: (error) => {
       console.log(error);
+      Swal.close();
       showAlert(
         "Thất Bại",
         `${
@@ -71,12 +91,19 @@ export const useCRUD = (key) => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (url) => await apiService.delete(url),
+    mutationFn: async (url) => {
+      showLoadingAlert();
+      const res = await apiService.delete(url);
+      return res;
+    },
     onSuccess: () => {
+      Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
       showAlert("Thành công!", "Xóa Thành công!");
     },
     onError: (error) => {
+      console.log(error);
+      Swal.close();
       showAlert(
         "Thất Bại",
         `${

@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 const AddCinema = () => {
   const nav = useNavigate();
-  const { data: branches } = useFetch(["branches"], "/branches");
+  const { data: branches } = useFetch(["branches"]);
   const { create: createCinema } = useCRUD();
 
   //  Xác thực dữ liệu với Yup

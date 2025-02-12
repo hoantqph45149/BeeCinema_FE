@@ -152,6 +152,13 @@ const Navdata = () => {
 
         {
           id: 2,
+          label: "Quản lý rạp chiếu",
+          link: "/admin/cinema",
+          parentId: "dichvuvauudai",
+        },
+
+        {
+          id: 3,
           label: "Quản lý phòng chiếu",
           link: "/admin/room",
           parentId: "dichvuvauudai",
@@ -159,8 +166,8 @@ const Navdata = () => {
 
         {
           id: 3,
-          label: "Quản lý rạp chiếu",
-          link: "/admin/cinema",
+          label: "Quản lý mẫu sơ đồ ghế",
+          link: "/admin/seat-template",
           parentId: "dichvuvauudai",
         },
       ],
