@@ -13,7 +13,15 @@ const store = configureStore({ reducer: rootReducer, devTools: true });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1, // Gọi lại 1 lần nếu request thất bại
+    },
+  },
+});
+
 root.render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
