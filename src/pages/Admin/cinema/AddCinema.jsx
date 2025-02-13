@@ -18,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 const AddCinema = () => {
   const nav = useNavigate();
-  const { data: branches } = useFetch(["branches"]);
+  const { data: branches } = useFetch(["branches"], "/branches");
   const { create: createCinema } = useCRUD();
 
   //  Xác thực dữ liệu với Yup
@@ -40,7 +40,7 @@ const AddCinema = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      // console.log(values);
+      console.log(values);
       createCinema.mutate({ url: "/cinemas", data: values });
       nav("/admin/cinema");
     },
