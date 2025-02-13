@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -279,54 +279,57 @@ const EditSeatTemplate = () => {
         );
       }
     },
-    [seats]
+    [seats, seatMap]
   );
 
-  const handleDeselectAll = useCallback((rowIndex) => {
-    if (seatMap.length > 0) {
-      setSeatMap((prevSeats) =>
-        prevSeats.map((row, rIdx) =>
-          rIdx === rowIndex
-            ? {
-                ...row,
-                seats: row.seats.map((seat) => {
-                  if (seat.selected) {
-                    removeSeatFromSelected(seat.rowLabel, seat.col);
-                  }
-                  return {
-                    ...seat,
-                    selected: false,
-                    hidden: false,
-                    colspan: 1,
-                  };
-                }),
-              }
-            : row
-        )
-      );
-    } else {
-      setSeats((prevSeats) =>
-        prevSeats.map((row, rIdx) =>
-          rIdx === rowIndex
-            ? {
-                ...row,
-                seats: row.seats.map((seat) => {
-                  if (seat.selected) {
-                    removeSeatFromSelected(seat.rowLabel, seat.col);
-                  }
-                  return {
-                    ...seat,
-                    selected: false,
-                    hidden: false,
-                    colspan: 1,
-                  };
-                }),
-              }
-            : row
-        )
-      );
-    }
-  }, []);
+  const handleDeselectAll = useCallback(
+    (rowIndex) => {
+      if (seatMap.length > 0) {
+        setSeatMap((prevSeats) =>
+          prevSeats.map((row, rIdx) =>
+            rIdx === rowIndex
+              ? {
+                  ...row,
+                  seats: row.seats.map((seat) => {
+                    if (seat.selected) {
+                      removeSeatFromSelected(seat.rowLabel, seat.col);
+                    }
+                    return {
+                      ...seat,
+                      selected: false,
+                      hidden: false,
+                      colspan: 1,
+                    };
+                  }),
+                }
+              : row
+          )
+        );
+      } else {
+        setSeats((prevSeats) =>
+          prevSeats.map((row, rIdx) =>
+            rIdx === rowIndex
+              ? {
+                  ...row,
+                  seats: row.seats.map((seat) => {
+                    if (seat.selected) {
+                      removeSeatFromSelected(seat.rowLabel, seat.col);
+                    }
+                    return {
+                      ...seat,
+                      selected: false,
+                      hidden: false,
+                      colspan: 1,
+                    };
+                  }),
+                }
+              : row
+          )
+        );
+      }
+    },
+    [seats, seatMap]
+  );
 
   const addSeatToSelected = (type, rowLabel, col) => {
     setSelectedSeats((prev) => [
@@ -627,17 +630,30 @@ const EditSeatTemplate = () => {
                   </Row>
                   <div className="card-body get-end d-flex justify-content-end gap-2"></div>
                   <Row className="gap-3">
-                    <Col lg={12} className="flex-grow-1">
-                      <Button
-                        onClick={() => {
-                          handleSubmit(0, 0);
-                        }}
-                        color="primary"
-                        className="mr-3 "
-                      >
-                        Lưu nháp
-                      </Button>
-                    </Col>
+                    {seatTemplate?.is_publish === false && (
+                      <Col lg={12} className="flex-grow-1">
+                        <Button
+                          onClick={() => {
+                            handleSubmit(0, 0);
+                          }}
+                          color="primary"
+                          className="mr-3 "
+                        >
+                          Lưu nháp
+                        </Button>
+                      </Col>
+                    )}
+                    {seatTemplate?.is_publish === true && (
+                      <Col lg={12} className="flex-grow-1">
+                        <Link
+                          to="/admin/seat-template"
+                          type="submit"
+                          className="btn btn-primary"
+                        >
+                          Danh sách
+                        </Link>
+                      </Col>
+                    )}
                     <Col lg={12} className="flex-grow-1">
                       <Button
                         onClick={() => {
@@ -647,7 +663,9 @@ const EditSeatTemplate = () => {
                         type="submit"
                         className="btn w-sm"
                       >
-                        Xuất bản
+                        {seatTemplate?.is_publish === false
+                          ? "Xuất Bản"
+                          : "Cập nhật"}
                       </Button>
                     </Col>
                   </Row>

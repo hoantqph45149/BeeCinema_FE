@@ -23,7 +23,7 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SeatTemplate = () => {
   const { data: matrixs } = useFetch(["matrixs"], "/getAll-matrix");
@@ -218,6 +218,20 @@ const SeatTemplate = () => {
       header: "Tên Mẫu",
       accessorKey: "name",
       enableColumnFilter: false,
+      cell: (cell) => (
+        <>
+          <div className="flex-grow-1">
+            <h5 className="fs-14 mb-1">{cell.getValue()}</h5>
+            <Link
+              to={`/admin/seat-template/${cell.row.original.id}/edit`}
+              className="text-info mb-0"
+            >
+              Xem sơ đồ ghế
+              <span className="fw-medium"> {cell.row.original.category}</span>
+            </Link>
+          </div>
+        </>
+      ),
     },
     {
       header: "Mô Tả",

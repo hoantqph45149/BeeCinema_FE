@@ -21,7 +21,7 @@ const UpdateCinema = () => {
   const { id } = useParams();
   const { data: branches } = useFetch(["branches"], "/branches");
   const { data: cinema } = useFetch(["cinema"], `/cinemas/${id}`);
-  console.log(cinema);
+  // console.log(cinema);
   const { patch: patchCinema } = useCRUD();
 
   //  Xác thực dữ liệu với Yup
