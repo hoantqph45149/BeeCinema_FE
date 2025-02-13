@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardBody,
@@ -15,27 +15,89 @@ import {
   NavLink,
   Row,
   Button,
+  Input,
+  Form,
 } from "reactstrap";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 
 const Room = () => {
+  const { data } = useFetch(["rooms"], "/rooms");
+  const { data: cinemas } = useFetch(["cinemas"], "/cinemas");
+  const { data: branches } = useFetch(["branches"], "/branches");
+  const { data: typeRooms } = useFetch(["typeRooms"], "/type-rooms");
+  const { data: seatTemplates } = useFetch(
+    ["seatTemplates"],
+    "/seat-templates"
+  );
+  const { create: createRoom, patch: patchRoom } = useCRUD(["rooms"]);
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
+  const [roomsPublish, setRoomsPublish] = useState([]);
+  const [roomsUnPublish, setRoomsUnPublish] = useState([]);
+  const [rooms, setRooms] = useState([]);
 
-  const toggleTab = (tab, status) => {
+  const toggleTab = (tab, type) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      // Thực hiện hành động với trạng thái "status" nếu cần.
-      console.log(`Tab ${tab} với trạng thái: ${status}`);
+      let filterRooms = data.data;
+      if (type === "all") {
+        setRooms(data.data);
+      } else if (type === "publish") {
+        filterRooms = data.data.filter((item) => item.is_publish === true);
+        console.log(filterRooms);
+        setRooms(filterRooms);
+      } else {
+        filterRooms = data.data.filter((item) => item.is_publish === false);
+        setRooms(filterRooms);
+      }
     }
   };
 
+  useEffect(() => {
+    if (data?.data) {
+      const filterRoomsPublish = data?.data.filter(
+        (item) => item.is_publish === true
+      );
+      const filterRoomsUnPublish = data?.data.filter(
+        (item) => item.is_publish === false
+      );
+      setRoomsPublish(filterRoomsPublish);
+      setRoomsUnPublish(filterRoomsUnPublish);
+      setRooms(data.data);
+    }
+  }, [data?.data]);
+
   const toggle = () => setModal(!modal);
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      branch_id: "",
+      cinema_id: "",
+      type_room_id: "",
+      seat_template_id: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Vui lòng nhập tên chi nhánh"),
+      branch_id: Yup.string().required("Vui lòng chọn chi nhánh"),
+      cinema_id: Yup.string().required("Vui lòng chọn rạp chiếu"),
+      type_room_id: Yup.string().required("Vui lòng chọn loại phòng chiếu"),
+      seat_template_id: Yup.string().required("Vui lòng chọn mẫu sơ đồ ghế"),
+    }),
+    onSubmit: (values) => {
+      if (isEdit) {
+      } else {
+        createRoom.mutate({ url: "/rooms", data: values });
+      }
+    },
+  });
+
   // Column
   const columns = useMemo(() => [
     {
@@ -46,17 +108,17 @@ const Room = () => {
     },
     {
       header: "Phòng chiếu",
-      accessorKey: "orderId",
+      accessorKey: "name",
       enableColumnFilter: false,
     },
     {
       header: "Rạp chiếu",
-      accessorKey: "customer",
+      accessorKey: "cinema.name",
       enableColumnFilter: false,
     },
     {
       header: "Loại Phòng",
-      accessorKey: "product",
+      accessorKey: "type_room.name",
       enableColumnFilter: false,
     },
     {
@@ -66,13 +128,47 @@ const Room = () => {
     },
     {
       header: "Trạng thái",
-      accessorKey: "amount",
+      accessorKey: "is_publish",
       enableColumnFilter: false,
+      cell: (cell) => {
+        switch (cell.getValue()) {
+          case true:
+            return (
+              <span className="badge text-uppercase bg-success text-white">
+                Đã xuất Bản
+              </span>
+            );
+          case false:
+            return (
+              <span className="badge text-uppercase bg-danger text-white">
+                Chưa Xuất Bản
+              </span>
+            );
+        }
+      },
     },
     {
       header: "Hoạt động",
-      accessorKey: "payment",
+      accessorKey: "is_active",
       enableColumnFilter: false,
+      cell: (cell) => {
+        // console.log(cell);
+        return (
+          <>
+            <div className="form-check form-switch form-check-right">
+              <Input
+                disabled={!cell.row.original.is_publish}
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckRightDisabled"
+                defaultChecked={cell.row.original.is_active}
+                // onChange={() => handleUpdateActive(cell.row.original)}
+              />
+            </div>
+          </>
+        );
+      },
     },
   ]);
 
@@ -126,6 +222,11 @@ const Room = () => {
                       >
                         <i className="ri-store-2-fill me-1 align-bottom"></i>{" "}
                         Tất cả
+                        {data?.data.length > 0 && (
+                          <span className="badge bg-success align-middle ms-1">
+                            {data?.data.length}
+                          </span>
+                        )}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -135,12 +236,18 @@ const Room = () => {
                           "fw-semibold"
                         )}
                         onClick={() => {
-                          toggleTab("2", "Delivered");
+                          toggleTab("2", "publish");
                         }}
                         href="#"
                       >
+                        {" "}
                         <i className="ri-checkbox-circle-line me-1 align-bottom"></i>{" "}
                         Đã xuất bản
+                        {roomsPublish.length > 0 && (
+                          <span className="badge bg-success align-middle ms-1">
+                            {roomsPublish.length}
+                          </span>
+                        )}
                       </NavLink>
                     </NavItem>
                     <NavItem>
@@ -150,20 +257,22 @@ const Room = () => {
                           "fw-semibold"
                         )}
                         onClick={() => {
-                          toggleTab("3", "Pickups");
+                          toggleTab("3", "unPublish");
                         }}
                         href="#"
                       >
                         Bản nháp
-                        <span className="badge bg-danger align-middle ms-1">
-                          2
-                        </span>
+                        {roomsUnPublish.length > 0 && (
+                          <span className="badge bg-danger align-middle ms-1">
+                            {roomsUnPublish.length}
+                          </span>
+                        )}
                       </NavLink>
                     </NavItem>
                   </Nav>
                   <TableContainer
                     columns={columns}
-                    data={[]}
+                    data={rooms}
                     isGlobalFilter={true}
                     isAddUserList={false}
                     customPageSize={8}
@@ -177,42 +286,79 @@ const Room = () => {
                   <ModalHeader toggle={toggle} className="bg-light">
                     {isEdit ? "Sửa phòng chiếu" : "Thêm phòng chiếu"}
                   </ModalHeader>
-                  <form>
+                  <Form onSubmit={formik.handleSubmit}>
                     <ModalBody>
                       <div className="mb-3">
                         <label className="form-label">Tên chi nhánh</label>
                         <input
                           type="text"
-                          className="form-control"
+                          className={`form-control ${
+                            formik.touched.name && formik.errors.name
+                              ? "is-invalid"
+                              : ""
+                          }`}
                           placeholder="Nhập tên chi nhánh"
+                          {...formik.getFieldProps("name")}
                         />
+                        {formik.touched.name && formik.errors.name && (
+                          <div className="invalid-feedback">
+                            {formik.errors.name}
+                          </div>
+                        )}
                       </div>
                       <Row>
                         <Col lg={6}>
-                        <div className="mb-3">
+                          <div className="mb-3">
                             <Label className="form-label">Chi Nhánh</Label>
                             <select
-                              className="form-select mb-3"
-                              aria-label="Default select example"
+                              className={`form-select ${
+                                formik.touched.branch_id &&
+                                formik.errors.branch_id
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              {...formik.getFieldProps("branch_id")}
                             >
-                              <option defaultValue="2">Hà Nội </option>
-                              <option defaultValue="3">Đà Nẵng</option>
-                              <option defaultValue="3">Hải Phòng</option>
-                              <option defaultValue="3">Bình Dương</option>
+                              <option value="">--- Chọn Chi Nhánh ---</option>
+                              {branches?.data.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                             </select>
+                            {formik.touched.branch_id &&
+                              formik.errors.branch_id && (
+                                <div className="invalid-feedback">
+                                  {formik.errors.branch_id}
+                                </div>
+                              )}
                           </div>
                         </Col>
                         <Col lg={6}>
                           <div className="mb-3">
                             <Label className="form-label">Rạp Chiếu</Label>
                             <select
-                              className="form-select mb-3"
-                              aria-label="Default select example"
+                              className={`form-select ${
+                                formik.touched.cinema_id &&
+                                formik.errors.cinema_id
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              {...formik.getFieldProps("cinema_id")}
                             >
-                              <option defaultValue="1">Giải Phóng </option>
-                              <option defaultValue="2">Thanh Xuân </option>
-                              <option defaultValue="3">Mỹ Đình</option>
+                              <option value="">--- Chọn Rạp Chiếu ---</option>
+                              {cinemas?.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                             </select>
+                            {formik.touched.cinema_id &&
+                              formik.errors.cinema_id && (
+                                <div className="invalid-feedback">
+                                  {formik.errors.cinema_id}
+                                </div>
+                              )}
                           </div>
                         </Col>
                       </Row>
@@ -223,28 +369,54 @@ const Room = () => {
                               Loại Phòng Chiếu
                             </Label>
                             <select
-                              className="form-select mb-3"
-                              aria-label="Default select example"
+                              className={`form-select ${
+                                formik.touched.type_room_id &&
+                                formik.errors.type_room_id
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              {...formik.getFieldProps("type_room_id")}
                             >
-                              <option defaultValue="1">2D </option>
-                              <option defaultValue="2">3D </option>
-                              <option defaultValue="3">4D</option>
+                              <option value="">Chọn Loại Phòng Chiếu</option>
+                              {typeRooms?.data.data.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                             </select>
+                            {formik.touched.type_room_id &&
+                              formik.errors.type_room_id && (
+                                <div className="invalid-feedback">
+                                  {formik.errors.type_room_id}
+                                </div>
+                              )}
                           </div>
                         </Col>
                         <Col lg={6}>
                           <div className="mb-3">
                             <Label className="form-label">Mẫu Sơ Đồ Ghế</Label>
                             <select
-                              className="form-select mb-3"
-                              aria-label="Default select example"
+                              className={`form-select ${
+                                formik.touched.seat_template_id &&
+                                formik.errors.seat_template_id
+                                  ? "is-invalid"
+                                  : ""
+                              }`}
+                              {...formik.getFieldProps("seat_template_id")}
                             >
-                              <option defaultValue="1">
-                                Template Standard{" "}
-                              </option>
-                              <option defaultValue="2">Loại 1 </option>
-                              <option defaultValue="3">Loại 2</option>
+                              <option value="">Chọn Mẫu Sơ Đồ Ghế</option>
+                              {seatTemplates?.data.map((item) => (
+                                <option key={item.id} value={item.id}>
+                                  {item.name}
+                                </option>
+                              ))}
                             </select>
+                            {formik.touched.seat_template_id &&
+                              formik.errors.seat_template_id && (
+                                <div className="invalid-feedback">
+                                  {formik.errors.seat_template_id}
+                                </div>
+                              )}
                           </div>
                         </Col>
                       </Row>
@@ -257,9 +429,8 @@ const Room = () => {
                         </Button>
                       </div>
                     </ModalBody>
-                  </form>
+                  </Form>
                 </Modal>
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>
