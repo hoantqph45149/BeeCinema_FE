@@ -223,7 +223,7 @@ const SeatTemplate = () => {
           <div className="flex-grow-1">
             <h5 className="fs-14 mb-1">{cell.getValue()}</h5>
             <Link
-              to={`/admin/seat-template/${cell.row.original.id}/edit`}
+              to={`/admin/seat-template/${cell.row.original.id}/see-seat-map`}
               className="text-info mb-0"
             >
               Xem sơ đồ ghế
