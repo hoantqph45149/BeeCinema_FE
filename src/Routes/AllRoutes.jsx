@@ -42,6 +42,7 @@ import AddAccount from "../pages/Admin/account/AddAccount";
 
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
+import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
@@ -66,6 +67,10 @@ const authProtectedRoutes = [
   // quản lý mẫu sơ đồ ghế
   { path: "/admin/seat-template", component: <SeatTemplate /> },
   { path: "/admin/seat-template/:id/edit", component: <EditSeatTemplate /> },
+  {
+    path: "/admin/seat-template/:id/see-seat-map",
+    component: <SeeSeatMap />,
+  },
 
   // quản lý phim
   { path: "/admin/movie", component: <Movie /> },
