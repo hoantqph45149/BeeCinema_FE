@@ -56,10 +56,7 @@ const SeeSeatMap = () => {
                       <div className="col-lg-12">
                         <h2 className="h5 fw-semibold mb-3">Sơ đồ ghế</h2>
                         <div className="table-responsive">
-                          <table
-                            style={{ maxWidth: "70%" }}
-                            className="mx-auto table text-center"
-                          >
+                          <table className="mx-auto table text-center">
                             <thead>
                               <tr>
                                 <th colSpan={matrix?.max_col}>
@@ -118,7 +115,7 @@ const SeeSeatMap = () => {
                                                   wordSpacing: "1.2em",
                                                   fontSize: "10px",
                                                 }}
-                                                className={`position-absolute start-50 translate-middle fw-bold`}
+                                                className={`position-absolute start-50 translate-middle !fs-6`}
                                               >
                                                 {seat.name}
                                               </span>
