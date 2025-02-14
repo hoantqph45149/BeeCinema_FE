@@ -43,6 +43,7 @@ import AddAccount from "../pages/Admin/account/AddAccount";
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
+import RoomEdit from "../pages/Admin/room/RoomEdit";
 const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
@@ -63,6 +64,7 @@ const authProtectedRoutes = [
 
   // quản lý phòng chiếu
   { path: "/admin/room", component: <Room /> },
+  { path: "/admin/room/:id/edit", component: <RoomEdit /> },
 
   // quản lý mẫu sơ đồ ghế
   { path: "/admin/seat-template", component: <SeatTemplate /> },

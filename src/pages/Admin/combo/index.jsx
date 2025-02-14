@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Combo = () => {
+  const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -111,8 +112,7 @@ const Combo = () => {
                           className="btn btn-success add-btn"
                           id="create-btn"
                           onClick={() => {
-                            setIsEdit(false);
-                            toggle();
+                            nav("/admin/combo/add");
                           }}
                         >
                           <i className="ri-add-line align-bottom me-1"></i> Thêm

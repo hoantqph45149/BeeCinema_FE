@@ -41,6 +41,7 @@ const Room = () => {
   const [roomsPublish, setRoomsPublish] = useState([]);
   const [roomsUnPublish, setRoomsUnPublish] = useState([]);
   const [rooms, setRooms] = useState([]);
+  const [theatersByBranch, setTheatersByBranch] = useState([]);
 
   const toggleTab = (tab, type) => {
     if (activeTab !== tab) {
@@ -75,6 +76,12 @@ const Room = () => {
 
   const toggle = () => setModal(!modal);
 
+  const handleChangeBranch = (idBranche) => {
+    const theaters = cinemas.filter((item) => item.branch_id == idBranche);
+    console.log(theaters);
+    setTheatersByBranch(theaters);
+  };
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -94,6 +101,7 @@ const Room = () => {
       if (isEdit) {
       } else {
         createRoom.mutate({ url: "/rooms", data: values });
+        setModal(false);
       }
     },
   });
@@ -123,8 +131,16 @@ const Room = () => {
     },
     {
       header: "Sức chứa",
-      accessorKey: "orderDate",
+      accessorKey: "totalSeats",
       enableColumnFilter: false,
+      cell: (cell) => {
+        const seat = cell.getValue() - cell.row.original.brokenSeats;
+        return (
+          <>
+            <span> {`${seat} / ${cell.row.original.totalSeats}`} Ghế</span>
+          </>
+        );
+      },
     },
     {
       header: "Trạng thái",
@@ -318,6 +334,10 @@ const Room = () => {
                                   : ""
                               }`}
                               {...formik.getFieldProps("branch_id")}
+                              onChange={(e) => {
+                                formik.handleChange(e);
+                                handleChangeBranch(e.target.value);
+                              }}
                             >
                               <option value="">--- Chọn Chi Nhánh ---</option>
                               {branches?.data.map((item) => (
@@ -347,7 +367,7 @@ const Room = () => {
                               {...formik.getFieldProps("cinema_id")}
                             >
                               <option value="">--- Chọn Rạp Chiếu ---</option>
-                              {cinemas?.map((item) => (
+                              {theatersByBranch?.map((item) => (
                                 <option key={item.id} value={item.id}>
                                   {item.name}
                                 </option>
