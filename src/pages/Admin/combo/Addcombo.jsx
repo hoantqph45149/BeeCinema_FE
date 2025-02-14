@@ -29,9 +29,6 @@ const Addcombo = () => {
   function countUP(id, prev_data_attr) {
     id(prev_data_attr + 1);
   }
-  const [foodItems, setFoodItems] = useState([]);
-  const [newFood, setNewFood] = useState("");
-  const [blueCounter1, setblueCounter1] = useState(5);
 
   return (
     <div className="page-content">
