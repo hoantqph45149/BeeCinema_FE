@@ -24,6 +24,7 @@ import * as Yup from "yup";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { Link, useNavigate } from "react-router-dom";
 
 const Room = () => {
   const { data } = useFetch(["rooms"], "/rooms");
@@ -35,14 +36,17 @@ const Room = () => {
     "/seat-templates"
   );
   const { create: createRoom, patch: patchRoom } = useCRUD(["rooms"]);
+
+  const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const [roomsPublish, setRoomsPublish] = useState([]);
   const [roomsUnPublish, setRoomsUnPublish] = useState([]);
+  const [room, setRoom] = useState({});
   const [rooms, setRooms] = useState([]);
   const [theatersByBranch, setTheatersByBranch] = useState([]);
-
+  // console.log(room);
   const toggleTab = (tab, type) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -83,12 +87,13 @@ const Room = () => {
   };
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      name: "",
-      branch_id: "",
-      cinema_id: "",
-      type_room_id: "",
-      seat_template_id: "",
+      name: (room && room?.name) || "",
+      branch_id: (room && room?.branch_id) || "",
+      cinema_id: (room && room?.cinema_id) || "",
+      type_room_id: (room && room?.type_room_id) || "",
+      seat_template_id: (room && room?.seat_template_id) || "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Vui lòng nhập tên chi nhánh"),
@@ -99,10 +104,29 @@ const Room = () => {
     }),
     onSubmit: (values) => {
       if (isEdit) {
+        patchRoom.mutate(
+          { url: `/rooms/${room.id}`, data: values },
+          {
+            onSuccess: (data) => {
+              if (!data.room.is_publish) {
+                nav(`/admin/room/${data.room.id}/edit`);
+              }
+              setModal(false);
+            },
+          }
+        );
       } else {
-        createRoom.mutate({ url: "/rooms", data: values });
+        createRoom.mutate(
+          { url: "/rooms", data: values },
+          {
+            onSuccess: (data) => {
+              nav(`/admin/room/${data.room.id}/edit`);
+            },
+          }
+        );
         setModal(false);
       }
+      formik.resetForm();
     },
   });
 
@@ -118,6 +142,20 @@ const Room = () => {
       header: "Phòng chiếu",
       accessorKey: "name",
       enableColumnFilter: false,
+      cell: (cell) => (
+        <>
+          <div className="flex-grow-1">
+            <h5 className="fs-14 mb-1">{cell.getValue()}</h5>
+            <Link
+              to={`/admin/room/${cell.row.original.id}/edit`}
+              className="text-info mb-0"
+            >
+              Xem sơ đồ ghế
+              <span className="fw-medium"> {cell.row.original.category}</span>
+            </Link>
+          </div>
+        </>
+      ),
     },
     {
       header: "Rạp chiếu",
@@ -182,6 +220,43 @@ const Room = () => {
                 // onChange={() => handleUpdateActive(cell.row.original)}
               />
             </div>
+          </>
+        );
+      },
+    },
+    {
+      header: "Action",
+      cell: (cell) => {
+        return (
+          <>
+            <ul className="list-inline hstack gap-2 mb-0">
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    toggle();
+                    setIsEdit(true);
+                    setRoom(cell.row.original);
+                    handleChangeBranch(cell.row.original.branch_id);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+              <li className="list-inline-item">
+                <Button
+                  disabled={cell.row.original.is_publish}
+                  color="primary"
+                  className="btn-sm "
+                  // onClick={() => {
+                  //   handleDeleteSeatTemplate(cell.row.original);
+                  // }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            </ul>
           </>
         );
       },
@@ -327,6 +402,7 @@ const Room = () => {
                           <div className="mb-3">
                             <Label className="form-label">Chi Nhánh</Label>
                             <select
+                              disabled={isEdit && room.is_publish}
                               className={`form-select ${
                                 formik.touched.branch_id &&
                                 formik.errors.branch_id
@@ -358,6 +434,7 @@ const Room = () => {
                           <div className="mb-3">
                             <Label className="form-label">Rạp Chiếu</Label>
                             <select
+                              disabled={isEdit && room.is_publish}
                               className={`form-select ${
                                 formik.touched.cinema_id &&
                                 formik.errors.cinema_id
@@ -389,6 +466,7 @@ const Room = () => {
                               Loại Phòng Chiếu
                             </Label>
                             <select
+                              disabled={isEdit && room.is_publish}
                               className={`form-select ${
                                 formik.touched.type_room_id &&
                                 formik.errors.type_room_id
@@ -416,6 +494,7 @@ const Room = () => {
                           <div className="mb-3">
                             <Label className="form-label">Mẫu Sơ Đồ Ghế</Label>
                             <select
+                              disabled={isEdit && room.is_publish}
                               className={`form-select ${
                                 formik.touched.seat_template_id &&
                                 formik.errors.seat_template_id

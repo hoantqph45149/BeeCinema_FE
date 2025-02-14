@@ -18,38 +18,68 @@ const RoomEdit = () => {
   const { id } = useParams();
   const { data: room } = useFetch(["room", { id }], `/rooms/${id}`);
   const { patch: patchRoom } = useCRUD(["room"]);
-  //   console.log(room);
+  console.log(room);
 
   const [matrix, setMatrix] = useState({});
   const [seatsByRow, setSeatsByRow] = useState([]);
-  const [isActive, setIsActive] = useState(room?.is_active);
+  const [isActive, setIsActive] = useState(null);
   const [seatSelected, setSeatSelected] = useState([]);
   console.log(seatSelected);
   //   console.log("matrix", matrix);
   //   console.log("seatsByRow", seatsByRow);
 
+  console.log(isActive);
+
   useEffect(() => {
     if (room) {
+      const seatSelected = room.seatMap.flatMap((row) =>
+        row.seats.filter((seat) => !seat.is_active)
+      );
+      setIsActive(room.room.is_active);
       setMatrix(room.room.seat_template.matrix_id);
       setSeatsByRow(room.seatMap);
+      setSeatSelected(seatSelected.map((item) => ({ ...item, is_active: 0 })));
     }
   }, [room]);
 
   const handleSubmit = () => {
-    patchSeatTemplate.mutate({
-      url: `/seat-templates/${seatTemplate.id}`,
-      data: { ...seatTemplate, is_active: isActive === true ? 1 : 0 },
+    patchRoom.mutate({
+      url: `/rooms/${id}`,
+      data: { ...room.room, is_active: isActive, seats: seatSelected },
+    });
+  };
+
+  const handlePublish = () => {
+    // console.log({ ...room, is_active: 1, is_publish: 1, action: "publish" });
+    patchRoom.mutate({
+      url: `/rooms/${id}`,
+      data: { ...room?.room, is_active: 1, is_publish: 1, action: "publish" },
+    });
+  };
+
+  const handleUnPublish = () => {
+    patchRoom.mutate({
+      url: `/rooms/${id}`,
+      data: { ...room?.room, is_active: 0, is_publish: 0 },
     });
   };
 
   const handleSeatSelect = (seat) => {
-    const chairExists = seatSelected.some((item) => item.id === seat.id);
-    if (chairExists) {
-      setSeatSelected(seatSelected.filter((item) => item.id !== seat.id));
-    } else {
-      setSeatSelected([...seatSelected, seat]);
-    }
+    setSeatSelected((prevSeats) => {
+      const chairExists = prevSeats.some((item) => item.id === seat.id);
+
+      if (chairExists) {
+        return prevSeats.map((item) =>
+          item.id === seat.id
+            ? { ...item, is_active: item.is_active === 0 ? 1 : 0 }
+            : item
+        );
+      } else {
+        return [...prevSeats, { ...seat, is_active: 0 }];
+      }
+    });
   };
+
   return (
     <>
       <div className="page-content">
@@ -91,7 +121,7 @@ const RoomEdit = () => {
                                       const seat = rowData.seats.find(
                                         (seat) => seat.coordinates_x == x
                                       );
-                                      //   console.log(seat.type_seat_id);
+                                      // console.log(seat);
                                       if (hideNextSeat) {
                                         hideNextSeat = false;
                                         return null;
@@ -120,12 +150,17 @@ const RoomEdit = () => {
                                             <div
                                               className={`position-relative d-flex justify-content-center align-items-center w-100`}
                                               onClick={() =>
-                                                handleSeatSelect(seat)
+                                                room?.room.is_publish
+                                                  ? handleSeatSelect(seat)
+                                                  : null
                                               }
                                             >
                                               <img
                                                 src={
-                                                  seatSelected.includes(seat)
+                                                  seatSelected.find(
+                                                    (item) =>
+                                                      item.id === seat.id
+                                                  )?.is_active === 0
                                                     ? "/svg/seat-double-broken.svg"
                                                     : "/svg/seat-double.svg"
                                                 }
@@ -147,12 +182,17 @@ const RoomEdit = () => {
                                             <div
                                               className={`position-relative bg-secondary-subtle d-flex justify-content-center align-items-center w-100"`}
                                               onClick={() =>
-                                                handleSeatSelect(seat)
+                                                room?.room.is_publish
+                                                  ? handleSeatSelect(seat)
+                                                  : null
                                               }
                                             >
                                               <img
                                                 src={
-                                                  seatSelected.includes(seat)
+                                                  seatSelected.find(
+                                                    (item) =>
+                                                      item.id === seat.id
+                                                  )?.is_active === 0
                                                     ? "/svg/seat-vip-broken.svg"
                                                     : "/svg/seat-vip.svg"
                                                 }
@@ -173,12 +213,17 @@ const RoomEdit = () => {
                                             <div
                                               className={`position-relative d-flex justify-content-center align-items-center w-100"`}
                                               onClick={() =>
-                                                handleSeatSelect(seat)
+                                                room?.room.is_publish
+                                                  ? handleSeatSelect(seat)
+                                                  : null
                                               }
                                             >
                                               <img
                                                 src={
-                                                  seatSelected.includes(seat)
+                                                  seatSelected.find(
+                                                    (item) =>
+                                                      item.id === seat.id
+                                                  )?.is_active === 0
                                                     ? "/svg/seat-regular-broken.svg"
                                                     : "/svg/seat-regular.svg"
                                                 }
@@ -223,44 +268,94 @@ const RoomEdit = () => {
                       <Label>Trạng Thái:</Label>
                       <span className="text-muted">
                         {" "}
-                        {room?.is_publish ? "Đã xuất bản" : "Chưa xuất bản"}
+                        {room?.room.is_publish
+                          ? "Đã xuất bản"
+                          : "Chưa xuất bản"}
                       </span>
                     </Col>
                     <Col md={12}>
                       <div className="form-check form-switch form-check-right">
                         <Label>Hoạt Động:</Label>
-                        <Input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="flexSwitchCheckRightDisabled"
-                          defaultChecked={room?.is_active}
-                          onChange={(e) => setIsActive(e.target.checked)}
-                        />
+                        {room?.room.is_publish ? (
+                          <>
+                            <Input
+                              className="form-check-input"
+                              type="checkbox"
+                              role="switch"
+                              id="flexSwitchCheckRightDisabled"
+                              defaultChecked={room?.room.is_active}
+                              onChange={(e) => setIsActive(e.target.checked)}
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-muted">
+                              {" "}
+                              {room?.is_active
+                                ? "Hoạt Động"
+                                : "Không hoạt động"}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </Col>
                   </Row>
                   <div className="card-body get-end d-flex justify-content-end gap-2"></div>
                   <Row className="gap-3">
-                    <Col lg={12} className="flex-grow-1">
-                      <Link
-                        to="/admin/seat-template"
-                        type="submit"
-                        className="btn btn-primary"
-                      >
-                        Danh sách
-                      </Link>
-                    </Col>
-                    <Col lg={12} className="flex-grow-1">
-                      <Button
-                        onClick={handleSubmit}
-                        color="primary"
-                        type="submit"
-                        className="btn w-sm"
-                      >
-                        Cập nhật
-                      </Button>
-                    </Col>
+                    {room?.room.is_publish ? (
+                      <>
+                        <Col lg={12} className="flex-grow-1">
+                          <Link
+                            to="/admin/room"
+                            type="submit"
+                            className="btn btn-primary"
+                          >
+                            Danh sách
+                          </Link>
+                        </Col>
+                      </>
+                    ) : (
+                      <>
+                        <Col lg={12} className="flex-grow-1">
+                          <Button
+                            onClick={handleUnPublish}
+                            color="primary"
+                            type="submit"
+                            className="btn w-sm"
+                          >
+                            Lưu Nháp
+                          </Button>
+                        </Col>
+                      </>
+                    )}
+
+                    {room?.room.is_publish ? (
+                      <>
+                        <Col lg={12} className="flex-grow-1">
+                          <Button
+                            onClick={handleSubmit}
+                            color="primary"
+                            type="submit"
+                            className="btn w-sm"
+                          >
+                            Cập nhật
+                          </Button>
+                        </Col>
+                      </>
+                    ) : (
+                      <>
+                        <Col lg={12} className="flex-grow-1">
+                          <Button
+                            onClick={handlePublish}
+                            color="primary"
+                            type="submit"
+                            className="btn w-sm"
+                          >
+                            Xuất Bản
+                          </Button>
+                        </Col>
+                      </>
+                    )}
                   </Row>
                 </CardBody>
               </Card>
