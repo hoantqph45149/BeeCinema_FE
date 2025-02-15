@@ -26,6 +26,7 @@ const useUploadImage = () => {
 
       if (response.data.secure_url) {
         setImageUrl(response.data.secure_url);
+        return response.data.secure_url;
       } else {
         throw new Error("Upload failed");
       }

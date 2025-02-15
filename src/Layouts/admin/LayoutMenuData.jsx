@@ -266,7 +266,7 @@ const Navdata = () => {
         {
           id: 2,
           label: "Quản lý Banner",
-          link: "/admin/banner",
+          link: "/admin/slide-show",
           parentId: "noidung",
         },
       ],
