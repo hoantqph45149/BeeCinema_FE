@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -15,18 +15,29 @@ import {
 import Select from "react-select";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import useUploadImage from "../../../Hooks/useUploadImage";
-import { useCRUD } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const AddMovie = () => {
+const EditMovie = () => {
+  const { id } = useParams();
+  const { data } = useFetch(["movie"], `/movies/${id}`);
   const nav = useNavigate();
-  const { create: createMovie } = useCRUD(["movie"]);
-
+  const { patch: patchMovie } = useCRUD(["movie"]);
+  const [movie, setMovie] = useState({});
   const [selectedMulti, setselectedMulti] = useState(null);
   const [action, setAction] = useState(null);
   const { uploadImage, imageUrl, loading } = useUploadImage();
+  useEffect(() => {
+    if (data) {
+      setMovie(data.movie);
+      setselectedMulti(
+        data.movie.movieVersions.map((item) => ({ value: item, label: item }))
+      );
+    }
+  }, [data]);
+  //   console.log(movie);
   const SingleOptions = [
     { value: "Phụ Đề", label: "Phụ Đề" },
     { value: "Lồng Tiếng", label: "Lồng Tiếng" },
@@ -39,24 +50,29 @@ const AddMovie = () => {
 
   // Formik initial values
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      name: "",
-      director: "",
-      cast: "",
-      release_date: new Date().toISOString().split("T")[0] || "", // Mặc định là chuỗi rỗng
-      end_date: "",
-      duration: "",
-      category: "",
-      rating: "T13",
-      versions: [],
-      description: "",
-      surcharge: "",
-      surcharge_desc: "",
-      is_active: true,
-      is_special: true,
-      is_hot: true,
-      img_thumbnail: "",
-      trailer_url: "",
+      name: (movie && movie?.name) || "",
+      director: (movie && movie?.director) || "",
+      cast: (movie && movie?.cast) || "",
+      release_date:
+        (movie.is_publish
+          ? movie && movie?.release_date
+          : new Date().toISOString().split("T")[0]) || "", // Mặc định là chuỗi rỗng
+      end_date: (movie && movie?.end_date) || "",
+      duration: (movie && movie?.duration) || "",
+      category: (movie && movie?.category) || "",
+      rating: (movie && movie?.rating) || "T13",
+      versions:
+        (selectedMulti && selectedMulti.map((item) => item.value)) || [],
+      description: (movie && movie?.description) || "",
+      surcharge: (movie && movie?.surcharge) || 0,
+      surcharge_desc: (movie && movie?.surcharge_desc) || "",
+      is_active: (movie && movie?.is_active) || true,
+      is_special: (movie && movie?.is_special) || true,
+      is_hot: (movie && movie?.is_hot) || true,
+      img_thumbnail: (movie && movie?.img_thumbnail) || "",
+      trailer_url: (movie && movie?.trailer_url) || "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Tên phim không được để trống"),
@@ -82,55 +98,48 @@ const AddMovie = () => {
         .required("Phiên bản không được để trống"),
       description: Yup.string().required("Mô tả không được để trống"),
 
-      img_thumbnail: Yup.mixed()
-        .required("Vui lòng chọn ảnh")
-        .test(
-          "fileFormat",
-          "Chỉ chấp nhận file JPG, JPEG, PNG",
-          (value) =>
-            value &&
-            ["image/jpg", "image/jpeg", "image/png"].includes(value.type)
-        )
-        .test(
-          "fileSize",
-          "Dung lượng ảnh không được quá 2MB",
-          (value) => value && value.size <= 2 * 1024 * 1024
-        ),
+      img_thumbnail: Yup.mixed(),
       trailer_url: Yup.string().required("URL trailer không được để trống"),
     }),
     onSubmit: async (values) => {
       try {
-        // Chờ upload xong và lấy URL ảnh
-        await uploadImage(values.img_thumbnail);
-
+        let image = movie.img_thumbnail;
         const movieVersion = selectedMulti.map((item) => item.value);
-
+        // Chờ upload xong và lấy URL ảnh
+        if (movie.img_thumbnail !== values.img_thumbnail) {
+          await uploadImage(values.img_thumbnail);
+        }
+        if (imageUrl) {
+          //   console.log("imageUrl", imageUrl);
+          image = imageUrl;
+        }
+        // console.log("image", image);
         const movieData = {
           ...values,
-          img_thumbnail: imageUrl,
+          img_thumbnail: image,
           versions: movieVersion,
           ...(action === "publish" && { action: "publish" }),
         };
         console.log("movieData", movieData);
 
-        if (movieData.img_thumbnail) {
-          createMovie.mutate(
-            { url: "/movies", data: movieData },
-            {
-              onSuccess: () => {
-                formik.resetForm();
-                nav("/admin/movie");
-              },
-            }
-          );
-        }
+        patchMovie.mutate(
+          { url: `/movies/${id}`, data: movieData },
+          {
+            onSuccess: (data) => {
+              formik.resetForm();
+              if (data?.movie) {
+                setMovie(data.movie);
+              }
+            },
+          }
+        );
       } catch (error) {
         console.error("Lỗi khi upload ảnh:", error);
       }
     },
   });
 
-  document.title = "Tạo Phim";
+  document.title = "Sửa Phim";
   return (
     <div className="page-content">
       <Container fluid>
@@ -157,11 +166,8 @@ const AddMovie = () => {
                           <Input
                             type="text"
                             id="name"
-                            name="name"
                             className={`form-control ${
-                              formik.touched.name && formik.errors.name
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.name ? "is-invalid" : ""
                             }`}
                             placeholder="Nhập tên phim"
                             {...formik.getFieldProps("name")}
@@ -182,12 +188,9 @@ const AddMovie = () => {
                           </Label>
                           <Input
                             type="text"
-                            name="director"
                             id="director"
                             className={`form-control ${
-                              formik.touched.director && formik.errors.director
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.director ? "is-invalid" : ""
                             }`}
                             placeholder="Nhập đạo diễn"
                             {...formik.getFieldProps("director")}
@@ -207,12 +210,9 @@ const AddMovie = () => {
                           </Label>
                           <Input
                             type="text"
-                            name="cast"
                             id="cast"
                             className={`form-control ${
-                              formik.errors.cast && formik.touched.cast
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.cast ? "is-invalid" : ""
                             }`}
                             placeholder="Nhập diễn viên"
                             {...formik.getFieldProps("cast")}
@@ -232,13 +232,10 @@ const AddMovie = () => {
                             Ngày khởi chiếu
                           </Label>
                           <Input
+                            disabled={movie.is_publish}
                             type="date"
-                            name="release_date"
                             className={`form-control ${
-                              formik.errors.release_date &&
-                              formik.touched.release_date
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.release_date ? "is-invalid" : ""
                             }`}
                             id="release_date"
                             {...formik.getFieldProps("release_date")}
@@ -257,12 +254,10 @@ const AddMovie = () => {
                             Ngày kết thúc
                           </Label>
                           <Input
+                            disabled={movie.is_publish}
                             type="date"
-                            name="end_date"
                             className={`form-control ${
-                              formik.errors.end_date && formik.touched.end_date
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.end_date ? "is-invalid" : ""
                             }`}
                             id="end_date"
                             {...formik.getFieldProps("end_date")}
@@ -281,12 +276,10 @@ const AddMovie = () => {
                             Thời lượng{" "}
                           </Label>
                           <Input
+                            disabled={movie.is_publish}
                             type="text"
-                            name="duration"
                             className={`form-control ${
-                              formik.errors.duration && formik.touched.duration
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.duration ? "is-invalid" : ""
                             }`}
                             placeholder="Nhập thời lượng phim"
                             id="duration"
@@ -309,11 +302,8 @@ const AddMovie = () => {
                           </Label>
                           <Input
                             type="text"
-                            name="category"
                             className={`form-control ${
-                              formik.errors.category && formik.touched.category
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.category ? "is-invalid" : ""
                             }`}
                             placeholder="Nhập thể loại phim "
                             id="category"
@@ -334,11 +324,8 @@ const AddMovie = () => {
                           </Label>
                           <select
                             id="rating"
-                            name="rating"
                             className={`form-select mb-3 ${
-                              formik.errors.rating && formik.touched.rating
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.rating ? "is-invalid" : ""
                             }`}
                             aria-label="Default select example"
                             {...formik.getFieldProps("rating")}
@@ -369,13 +356,9 @@ const AddMovie = () => {
                             Phiên bản
                           </Label>
                           <Select
-                            id="versions"
+                            isDisabled={movie.is_publish}
                             name="versions"
-                            className={`form-select mb-3 ${
-                              formik.errors.versions && formik.touched.versions
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            id="versions"
                             styles={{
                               menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                             }}
@@ -403,12 +386,8 @@ const AddMovie = () => {
                             Mô tả
                           </Label>
                           <textarea
-                            name="description"
                             className={`form-control ${
-                              formik.errors.description &&
-                              formik.touched.description
-                                ? "is-invalid"
-                                : ""
+                              formik.errors.description ? "is-invalid" : ""
                             }`}
                             id="description"
                             rows="5"
@@ -443,7 +422,6 @@ const AddMovie = () => {
                         </Label>
                         <Input
                           id="surcharge"
-                          name="surcharge"
                           type="text"
                           className="form-control"
                           placeholder="Nhập giá phụ thu"
@@ -458,7 +436,6 @@ const AddMovie = () => {
                         </Label>
                         <textarea
                           className="form-control"
-                          name="surcharge_desc"
                           id="surcharge_desc"
                           rows="3"
                           {...formik.getFieldProps("surcharge_desc")}
@@ -474,6 +451,9 @@ const AddMovie = () => {
               <Card>
                 <CardHeader>
                   <h5 className="fs-16">Thêm mới </h5>
+                  <span className="btn btn-primary btn-sm me-2">
+                    {movie.is_publish ? "Đã xuất bản" : "Chưa xuất bản"}
+                  </span>
                 </CardHeader>
                 <CardBody>
                   <Row>
@@ -486,7 +466,6 @@ const AddMovie = () => {
                               type="checkbox"
                               role="switch"
                               id="is_active"
-                              name="is_active"
                               defaultChecked
                               {...formik.getFieldProps("is_active")}
                             />
@@ -506,7 +485,6 @@ const AddMovie = () => {
                               type="checkbox"
                               role="switch"
                               id="is_hot"
-                              name="is_hot"
                               defaultChecked
                               {...formik.getFieldProps("is_hot")}
                             />
@@ -518,15 +496,30 @@ const AddMovie = () => {
                       </div>
                     </Col>
                     <div className="card-body border-bottom border-light get-end d-flex justify-content-end gap-2">
-                      <Button type="submit" color="primary" className="mr-3">
-                        Lưu nháp
-                      </Button>
+                      {movie.is_publish ? (
+                        <Button
+                          onClick={() => nav("/admin/movie")}
+                          type="button"
+                          color="primary"
+                          className="mr-3"
+                        >
+                          Danh sách phim
+                        </Button>
+                      ) : (
+                        <Button type="submit" color="primary" className="mr-3">
+                          Lưu nháp
+                        </Button>
+                      )}
                       <Button
-                        onClick={() => setAction("publish")}
+                        onClick={() =>
+                          movie.is_publish
+                            ? setAction("")
+                            : setAction("publish")
+                        }
                         type="submit"
                         color="primary"
                       >
-                        Xuất bản
+                        {movie.is_publish ? "Câp nhật" : "Xuất bản"}
                       </Button>
                     </div>
                   </Row>
@@ -559,6 +552,13 @@ const AddMovie = () => {
                             </div>
                           )}
                       </div>
+                      <div className="mt-3">
+                        <img
+                          src={movie.img_thumbnail}
+                          alt=""
+                          style={{ maxWidth: "250px" }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -574,10 +574,7 @@ const AddMovie = () => {
                         id="trailer_url"
                         type="text"
                         className={`form-control ${
-                          formik.errors.trailer_url &&
-                          formik.touched.trailer_url
-                            ? "is-invalid"
-                            : ""
+                          formik.errors.trailer_url ? "is-invalid" : ""
                         }`}
                         placeholder="Nhập code"
                         {...formik.getFieldProps("trailer_url")}
@@ -588,6 +585,17 @@ const AddMovie = () => {
                             {formik.errors.trailer_url}
                           </div>
                         )}
+                      <div className="mt-3">
+                        <iframe
+                          style={{
+                            width: "100%",
+                            height: "200px",
+                          }}
+                          src={`https://www.youtube.com/embed/${movie.trailer_url}?rel=0&showinfo=0`}
+                          allow="autoplay; encrypted-media"
+                          title="Video"
+                        ></iframe>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -599,4 +607,4 @@ const AddMovie = () => {
     </div>
   );
 };
-export default AddMovie;
+export default EditMovie;

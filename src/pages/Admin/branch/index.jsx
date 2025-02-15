@@ -130,7 +130,7 @@ const Branch = () => {
     },
     {
       header: "Hoạt động",
-      accessorKey: "acctive",
+      accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
         // console.log(cell);
@@ -145,12 +145,6 @@ const Branch = () => {
                 defaultChecked={cell.row.original.is_active == 1 ? true : false}
                 onChange={() => handleUpdateActive(cell.row.original)}
               />
-              <Label
-                className="form-check-label"
-                for="flexSwitchCheckRightDisabled"
-              >
-                Hoạt động:
-              </Label>
             </div>
           </>
         );
