@@ -1,49 +1,81 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Button,
   Card,
   CardBody,
   Col,
   Container,
   Input,
   Row,
-  Button,
   Table,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { h } from "@fullcalendar/core/preact.js";
 
+document.title = "Quản lý giá vé";
 const PriceManage = () => {
-  document.title = "Quản lý giá vé | Velzon - React Admin & Dashboard Template";
+  const { data: typeSeatsData } = useFetch(["typeSeats"], "/type-seats");
+  const { data: cinemasData } = useFetch(["cinemas"], "/cinemas");
+  const { data: typeRoomsData } = useFetch(["typeRooms"], "/type-rooms");
+  const { data: branchesData } = useFetch(["branches"], "/branches");
+  const { patch: patchTypeRoom } = useCRUD(["typeRooms"]);
+  const { patch: patchTypeSeat } = useCRUD(["typeSeats"]);
+  const { patch: patchCinema } = useCRUD(["cinemas"]);
+  const [typeRooms, setTypeRooms] = useState([]);
+  const [typeSeats, setTypeSeats] = useState([]);
+  const [cinemas, setCinemas] = useState([]);
+  const [branches, setBranches] = useState([]);
+  console.log("branchesData", branches);
+  // console.log("typeRoomsData", typeRooms);
+  console.log("cinemasData", cinemas);
+  // console.log("typeSeatsData", typeSeats);
 
-  const [prices, setPrices] = useState({
-    seatPrices: {
-      "Ghế Thường": 50000,
-      "Ghế Vip": 75000,
-      "Ghế Đôi": 120000,
-    },
-    roomFees: {
-      "2D": 0,
-      "3D": 30000,
-      IMAX: 50000,
-    },
-    cinemaFees: {
-      "Đồ Sơn": 20000,
-      "Lương Khê": 20000,
-      "Hải Châu": 10000,
-      "Cẩm Lệ": 20000,
-      "Sài Gòn": 20000,
-      "Gò Vấp": 20000,
-      "Hà Đông": 10000,
-    },
-  });
+  useEffect(() => {
+    if ((typeRoomsData, typeSeatsData, cinemasData, branchesData)) {
+      setCinemas(cinemasData);
+      setTypeRooms(typeRoomsData.data);
+      setTypeSeats(typeSeatsData.data);
+      setBranches(branchesData.data);
+    }
+  }, [typeRoomsData, typeSeatsData, cinemasData, branchesData]);
 
-  const handleChange = (category, key, value) => {
-    setPrices((prev) => ({
-      ...prev,
-      [category]: {
-        ...prev[category],
-        [key]: Number(value),
-      },
-    }));
+  const handleUpdatePrice = (item, type) => {
+    switch (type) {
+      case "seat":
+        patchTypeSeat.mutate({
+          url: `/type-seats/${item.id}`,
+          data: { ...item, price: Number(item.price) },
+        });
+        break;
+      case "room":
+        patchTypeRoom.mutate({
+          url: `/type-rooms/${item.id}`,
+          data: { ...item, surcharge: Number(item.surcharge) },
+        });
+        console.log(item);
+        break;
+      case "cinema":
+        patchCinema.mutate({
+          url: `/cinemas/${item.id}`,
+          data: { ...item, surcharge: Number(item.surcharge) },
+        });
+        console.log(item);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleChangeBranch = (value) => {
+    if (value === "all") {
+      setCinemas(cinemasData);
+    } else {
+      const selectedBranch = branches.find((branch) => branch.id == value);
+      if (selectedBranch) {
+        setCinemas(selectedBranch.cinemas);
+      }
+    }
   };
 
   return (
@@ -58,22 +90,38 @@ const PriceManage = () => {
                 <Table bordered>
                   <thead>
                     <tr>
-                      <th>GIÁ THEO GHẾ (VNĐ)</th>
-                      <th></th>
+                      <th>Giá theo ghế</th>
+                      <th>Giá (VND)</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(prices.seatPrices).map(([type, price]) => (
-                      <tr key={type}>
-                        <td>{type}</td>
+                    {typeSeats.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
                         <td>
                           <Input
                             type="number"
-                            value={price}
-                            onChange={(e) =>
-                              handleChange("seatPrices", type, e.target.value)
-                            }
+                            value={item.price || ""}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const updatedSeats = typeSeats.map((seat) =>
+                                seat.id === item.id
+                                  ? { ...seat, price: Number(e.target.value) }
+                                  : seat
+                              );
+                              setTypeSeats(updatedSeats);
+                            }}
                           />
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() => handleUpdatePrice(item, "seat")}
+                            type="button"
+                            color="primary"
+                          >
+                            Cập nhật
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -83,29 +131,45 @@ const PriceManage = () => {
                 <Table bordered>
                   <thead>
                     <tr>
-                      <th>PHỤ THU THEO LOẠI PHÒNG (VNĐ)</th>
-                      <th></th>
+                      <th> Phụ thu theo loại phòng</th>
+                      <th> Giá (VNĐ)</th>
+                      <th> Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(prices.roomFees).map(([type, fee]) => (
-                      <tr key={type}>
-                        <td>{type}</td>
+                    {typeRooms.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
                         <td>
                           <Input
                             type="number"
-                            value={fee}
-                            onChange={(e) =>
-                              handleChange("roomFees", type, e.target.value)
-                            }
+                            value={item.surcharge || ""}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const updatedRooms = typeRooms.map((room) =>
+                                room.id === item.id
+                                  ? {
+                                      ...room,
+                                      surcharge: Number(e.target.value),
+                                    }
+                                  : room
+                              );
+                              setTypeRooms(updatedRooms);
+                            }}
                           />
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() => handleUpdatePrice(item, "room")}
+                            color="primary"
+                          >
+                            Cập nhật
+                          </Button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </Table>
-
-                <Button color="primary">Cập nhật</Button>
               </CardBody>
             </Card>
           </Col>
@@ -115,18 +179,25 @@ const PriceManage = () => {
               <CardBody>
                 <h5 className="mb-3">Phụ thu theo rạp</h5>
                 <Row className="mb-2">
-                  <Col md={8}>
-                    <Input type="select">
-                      <option>Lọc theo Chi nhánh</option>
-                      <option>Hà Nội</option>
-                      <option>TP.HCM</option>
-                    </Input>
-                  </Col>
-                  <Col md={4}>
-                    <Button color="primary">
-                      {" "}
-                      <i className="ri-equalizer-fill me-2"></i>Lọc
-                    </Button>
+                  <Col md={12}>
+                    <div className="mb-3">
+                      <select
+                        id="branches"
+                        name="branches"
+                        className={`form-select mb-3`}
+                        aria-label="Default select example"
+                        onChange={(e) => {
+                          handleChangeBranch(e.target.value);
+                        }}
+                      >
+                        <option value="all">Tất cả</option>
+                        {branches.map((item) => (
+                          <option key={item.id} value={item.id}>
+                            {item.name}
+                          </option> // </option>
+                        ))}
+                      </select>
+                    </div>
                   </Col>
                 </Row>
 
@@ -135,27 +206,43 @@ const PriceManage = () => {
                     <tr>
                       <th>Tên rạp</th>
                       <th>Giá (VNĐ)</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(prices.cinemaFees).map(([cinema, fee]) => (
-                      <tr key={cinema}>
-                        <td>{cinema}</td>
+                    {cinemas.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
                         <td>
                           <Input
                             type="number"
-                            value={fee}
-                            onChange={(e) =>
-                              handleChange("cinemaFees", cinema, e.target.value)
-                            }
+                            value={item.surcharge || ""}
+                            placeholder="0"
+                            onChange={(e) => {
+                              const updatedCinemas = cinemas.map((cinema) =>
+                                cinema.id === item.id
+                                  ? {
+                                      ...cinema,
+                                      surcharge: Number(e.target.value),
+                                    }
+                                  : cinema
+                              );
+                              setCinemas(updatedCinemas);
+                            }}
                           />
+                        </td>
+                        <td>
+                          <Button
+                            onClick={() => handleUpdatePrice(item, "cinema")}
+                            color="primary"
+                          >
+                            Cập nhật
+                          </Button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </Table>
-
-                <Button color="primary">Cập nhật</Button>
               </CardBody>
             </Card>
           </Col>
