@@ -100,12 +100,6 @@ const Cinema = () => {
                 defaultChecked={cell.row.original.is_active == 1 ? true : false}
                 onChange={() => handleUpdateActive(cell.row.original)}
               />
-              <Label
-                className="form-check-label"
-                for="flexSwitchCheckRightDisabled"
-              >
-                Hoạt động:
-              </Label>
             </div>
           </>
         );
