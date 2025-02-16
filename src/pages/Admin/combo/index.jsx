@@ -1,21 +1,33 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Modal,
+  Row,
+} from "reactstrap";
 
 import { Link, useNavigate } from "react-router-dom";
-
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useFetch } from "../../../Hooks/useCRUD";
+import { formatVND } from "./../../../utils/Currency";
 
 const Combo = () => {
+  const { data } = useFetch(["combos"], "/combos");
   const nav = useNavigate();
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [combos, setCombos] = useState([]);
 
-  const toggle = () => setModal(!modal);
+  useEffect(() => {
+    if (data) {
+      setCombos(data.data);
+    }
+  }, [data]);
+
+  console.log(combos);
   // Customers Column
   const columns = useMemo(() => [
     {
@@ -24,74 +36,137 @@ const Combo = () => {
       enableColumnFilter: false,
     },
     {
-      header: "Tên combo",
-      accessorKey: "customer",
+      header: "Tên",
+      accessorKey: "name",
       enableColumnFilter: false,
     },
 
     {
       header: "Hình ảnh",
-      accessorKey: "phone",
+      accessorKey: "img_thumbnail",
       enableColumnFilter: false,
+      cell: (cell) => {
+        // console.log(cell);
+        return (
+          <>
+            <img
+              src={cell.row.original.img_thumbnail}
+              alt={`image-${cell.row.original.name}`}
+              style={{
+                maxWidth: "120px",
+                maxHeight: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </>
+        );
+      },
     },
     {
       header: "Thông tin",
-      accessorKey: "phone",
+      accessorKey: "combo_foods",
       enableColumnFilter: false,
+      cell: (cell) => {
+        const foods = cell.row.original.combo_foods;
+        return (
+          <>
+            {foods.map((food) => {
+              return (
+                <div className="mb-2">
+                  <h5 className="fs-14">
+                    <p className="mb-0 fw-bold">{food.name}</p>
+                  </h5>
+                  <p className="text-muted mb-0">
+                    Số lượng :{" "}
+                    <span className="fw-medium">{food.quantity}</span>
+                  </p>
+                </div>
+              );
+            })}
+          </>
+        );
+      },
     },
     {
-      header: "Gía gốc",
-      accessorKey: "phone",
+      header: "Giá gốc",
+      accessorKey: "price",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return formatVND(Number(cell.row.original.price));
+      },
     },
     {
-      header: "Gía bán",
-      accessorKey: "phone",
+      header: "Giá bán",
+      accessorKey: "discount_price",
       enableColumnFilter: false,
+      cell: (cell) => {
+        const price = formatVND(Number(cell.row.discount_price));
+        console.log(price);
+        return price;
+      },
     },
     {
       header: "Hoạt động",
-      accessorKey: "date",
+      accessorKey: "is_active",
       enableColumnFilter: false,
+      cell: (cell) => {
+        // console.log(cell);
+        return (
+          <>
+            <div className="form-check form-switch form-check-right">
+              <Input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="is_active"
+                defaultChecked={cell.row.original.is_active}
+                // onChange={() => handleUpdateActive(cell.row.original)}
+              />
+            </div>
+          </>
+        );
+      },
     },
+
     {
       header: "Action",
-      cell: (cellProps) => {
+      cell: (cell) => {
         return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
-          </ul>
+          <>
+            <ul className="list-inline hstack gap-2 mb-0">
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    nav(`/admin/combo/${cell.row.original.id}/edit`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+              {/* <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  // onClick={() => {
+                  //   handleDeleteBranche(cell.row.original);
+                  //   setBranche(cell.row.original);
+                  // }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li> */}
+            </ul>
+          </>
         );
       },
     },
   ]);
 
-  document.title = "Customers | Velzon - React Admin & Dashboard Template";
+  document.title = "Danh sách combo";
   return (
-    <React.Fragment>
+    <>
       <div className="page-content">
         <Container fluid>
           <BreadCrumb title="Quản lý đồ ăn" pageTitle="Quản lý" />
@@ -126,28 +201,23 @@ const Combo = () => {
                   <div>
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={combos || []}
                       isGlobalFilter={true}
                       isAddUserList={false}
-                      customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
+                      customPageSize={10}
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap dt-responsive"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Search for order ID, customer, order status or something..."
                     />
                   </div>
-                  <Modal
-                    id="showModal"
-                    isOpen={modal}
-                    toggle={toggle}
-                    centered
-                  ></Modal>
-                  <ToastContainer closeButton={false} limit={1} />
                 </div>
               </Card>
             </Col>
           </Row>
         </Container>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

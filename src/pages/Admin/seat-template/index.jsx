@@ -114,10 +114,15 @@ const SeatTemplate = () => {
     },
     onSubmit: (values) => {
       if (isEdit) {
+        console.log(values);
+        console.log("setSeatTemplate", seatTemplate);
         patchSeatTemplate.mutate(
           {
             url: `/seat-templates/${seatTemplate.id}`,
-            data: values,
+            data: {
+              ...values,
+              seat_structure: seatTemplate.seat_structure,
+            },
           },
           {
             onSuccess: (data) => {
