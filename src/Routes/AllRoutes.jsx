@@ -45,6 +45,7 @@ import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 import RoomEdit from "../pages/Admin/room/RoomEdit";
 import EditMovie from "../pages/Admin/movie/EditMovie";
+import Introduce from "../pages/Client/introduce";
 const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
@@ -150,6 +151,10 @@ const clientRoutes = [
   {
     path: "/",
     component: <Home />,
+  },
+  {
+    path: "/introduce",
+    component: <Introduce />,
   },
 
   {
