@@ -30,6 +30,7 @@ const branchSchema = Yup.object().shape({
 
 const Branch = () => {
   const { data } = useFetch(["branches"], "/branches");
+  // console.log(data);
   const { create, patch, delete: deleteBranch } = useCRUD(["branches"]);
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
@@ -38,10 +39,10 @@ const Branch = () => {
 
   useEffect(() => {
     if (data?.data) {
-      console.log(data);
+      // console.log(data);
       setBranches(data.data);
     }
-  }, [data]);
+  }, [data?.data]);
 
   // Formik để quản lý Form
   const formik = useFormik({

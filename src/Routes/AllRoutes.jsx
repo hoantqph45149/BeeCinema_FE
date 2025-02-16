@@ -1,43 +1,61 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-import Account from "../pages/Admin/account";
-import Banner from "../pages/Admin/banner";
-import Branch from "../pages/Admin/branch/index";
-import Cinema from "../pages/Admin/cinema/index";
-import Combo from "../pages/Admin/combo";
-import Food from "../pages/Admin/food";
-import Movie from "../pages/Admin/movie/index";
+/* Admin routes */
 import Overview from "../pages/Admin/overview/index";
-import Post from "../pages/Admin/post";
-import Room from "../pages/Admin/room/index";
-import Showtime from "../pages/Admin/showtime";
-import Ticket from "../pages/Admin/ticket";
-import Login from "../pages/Auth/login";
-import Register from "../pages/Auth/register";
-import Home from "../pages/Client/Home";
+import Account from "../pages/Admin/account";
 
+// banner
+import SlideShow from "../pages/Admin/slide-show";
+import AddSlideShow from "../pages/Admin/slide-show/AddSlideShow";
+
+// branch
+import Branch from "../pages/Admin/branch/index";
+
+// cinema
+import Cinema from "../pages/Admin/cinema/index";
 import AddCinema from "../pages/Admin/cinema/AddCinema";
+import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
+
+// combo
+import Combo from "../pages/Admin/combo";
+
+// food
+import Food from "../pages/Admin/food";
+
+// movie
+import Movie from "../pages/Admin/movie/index";
+import AddMovie from "../pages/Admin/movie/AddMovie";
+import EditMovie from "../pages/Admin/movie/EditMovie";
+
+// post
+import Post from "../pages/Admin/post";
 import AddPost from "../pages/Admin/post/AddPost";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
+
+// room
+import Room from "../pages/Admin/room/index";
+import RoomEdit from "../pages/Admin/room/RoomEdit";
+
+// showtime
+import Showtime from "../pages/Admin/showtime";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
+import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
+
+// ticket
+import Ticket from "../pages/Admin/ticket";
+
+// voucher
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
 import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 
+// thống kê
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 
-import MoviesClient from "../pages/Client/movie";
-import ShowtimeClient from "../pages/Client/showtime";
-
-import AddMovie from "../pages/Admin/movie/AddMovie";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
-import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
-import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
-import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 import Addcombo from "../pages/Admin/combo/Addcombo";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
-import AddSlideShow from "../pages/Admin/banner/AddSlideShow";
 import AddAccount from "../pages/Admin/account/AddAccount";
 
 import SeatTemplate from "../pages/Admin/seat-template";
@@ -45,7 +63,17 @@ import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 import RoomEdit from "../pages/Admin/room/RoomEdit";
 import EditMovie from "../pages/Admin/movie/EditMovie";
+
+/* Client routes */
+
+import Login from "../pages/Auth/login";
+import Register from "../pages/Auth/register";
+import Home from "../pages/Client/Home";
+import ShowtimeClient from "../pages/Client/showtime";
+import MoviesClient from "../pages/Client/movie";
+import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
+
 const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
@@ -117,8 +145,8 @@ const authProtectedRoutes = [
   // quản lý giá vé
   { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
-  { path: "/admin/banner", component: <Banner /> },
-  { path: "/admin/banner/add", component: <AddSlideShow /> },
+  { path: "/admin/slide-show", component: <SlideShow /> },
+  { path: "/admin/slide-show/add", component: <AddSlideShow /> },
   // thống kê
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
