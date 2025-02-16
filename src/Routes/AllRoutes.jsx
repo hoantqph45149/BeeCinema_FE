@@ -61,6 +61,8 @@ import AddAccount from "../pages/Admin/account/AddAccount";
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
+import RoomEdit from "../pages/Admin/room/RoomEdit";
+import EditMovie from "../pages/Admin/movie/EditMovie";
 
 /* Client routes */
 
@@ -70,6 +72,7 @@ import Home from "../pages/Client/Home";
 import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
+import Introduce from "../pages/Client/introduce";
 
 const authProtectedRoutes = [
   // quản lý tài khoản
@@ -176,6 +179,10 @@ const clientRoutes = [
   {
     path: "/",
     component: <Home />,
+  },
+  {
+    path: "/introduce",
+    component: <Introduce />,
   },
 
   {
