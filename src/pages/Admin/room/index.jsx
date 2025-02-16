@@ -35,6 +35,8 @@ const Room = () => {
     ["seatTemplates"],
     "/seat-templates"
   );
+
+  console.log(typeRooms);
   const { create: createRoom, patch: patchRoom } = useCRUD(["rooms"]);
 
   const nav = useNavigate();
@@ -476,7 +478,7 @@ const Room = () => {
                               {...formik.getFieldProps("type_room_id")}
                             >
                               <option value="">Chọn Loại Phòng Chiếu</option>
-                              {typeRooms?.data.data.map((item) => (
+                              {typeRooms?.data.map((item) => (
                                 <option key={item.id} value={item.id}>
                                   {item.name}
                                 </option>

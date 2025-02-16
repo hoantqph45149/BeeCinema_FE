@@ -65,8 +65,8 @@ const Food = () => {
   });
 
   useEffect(() => {
-    if (data?.data) {
-      setFoods(data.data.data);
+    if (data) {
+      setFoods(data.data);
     }
   }, [data]);
 

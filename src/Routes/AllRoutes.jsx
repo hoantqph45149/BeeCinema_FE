@@ -19,6 +19,8 @@ import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
 import Combo from "../pages/Admin/combo";
+import AddCombo from "./../pages/Admin/combo/AddCombo";
+import EditCombo from "./../pages/Admin/combo/EditCombo";
 
 // food
 import Food from "../pages/Admin/food";
@@ -54,17 +56,12 @@ import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 
-import Addcombo from "../pages/Admin/combo/Addcombo";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddAccount from "../pages/Admin/account/AddAccount";
 
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
-import RoomEdit from "../pages/Admin/room/RoomEdit";
-import EditMovie from "../pages/Admin/movie/EditMovie";
-
-/* Client routes */
 
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
@@ -128,7 +125,8 @@ const authProtectedRoutes = [
 
   // quản lý combo
   { path: "/admin/combo", component: <Combo /> },
-  { path: "/admin/combo/add", component: <Addcombo /> },
+  { path: "/admin/combo/add", component: <AddCombo /> },
+  { path: "/admin/combo/:id/edit", component: <EditCombo /> },
 
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },

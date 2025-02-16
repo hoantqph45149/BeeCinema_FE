@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -20,25 +20,28 @@ import { showAlert } from "../../../Components/Common/showAlert";
 import useUploadImage from "../../../Hooks/useUploadImage";
 
 document.title = "";
-const AddCombo = () => {
+const EditCombo = () => {
+  const { id } = useParams();
   const { data: foodsData } = useFetch(["foods"], "/foods");
-  const { create: createCombo } = useCRUD(["combos"]);
+  const { data: comboData } = useFetch(["combos"], `/combos/${id}`);
+  const { patch: patchCombo } = useCRUD(["combos"]);
   const { uploadImage } = useUploadImage();
-
   const nav = useNavigate();
-  const [foods, setFoods] = useState([
-    { id: "", quantity: 1 },
-    { id: "", quantity: 1 },
-  ]);
+  const [foods, setFoods] = useState([]);
 
-  const handleDeleteFood = (index) => {
-    const newFoods = [...foods];
-    newFoods.splice(index, 1);
-    setFoods(newFoods);
-  };
-  const handleAddFood = () => {
-    setFoods([...foods, { id: "", quantity: "" }]);
-  };
+  useEffect(() => {
+    if (comboData) {
+      formik.setValues({
+        name: comboData.name,
+        price: comboData.price,
+        discount_price: comboData.discount_price,
+        description: comboData.description,
+        img_thumbnail: comboData.img_thumbnail,
+        is_active: comboData.is_active,
+      });
+      setFoods(comboData.combo_foods);
+    }
+  }, [comboData]);
 
   const countDown = (index) => {
     setFoods((prevFoods) =>
@@ -88,29 +91,19 @@ const AddCombo = () => {
       img_thumbnail: Yup.mixed().required("Vui lòng chọn hình ảnh"),
     }),
     onSubmit: async (values) => {
-      const checkFoods = foods.every((food) => food.id !== "");
-      if (!checkFoods) {
-        showAlert(" Thất Bại", "Vui lòng chọn tối thiểu 2 đồ ăn", "warning");
-        return;
+      let image = comboData.img_thumbnail;
+      if (values.img_thumbnail !== comboData.img_thumbnail) {
+        image = await uploadImage(values.img_thumbnail);
       }
-      const image = await uploadImage(values.img_thumbnail);
 
-      createCombo.mutate(
-        {
-          url: "/combos",
-          data: {
-            ...values,
-            combo_foods: foods,
-            img_thumbnail: image,
-          },
+      patchCombo.mutate({
+        url: `/combos/${id}`,
+        data: {
+          ...values,
+          combo_foods: foods,
+          img_thumbnail: image,
         },
-        {
-          onSuccess: () => {
-            formik.resetForm();
-            nav("/admin/combos");
-          },
-        }
-      );
+      });
     },
   });
 
@@ -124,32 +117,16 @@ const AddCombo = () => {
               <div>
                 <Card>
                   <div className="card-header border-0">
-                    <Row className="align-items-center">
-                      <Col>
-                        <div className="d-flex flex-column mb-3">
-                          <div className="flex-grow-1">
-                            <h5 className="fs-16">Thêm thông tin combo</h5>
-                          </div>
-                          <Button
-                            onClick={handleAddFood}
-                            type="button"
-                            color="success"
-                            className="mt-3 align-self-end"
-                          >
-                            <i className="ri-add-line align-bottom me-1"></i>{" "}
-                            Thêm đồ ăn
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
+                    <h5 className="fs-16">Thêm thông tin combo</h5>
                   </div>
                   <div className="card-body">
-                    {foods.map((food, index) => (
+                    {foods?.map((food, index) => (
                       <Row key={index} className="mb-3">
                         <h5 className="fw-semibold"> Đồ ăn {index + 1} </h5>
-                        <Col lg={12} xl={6}>
+                        <Col lg={12} xl={8}>
                           <div className="mb-3">
                             <select
+                              disabled
                               id="branches"
                               name="branches"
                               className={`form-select mb-3`}
@@ -175,19 +152,20 @@ const AddCombo = () => {
                             </select>
                           </div>
                         </Col>
-                        <Col lg={12} xl={6}>
+                        <Col md={12} lg={4}>
                           <Row>
-                            <Col sm={6}>
+                            <Col sm={12}>
                               <div className="mb-3">
                                 <div>
                                   <div className="input-step full-width">
-                                    <button
+                                    <Button
+                                      disabled
                                       type="button"
                                       className="minus material-shadow"
                                       onClick={() => countDown(index)}
                                     >
                                       –
-                                    </button>
+                                    </Button>
                                     <Input
                                       type="number"
                                       className="product-quantity"
@@ -196,31 +174,18 @@ const AddCombo = () => {
                                       max="100"
                                       readOnly
                                     />
-                                    <button
+                                    <Button
+                                      disabled
                                       type="button"
                                       className="plus material-shadow"
                                       onClick={() => countUP(index)}
                                     >
                                       +
-                                    </button>
+                                    </Button>
                                   </div>
                                 </div>
                               </div>
                             </Col>
-                            {foods.length > 2 && (
-                              <Col sm={6}>
-                                <div className="mb-3">
-                                  <div>
-                                    <Button
-                                      onClick={() => handleDeleteFood(index)}
-                                      color="danger"
-                                    >
-                                      <i className="ri-delete-bin-5-fill"></i>
-                                    </Button>
-                                  </div>
-                                </div>
-                              </Col>
-                            )}
                           </Row>
                         </Col>
                       </Row>
@@ -256,6 +221,7 @@ const AddCombo = () => {
                             Giá gốc
                           </Label>
                           <Input
+                            disabled
                             type="number"
                             className={`form-control ${
                               formik.errors.price && formik.touched.price
@@ -360,6 +326,13 @@ const AddCombo = () => {
                             </div>
                           )}
                       </div>
+                      <div className="mt-3">
+                        <img
+                          style={{ maxWidth: "200px", height: "100%" }}
+                          src={comboData?.img_thumbnail}
+                          alt={`image-${comboData?.name}`}
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardHeader>
@@ -393,7 +366,7 @@ const AddCombo = () => {
                             Danh sách
                           </Button>
                           <Button type="submit" color="primary">
-                            Thêm mới
+                            Cập nhật
                           </Button>
                         </div>
                       </div>
@@ -408,4 +381,4 @@ const AddCombo = () => {
     </div>
   );
 };
-export default AddCombo;
+export default EditCombo;
