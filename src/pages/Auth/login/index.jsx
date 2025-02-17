@@ -1,177 +1,92 @@
-import React from "react";
-import {
-  Button,
-  Card,
-  CardBody,
-  Col,
-  Container,
-  Form,
-  Input,
-  Label,
-  Row,
-  Spinner,
-} from "reactstrap";
-
 import { Link } from "react-router-dom";
 
-import logoLight from "../../../assets/images/logo-light.png";
-import ParticlesAuth from "../common/ParticlesAuth";
-
-const Login = () => {
-  document.title = "";
+export function Login() {
   return (
-    <React.Fragment>
-      <ParticlesAuth>
-        <div className="auth-page-content mt-lg-5">
-          <Container>
-            <Row>
-              <Col lg={12}>
-                <div className="text-center mt-sm-5 mb-4 text-white-50">
-                  <div>
-                    <Link to="/" className="d-inline-block auth-logo">
-                      <img src={logoLight} alt="" height="20" />
-                    </Link>
-                  </div>
-                  <p className="mt-3 fs-15 fw-medium">
-                    Premium Admin & Dashboard Template
-                  </p>
-                </div>
-              </Col>
-            </Row>
-
-            <Row className="justify-content-center">
-              <Col md={8} lg={6} xl={5}>
-                <Card className="mt-4 card-bg-fill">
-                  <CardBody className="p-4">
-                    <div className="text-center mt-2">
-                      <h5 className="text-primary">Welcome Back !</h5>
-                      <p className="text-muted">
-                        Sign in to continue to Velzon.
-                      </p>
-                    </div>
-
-                    <div className="p-2 mt-4">
-                      <Form onSubmit={(e) => {}} action="#">
-                        <div className="mb-3">
-                          <Label htmlFor="email" className="form-label">
-                            Email
-                          </Label>
-                          <Input
-                            name="email"
-                            className="form-control"
-                            placeholder="Enter email"
-                            type="email"
-                          />
-                        </div>
-
-                        <div className="mb-3">
-                          <div className="float-end">
-                            <Link to="/forgot-password" className="text-muted">
-                              Forgot password?
-                            </Link>
-                          </div>
-                          <Label
-                            className="form-label"
-                            htmlFor="password-input"
-                          >
-                            Password
-                          </Label>
-                          <div className="position-relative auth-pass-inputgroup mb-3">
-                            <Input
-                              name="password"
-                              type="password"
-                              className="form-control pe-5"
-                              placeholder="Enter Password"
-                            />
-
-                            <button
-                              className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted material-shadow-none"
-                              type="button"
-                              id="password-addon"
-                            >
-                              <i className="ri-eye-fill align-middle"></i>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div className="form-check">
-                          <Input
-                            className="form-check-input"
-                            type="checkbox"
-                            value=""
-                            id="auth-remember-check"
-                          />
-                          <Label
-                            className="form-check-label"
-                            htmlFor="auth-remember-check"
-                          >
-                            Remember me
-                          </Label>
-                        </div>
-
-                        <div className="mt-4">
-                          <Button
-                            color="success"
-                            className="btn btn-success w-100"
-                            type="submit"
-                          >
-                            <Spinner size="sm" className="me-2">
-                              {" "}
-                              Loading...{" "}
-                            </Spinner>
-                            Sign In
-                          </Button>
-                        </div>
-
-                        <div className="mt-4 text-center">
-                          <div className="signin-other-title">
-                            <h5 className="fs-13 mb-4 title">Sign In with</h5>
-                          </div>
-                          <div>
-                            <Link
-                              to="#"
-                              className="btn btn-primary btn-icon me-1"
-                            >
-                              <i className="ri-facebook-fill fs-16" />
-                            </Link>
-                            <Link
-                              to="#"
-                              className="btn btn-danger btn-icon me-1"
-                            >
-                              <i className="ri-google-fill fs-16" />
-                            </Link>
-                            <Button color="dark" className="btn-icon">
-                              <i className="ri-github-fill fs-16"></i>
-                            </Button>{" "}
-                            <Button color="info" className="btn-icon">
-                              <i className="ri-twitter-fill fs-16"></i>
-                            </Button>
-                          </div>
-                        </div>
-                      </Form>
-                    </div>
-                  </CardBody>
-                </Card>
-
-                <div className="mt-4 text-center">
-                  <p className="mb-0">
-                    Don't have an account ?{" "}
-                    <Link
-                      to="/register"
-                      className="fw-semibold text-primary text-decoration-underline"
-                    >
-                      {" "}
-                      Signup{" "}
-                    </Link>{" "}
-                  </p>
-                </div>
-              </Col>
-            </Row>
-          </Container>
+    <section className="m-8 flex gap-4">
+      <div className="w-full lg:w-3/5 mt-24">
+        <div className="text-center">
+          <h2 className="font-bold mb-4 text-3xl">Đăng Nhập</h2>
+          <p className="text-lg text-blue-600 font-normal">Nhập email và mật khẩu để đăng nhập.</p>
         </div>
-      </ParticlesAuth>
-    </React.Fragment>
+        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+          <div className="mb-1 flex flex-col gap-6">
+           <div className="mb-3 flex flex-col gap-2">
+            <label className="text-sm text-blue-600 font-medium" htmlFor="email">Email</label>
+            <input
+              id="email"
+              type="email"
+              className="outline-none p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+              placeholder="name@mail.com"
+            />
+           </div>
+           <div className="mb-3 flex flex-col gap-2">
+            <label className="text-sm text-blue-600 font-medium mb-1" htmlFor="password">Mật khẩu</label>
+            <input
+              id="password"
+              type="password"
+              className="outline-none p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full"
+              placeholder="******"
+            />
+            </div>
+          </div>
+          <div className="flex items-center mt-4 mb-4">
+            <input
+              id="terms"
+              type="checkbox"
+              className="mr-2"
+            />
+            <label htmlFor="terms" className="text-sm text-gray-600">
+              Tôi đồng ý với&nbsp;
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-800 underline"
+              >
+                Điều khoản và điều kiện
+              </a>
+            </label>
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 mt-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Đăng nhập
+          </button>
+
+          <div className="space-y-4  mt-8">
+            <button className="w-full py-3 text-lg bg-white border border-gray-300 rounded-lg shadow-md flex items-center justify-center gap-2 hover:bg-gray-100">
+              <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clipPath="url(#clip0_1156_824)">
+                  <path d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z" fill="#4285F4" />
+                  <path d="M8.65974 16.0006C10.8174 16.0006 12.637 15.2922 13.9627 14.0693L11.3847 12.0704C10.6675 12.5584 9.7415 12.8347 8.66268 12.8347C6.5756 12.8347 4.80598 11.4266 4.17104 9.53357H1.51074V11.5942C2.86882 14.2956 5.63494 16.0006 8.65974 16.0006Z" fill="#34A853" />
+                  <path d="M4.16852 9.53356C3.83341 8.53999 3.83341 7.46411 4.16852 6.47054V4.40991H1.51116C0.376489 6.67043 0.376489 9.33367 1.51116 11.5942L4.16852 9.53356Z" fill="#FBBC04" />
+                  <path d="M8.65974 3.16644C9.80029 3.1488 10.9026 3.57798 11.7286 4.36578L14.0127 2.08174C12.5664 0.72367 10.6469 -0.0229773 8.65974 0.000539111C5.63494 0.000539111 2.86882 1.70548 1.51074 4.40987L4.1681 6.4705C4.8001 4.57449 6.57266 3.16644 8.65974 3.16644Z" fill="#EA4335" />
+                </g>
+                <defs>
+                  <clipPath id="clip0_1156_824">
+                    <rect width="16" height="16" fill="white" transform="translate(0.5)" />
+                  </clipPath>
+                </defs>
+              </svg>
+              <span>Đăng nhập với Google</span>
+            </button>
+          </div>
+
+          <p className="text-center text-gray-900 font-medium mt-4">
+            Chưa đăng ký?
+            <Link to="/auth/sign-up" className="text-gray-900 ml-1">Tạo tài khoản</Link>
+          </p>
+        </form>
+      </div>
+
+      <div className="w-2/5 h-full hidden lg:block">
+        <img
+          src="/images/pattern.jpg"
+          className="h-full w-full object-cover rounded-3xl"
+          alt="Pattern"
+        />
+      </div>
+    </section>
   );
-};
+}
 
 export default Login;
