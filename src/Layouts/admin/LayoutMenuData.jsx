@@ -83,7 +83,7 @@ const Navdata = () => {
       id: "tongquan",
       label: "Tổng quan",
       icon: "ri-apps-line",
-      link: "/dashboard",
+      link: "/admin/overview",
       click: function (e) {
         e.preventDefault();
         setIscurrentState("Tongquan");
