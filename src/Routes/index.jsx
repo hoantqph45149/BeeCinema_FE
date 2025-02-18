@@ -7,24 +7,45 @@ import NonAuthLayout from "../Layouts/admin/NonAuthLayout";
 import VerticalLayout from "../Layouts/admin/index";
 
 //routes
-import { authProtectedRoutes, publicRoutes, clientRoutes } from "./AllRoutes";
-import { AuthProtected } from "./AuthProtected";
+import {
+  authProtectedRoutes,
+  publicRoutesNonAuthLayout,
+  publicRoutes,
+  clientRoutes,
+} from "./AllRoutes";
+import { AuthProtected, CheckRouteAuth } from "./AuthProtected";
 
 const Index = () => {
   return (
     <React.Fragment>
       <Routes>
         <Route>
+          {publicRoutesNonAuthLayout.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <CheckRouteAuth>
+                  <NonAuthLayout>{route.component}</NonAuthLayout>
+                </CheckRouteAuth>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+        {/* Đường dẫn client không cần login */}
+        <Route>
           {publicRoutes.map((route, idx) => (
             <Route
               path={route.path}
-              element={<NonAuthLayout>{route.component}</NonAuthLayout>}
+              element={<LayoutClient>{route.component}</LayoutClient>}
               key={idx}
               exact={true}
             />
           ))}
         </Route>
 
+        {/* Đường dẫn admin cần login và phải lầ admin */}
         <Route>
           {authProtectedRoutes.map((route, idx) => (
             <Route
@@ -40,6 +61,7 @@ const Index = () => {
           ))}
         </Route>
 
+        {/* Đường dẫn client cần login */}
         <Route>
           {clientRoutes.map((route, idx) => (
             <Route

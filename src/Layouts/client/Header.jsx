@@ -3,8 +3,10 @@ import LocationSelect from "./LocationSelect";
 import MenuDropdown from "./MenuDropdown";
 import ProfileDropdownClient from "./ProfileDropdownClient";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
 
 const Header = () => {
+  const { authUser } = useAuthContext();
   const [isFixed, setIsFixed] = useState(false);
 
   useEffect(() => {
@@ -26,14 +28,17 @@ const Header = () => {
       <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
-            {/* <div className="flex">
-              <Link to={"/register"}>Đăng ký</Link>
-              <span className="mx-2">|</span>
-              <Link to={"/Login"}>Đăng nhập</Link>
-            </div> */}
-            <div className="py-2">
-              <ProfileDropdownClient />
-            </div>
+            {authUser?.user ? (
+              <div className="py-2">
+                <ProfileDropdownClient user={authUser.user} />
+              </div>
+            ) : (
+              <div className="flex">
+                <Link to={"/register"}>Đăng ký</Link>
+                <span className="mx-2">|</span>
+                <Link to={"/Login"}>Đăng nhập</Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

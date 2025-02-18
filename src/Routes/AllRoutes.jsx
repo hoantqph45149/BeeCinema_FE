@@ -71,6 +71,38 @@ import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
 
+const publicRoutesNonAuthLayout = [
+  {
+    path: "/login",
+    component: <Login />,
+  },
+  {
+    path: "/register",
+    component: <Register />,
+  },
+];
+
+const publicRoutes = [
+  {
+    path: "/",
+    component: <Home />,
+  },
+  {
+    path: "/introduce",
+    component: <Introduce />,
+  },
+
+  {
+    path: "/showtime",
+    component: <ShowtimeClient />,
+  },
+
+  {
+    path: "/movies",
+    component: <MoviesClient />,
+  },
+];
+
 const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
@@ -162,37 +194,7 @@ const authProtectedRoutes = [
   { path: "/admin", component: <Navigate to="/admin/overview" /> },
 ];
 
-const publicRoutes = [
-  {
-    path: "/login",
-    component: <Login />,
-  },
-  {
-    path: "/register",
-    component: <Register />,
-  },
-];
-
 const clientRoutes = [
-  {
-    path: "/",
-    component: <Home />,
-  },
-  {
-    path: "/introduce",
-    component: <Introduce />,
-  },
-
-  {
-    path: "/showtime",
-    component: <ShowtimeClient />,
-  },
-
-  {
-    path: "/movies",
-    component: <MoviesClient />,
-  },
-
   {
     path: "/choose-seat",
     component: <ChooseSeat />,
@@ -207,4 +209,9 @@ const clientRoutes = [
   { path: "*", component: <Navigate to="/" /> },
 ];
 
-export { authProtectedRoutes, clientRoutes, publicRoutes };
+export {
+  authProtectedRoutes,
+  clientRoutes,
+  publicRoutes,
+  publicRoutesNonAuthLayout,
+};

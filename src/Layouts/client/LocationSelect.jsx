@@ -6,7 +6,6 @@ export default function LocationSelect() {
   const { branches, cinema, setCinema } = useBrancheContext();
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-
   const menuRef = useRef(null);
 
   useEffect(() => {

@@ -7,27 +7,52 @@ import {
   LogOut,
   UserPen,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCRUD } from "../../Hooks/useCRUD";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
 
 function ProfileDropdownClient() {
+  const { create: logout } = useCRUD(["logout"]);
+  const { authUser, setAuthUser } = useAuthContext();
+  const user = authUser.user;
+
+  const handleLogout = () => {
+    logout.mutate(
+      {
+        url: "/logout",
+        data: {},
+        shouldShowAlert: false,
+      },
+      {
+        onSuccess: () => {
+          localStorage.removeItem("user");
+          setAuthUser(null);
+        },
+      }
+    );
+  };
   return (
     <Menu>
       <MenuButton className="flex items-center space-x-2 text-primary font-semibold">
-        <span>Xin chào : Admin</span> <ChevronDown size={20} strokeWidth={3} />
+        <span>Xin chào : {user.name}</span>{" "}
+        <ChevronDown size={20} strokeWidth={3} />
       </MenuButton>
       <MenuItems
         anchor="bottom"
         className="w-64 bg-white border rounded-lg shadow-lg"
       >
-        <MenuItem>
-          <Link
-            className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/settings"
-          >
-            <LockKeyhole size={16} strokeWidth={1.5} className="mr-2" /> Truy
-            Cập Trang Quản Trị
-          </Link>
-        </MenuItem>
+        {user.role === "admin" && (
+          <MenuItem>
+            <Link
+              className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
+              href="/settings"
+            >
+              <LockKeyhole size={16} strokeWidth={1.5} className="mr-2" /> Truy
+              Cập Trang Quản Trị
+            </Link>
+          </MenuItem>
+        )}
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
@@ -57,8 +82,8 @@ function ProfileDropdownClient() {
         </MenuItem>
         <MenuItem>
           <Link
+            onClick={handleLogout}
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
           >
             <LogOut size={16} strokeWidth={1.5} className="mr-2" /> Đăng Xuất
           </Link>

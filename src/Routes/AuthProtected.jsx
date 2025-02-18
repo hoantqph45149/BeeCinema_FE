@@ -1,8 +1,25 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 
-const AuthProtected = (props) => {
-  return <>{props.children}</>;
+const AuthProtected = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  if (!user || !user.token) {
+    // Bạn có thể kiểm tra token hoặc quyền của người dùng
+    return <Navigate to="/login" />;
+  }
+
+  return <>{children}</>;
+};
+
+const CheckRouteAuth = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  if (user?.user || user?.token) {
+    return <Navigate to="/" />;
+  }
+
+  return <>{children}</>;
 };
 
 const AccessRoute = ({ component: Component, ...rest }) => {
@@ -21,4 +38,4 @@ const AccessRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-export { AccessRoute, AuthProtected };
+export { AccessRoute, AuthProtected, CheckRouteAuth };
