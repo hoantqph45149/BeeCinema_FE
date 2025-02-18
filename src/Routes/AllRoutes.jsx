@@ -70,6 +70,7 @@ import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
+import News from "../pages/Client/News";
 
 const authProtectedRoutes = [
   // quản lý tài khoản
@@ -177,6 +178,10 @@ const clientRoutes = [
   {
     path: "/",
     component: <Home />,
+  },
+  {
+    path: "/news",
+    component: <News />,
   },
   {
     path: "/introduce",
