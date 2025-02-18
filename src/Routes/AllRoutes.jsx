@@ -71,6 +71,7 @@ import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
 import Voucher from "../pages/Admin/voucher/Index";
+import Contact from "../pages/Client/contact";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -198,6 +199,29 @@ const authProtectedRoutes = [
 ];
 
 const clientRoutes = [
+  {
+    path: "/",
+    component: <Home />,
+  },
+  {
+    path: "/contact",
+    component: <Contact />,
+  },
+  {
+    path: "/introduce",
+    component: <Introduce />,
+  },
+
+  {
+    path: "/showtime",
+    component: <ShowtimeClient />,
+  },
+
+  {
+    path: "/movies",
+    component: <MoviesClient />,
+  },
+
   {
     path: "/choose-seat",
     component: <ChooseSeat />,
