@@ -15,8 +15,7 @@ const AuthSlideshow = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3500);
-
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 

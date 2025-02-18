@@ -13,7 +13,11 @@ import {
   publicRoutes,
   clientRoutes,
 } from "./AllRoutes";
-import { AuthProtected, CheckRouteAuth } from "./AuthProtected";
+import {
+  AuthProtected,
+  CheckRouteAuth,
+  CheckRouteAdmin,
+} from "./AuthProtected";
 
 const Index = () => {
   return (
@@ -51,9 +55,9 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <AuthProtected>
+                <CheckRouteAdmin>
                   <VerticalLayout>{route.component}</VerticalLayout>
-                </AuthProtected>
+                </CheckRouteAdmin>
               }
               key={idx}
               exact={true}

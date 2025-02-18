@@ -22,6 +22,20 @@ const CheckRouteAuth = ({ children }) => {
   return <>{children}</>;
 };
 
+const CheckRouteAdmin = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  if (user?.user?.role !== "admin") {
+    return (window.location.href = "/");
+  }
+
+  if (!user || !user.token) {
+    return <Navigate to="/login" />;
+  }
+
+  return <>{children}</>;
+};
+
 const AccessRoute = ({ component: Component, ...rest }) => {
   return (
     <Route
@@ -38,4 +52,4 @@ const AccessRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-export { AccessRoute, AuthProtected, CheckRouteAuth };
+export { AccessRoute, AuthProtected, CheckRouteAuth, CheckRouteAdmin };

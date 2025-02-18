@@ -78,10 +78,10 @@ const Header = () => {
                 <Link to={"/#"}>Giá vé</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Tin tức</Link>
+                <Link to={"/"}>Tin tức</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Liên hệ</Link>
+                <Link to={"/contact"}>Liên hệ</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 <Link to={"/introduce"}>Giới thiệu</Link>

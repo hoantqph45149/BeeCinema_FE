@@ -46,7 +46,9 @@ function ProfileDropdownClient() {
           <MenuItem>
             <Link
               className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-              href="/settings"
+              onClick={() => {
+                window.location.href = "/admin";
+              }}
             >
               <LockKeyhole size={16} strokeWidth={1.5} className="mr-2" /> Truy
               Cập Trang Quản Trị
