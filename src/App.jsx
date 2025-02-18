@@ -7,9 +7,7 @@ import Route from "./routes";
 function App() {
   useLayoutEffect(() => {
     if (
-      location.pathname.startsWith("/admin") ||
-      location.pathname.startsWith("/login") ||
-      location.pathname.startsWith("/register")
+      location.pathname.startsWith("/admin") 
     ) {
       import("./assets/scss/themes.scss");
     } else {
