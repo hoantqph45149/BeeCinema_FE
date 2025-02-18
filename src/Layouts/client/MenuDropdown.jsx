@@ -58,7 +58,7 @@ function MenuDropdown() {
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
             href="/license"
           >
-            <Siren size={16} strokeWidth={1.5} className="mr-2" /> Chính sách
+            <Siren size={16} strokeWidth={1.5} className="mr-2" /> Ưu Đãi
           </Link>
         </MenuItem>
         <MenuItem>
