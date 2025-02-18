@@ -67,7 +67,7 @@ const Header = () => {
                 <Link to={"/movies"}>Phim</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Chính sách</Link>
+                <Link to={"/theaterinformation"}>Rạp</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 <Link to={"/#"}>Giá vé</Link>
