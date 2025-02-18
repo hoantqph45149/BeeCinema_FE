@@ -233,7 +233,7 @@ const Navdata = () => {
         {
           id: 3,
           label: "Mã giảm giá",
-          link: "/#",
+          link: "/admin/voucher",
           parentId: "dichvuvauudai",
         },
         {

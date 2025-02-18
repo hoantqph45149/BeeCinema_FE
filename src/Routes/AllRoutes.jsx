@@ -70,6 +70,7 @@ import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
+import Voucher from "../pages/Admin/voucher/Index";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -165,6 +166,8 @@ const authProtectedRoutes = [
   { path: "/admin/account/add", component: <AddAccount /> },
 
   // quản lý giảm giá
+
+  { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/edit", component: <EditVoucher /> },
 
