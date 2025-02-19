@@ -78,6 +78,7 @@ import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
 import ProfileClient from "../pages/Client/Profile";
+import TheaterInformation from "../pages/Client/theater-information";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -225,6 +226,10 @@ const clientRoutes = [
   {
     path: "/showtime",
     component: <ShowtimeClient />,
+  },
+  {
+    path: "/theaterinformation",
+    component: <TheaterInformation />,
   },
 
   {
