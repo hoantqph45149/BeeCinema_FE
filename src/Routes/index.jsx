@@ -12,6 +12,7 @@ import {
   publicRoutesNonAuthLayout,
   publicRoutes,
   clientRoutes,
+  emailVerifiedRoutes,
 } from "./AllRoutes";
 import {
   AuthProtected,
@@ -68,6 +69,21 @@ const Index = () => {
         {/* Đường dẫn client cần login */}
         <Route>
           {clientRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <AuthProtected>
+                  <LayoutClient>{route.component}</LayoutClient>
+                </AuthProtected>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+
+        <Route>
+          {emailVerifiedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={

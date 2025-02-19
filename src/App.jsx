@@ -1,23 +1,18 @@
 import React, { useLayoutEffect } from "react";
 
-//import Scss
-
-import Route from "./routes";
-//imoprt Route
+import Route from "./Routes";
 function App() {
   useLayoutEffect(() => {
-    if (
-      location.pathname.startsWith("/admin") 
-    ) {
+    if (location.pathname.startsWith("/admin")) {
       import("./assets/scss/themes.scss");
     } else {
       import("./index.css");
     }
-  }, [location.pathname]);
+  }, [location]);
   return (
-    <React.Fragment>
+    <>
       <Route />
-    </React.Fragment>
+    </>
   );
 }
 

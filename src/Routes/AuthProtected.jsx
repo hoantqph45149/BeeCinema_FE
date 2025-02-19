@@ -5,8 +5,17 @@ const AuthProtected = ({ children }) => {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   if (!user || !user.token) {
-    // Bạn có thể kiểm tra token hoặc quyền của người dùng
     return <Navigate to="/login" />;
+  }
+
+  return <>{children}</>;
+};
+
+const CheckRouteVerifiedEmail = ({ children }) => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  if (!user || !user.token || !user.user.email_verified_at) {
+    return <Navigate to="/" />;
   }
 
   return <>{children}</>;
@@ -52,4 +61,10 @@ const AccessRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-export { AccessRoute, AuthProtected, CheckRouteAuth, CheckRouteAdmin };
+export {
+  AccessRoute,
+  AuthProtected,
+  CheckRouteAuth,
+  CheckRouteAdmin,
+  CheckRouteVerifiedEmail,
+};

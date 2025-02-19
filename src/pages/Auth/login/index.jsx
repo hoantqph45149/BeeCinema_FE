@@ -5,16 +5,19 @@ import { useCRUD } from "../../../Hooks/useCRUD";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import AuthSlideshow from "../common/AuthSlideshow";
 import { showAlert } from "../../../Components/Common/showAlert";
+import Modal from "../../../Components/Common/Modal";
+import { useState } from "react";
+import ForgotPassword from "../forgot-password";
 
 export function Login() {
   const { setAuthUser } = useAuthContext();
   const { create: login } = useCRUD(["login"]);
+  const [openModalforgot, setOpenModalforgot] = useState(false);
   const nav = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
-      terms: false,
     },
     validationSchema: Yup.object({
       email: Yup.string()
@@ -23,7 +26,6 @@ export function Login() {
       password: Yup.string()
         .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
         .required("Vui lòng nhập mật khẩu"),
-      terms: Yup.boolean().oneOf([true], "Bạn phải đồng ý với điều khoản"),
     }),
     onSubmit: (values) => {
       login.mutate(
@@ -60,7 +62,7 @@ export function Login() {
           </p>
         </div>
         <form
-          className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2"
+          className="mt-8 mb-2 w-full md:mx-auto max-w-[600px] lg:w-1/2"
           onSubmit={formik.handleSubmit}
         >
           <div className="mb-1 flex flex-col gap-6">
@@ -94,6 +96,7 @@ export function Login() {
                 type="password"
                 className="outline-none p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent w-full"
                 placeholder="******"
+                autoComplete="password"
                 {...formik.getFieldProps("password")}
               />
               {formik.touched.password && formik.errors.password && (
@@ -101,23 +104,13 @@ export function Login() {
               )}
             </div>
           </div>
-          <div className="flex items-center mt-4 mb-4">
-            <input
-              id="terms"
-              type="checkbox"
-              className="mr-2"
-              {...formik.getFieldProps("terms")}
-            />
-            <label htmlFor="terms" className="text-sm text-gray-600">
-              Tôi đồng ý với&nbsp;
-              <a href="#" className="text-accent hover:text-blue-800 underline">
-                Điều khoản và điều kiện
-              </a>
-            </label>
+          <div
+            onClick={() => setOpenModalforgot(true)}
+            className="flex items-center mt-4 mb-4 cursor-pointer"
+          >
+            <span className="text-sm text-accent">Quên mật khẩu ?</span>
           </div>
-          {formik.touched.terms && formik.errors.terms && (
-            <p className="text-red-500 text-sm">{formik.errors.terms}</p>
-          )}
+
           <button
             type="submit"
             className="w-full py-3 mt-6 bg-accent text-white rounded-lg hover:opacity-90"
@@ -136,6 +129,15 @@ export function Login() {
       <div className="w-2/5 min-h-lvh hidden xl:block">
         <AuthSlideshow />
       </div>
+      <Modal
+        isOpen={openModalforgot}
+        onClose={() => setOpenModalforgot(false)}
+        onSubmit={() => alert("Submitted!")}
+        title="Quên mật khẩu"
+        isFooter={false}
+      >
+        <ForgotPassword />
+      </Modal>
     </section>
   );
 }

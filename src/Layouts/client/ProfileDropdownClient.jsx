@@ -5,6 +5,7 @@ import {
   IdCard,
   LockKeyhole,
   LogOut,
+  Tags,
   UserPen,
 } from "lucide-react";
 import { useState } from "react";
@@ -15,6 +16,7 @@ import { useAuthContext } from "../../Contexts/auth/UseAuth";
 function ProfileDropdownClient() {
   const { create: logout } = useCRUD(["logout"]);
   const { authUser, setAuthUser } = useAuthContext();
+  const nav = useNavigate();
   const user = authUser.user;
 
   const handleLogout = () => {
@@ -28,6 +30,7 @@ function ProfileDropdownClient() {
         onSuccess: () => {
           localStorage.removeItem("user");
           setAuthUser(null);
+          nav("/login");
         },
       }
     );
@@ -58,7 +61,7 @@ function ProfileDropdownClient() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/support"
+            to="/profile"
           >
             <UserPen size={16} strokeWidth={1.5} className="mr-2" /> Thông Tin
             Tài Khoản
@@ -67,7 +70,7 @@ function ProfileDropdownClient() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            to="/profile?tab=membership"
           >
             <IdCard size={16} strokeWidth={1.5} className="mr-2" /> Thẻ Thành
             Viên
@@ -76,10 +79,19 @@ function ProfileDropdownClient() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            to="/profile?tab=bookingHistory"
           >
             <FolderClock size={16} strokeWidth={1.5} className="mr-2" />
             Lịch Sử Đặt Vé
+          </Link>
+        </MenuItem>
+        <MenuItem>
+          <Link
+            className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
+            to="/profile?tab=Voucher"
+          >
+            <Tags size={18} strokeWidth={1.5} className="mr-2" />
+            Voucher
           </Link>
         </MenuItem>
         <MenuItem>

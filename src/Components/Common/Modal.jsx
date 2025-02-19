@@ -23,12 +23,10 @@ function Modal({
   if (!isVisible) return null;
 
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center bg-black/50 z-50`}
-    >
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       {/* Modal Container */}
       <div
-        className={`bg-white rounded-xl p-6 shadow-lg transform transition-all duration-300 ${
+        className={`bg-white rounded-xl p-6 shadow-lg transform transition-all duration-300 max-h-screen overflow-y-auto max-w-[90%] xl:w-1/2${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >
@@ -46,7 +44,7 @@ function Modal({
         )}
 
         {/* Body */}
-        <div className="mt-4">{children}</div>
+        <div className="mt-4 max-h-[60vh] overflow-y-auto">{children}</div>
 
         {/* Footer */}
         {isFooter && (

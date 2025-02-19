@@ -56,12 +56,16 @@ import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 
+// quản lý giá
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddAccount from "../pages/Admin/account/AddAccount";
 
+// quản lý sơ đồ ghế
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
+
+// Đường dẫn dành cho phía client
 
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
@@ -73,6 +77,7 @@ import Introduce from "../pages/Client/introduce";
 import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
+import ProfileClient from "../pages/Client/Profile";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -107,9 +112,6 @@ const publicRoutes = [
 ];
 
 const authProtectedRoutes = [
-  // quản lý tài khoản
-  { path: "/admin/account", component: <Account /> },
-
   // quản lý vé
   {
     path: "/admin/ticket",
@@ -199,11 +201,14 @@ const authProtectedRoutes = [
   { path: "/admin", component: <Navigate to="/admin/overview" /> },
 ];
 
-const clientRoutes = [
+const emailVerifiedRoutes = [
   {
-    path: "/",
-    component: <Home />,
+    path: "/choose-seat",
+    component: <ChooseSeat />,
   },
+];
+
+const clientRoutes = [
   {
     path: "/news",
     component: <News />,
@@ -228,8 +233,8 @@ const clientRoutes = [
   },
 
   {
-    path: "/choose-seat",
-    component: <ChooseSeat />,
+    path: "/profile",
+    component: <ProfileClient />,
   },
 
   {
@@ -246,4 +251,5 @@ export {
   clientRoutes,
   publicRoutes,
   publicRoutesNonAuthLayout,
+  emailVerifiedRoutes,
 };

@@ -39,7 +39,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/support"
+            href="/profile"
           >
             <UserPen size={16} strokeWidth={1.5} className="mr-2" /> Thông Tin
             Tài Khoản

@@ -14,8 +14,10 @@ export const useCRUD = (key) => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.post(url, data);
       return res;
     },
@@ -45,8 +47,10 @@ export const useCRUD = (key) => {
   });
 
   const putMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.put(url, data);
       return res;
     },
@@ -75,8 +79,10 @@ export const useCRUD = (key) => {
   });
 
   const patchMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.patch(url, data);
       return res;
     },
