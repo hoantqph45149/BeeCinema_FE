@@ -56,12 +56,16 @@ import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
 
+// quản lý giá
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddAccount from "../pages/Admin/account/AddAccount";
 
+// quản lý sơ đồ ghế
 import SeatTemplate from "../pages/Admin/seat-template";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
+
+// Đường dẫn dành cho phía client
 
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
@@ -70,14 +74,45 @@ import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
 import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
 import Introduce from "../pages/Client/introduce";
+import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
-import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
+import ProfileClient from "../pages/Client/Profile";
+import TheaterInformation from "../pages/Client/theater-information";
+
+const publicRoutesNonAuthLayout = [
+  {
+    path: "/login",
+    component: <Login />,
+  },
+  {
+    path: "/register",
+    component: <Register />,
+  },
+];
+
+const publicRoutes = [
+  {
+    path: "/",
+    component: <Home />,
+  },
+  {
+    path: "/introduce",
+    component: <Introduce />,
+  },
+
+  {
+    path: "/showtime",
+    component: <ShowtimeClient />,
+  },
+
+  {
+    path: "/movies",
+    component: <MoviesClient />,
+  },
+];
 
 const authProtectedRoutes = [
-  // quản lý tài khoản
-  { path: "/admin/account", component: <Account /> },
-
   // quản lý vé
   {
     path: "/admin/ticket",
@@ -136,6 +171,8 @@ const authProtectedRoutes = [
   { path: "/admin/account/add", component: <AddAccount /> },
 
   // quản lý giảm giá
+
+  { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/edit", component: <EditVoucher /> },
 
@@ -165,22 +202,14 @@ const authProtectedRoutes = [
   { path: "/admin", component: <Navigate to="/admin/overview" /> },
 ];
 
-const publicRoutes = [
+const emailVerifiedRoutes = [
   {
-    path: "/login",
-    component: <Login />,
-  },
-  {
-    path: "/register",
-    component: <Register />,
+    path: "/choose-seat",
+    component: <ChooseSeat />,
   },
 ];
 
 const clientRoutes = [
-  {
-    path: "/",
-    component: <Home />,
-  },
   {
     path: "/news",
     component: <News />,
@@ -199,8 +228,8 @@ const clientRoutes = [
     component: <ShowtimeClient />,
   },
   {
-    path:'/theaterinformation',
-    component:<TheaterInformation/>
+    path: "/theaterinformation",
+    component: <TheaterInformation />,
   },
 
   {
@@ -209,8 +238,8 @@ const clientRoutes = [
   },
 
   {
-    path: "/choose-seat",
-    component: <ChooseSeat />,
+    path: "/profile",
+    component: <ProfileClient />,
   },
 
   {
@@ -222,4 +251,10 @@ const clientRoutes = [
   { path: "*", component: <Navigate to="/" /> },
 ];
 
-export { authProtectedRoutes, clientRoutes, publicRoutes };
+export {
+  authProtectedRoutes,
+  clientRoutes,
+  publicRoutes,
+  publicRoutesNonAuthLayout,
+  emailVerifiedRoutes,
+};

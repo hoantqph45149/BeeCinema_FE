@@ -2,8 +2,19 @@ import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
 import Banner from "./Banner";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
+import Modal from "../../../Components/Common/Modal";
+import VerifiedEmail from "../../Auth/verified-email";
 
 const Home = () => {
+  const [openModalVeryfiedEmail, setOpenModalVeryfiedEmail] = useState(false);
+  const { authUser } = useAuthContext();
+  useEffect(() => {
+    if (authUser?.user && authUser?.user?.email_verified_at === null) {
+      setOpenModalVeryfiedEmail(true);
+    }
+  }, [authUser?.user]);
+
   const [phimDangChieu, setPhimDangChieu] = useState([]);
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
@@ -63,6 +74,16 @@ const Home = () => {
   ];
   return (
     <>
+      {openModalVeryfiedEmail && (
+        <Modal
+          isOpen={true}
+          onClose={() => setOpenModalVeryfiedEmail(false)}
+          title="Xác thực Email"
+          isFooter={false}
+        >
+          <VerifiedEmail />
+        </Modal>
+      )}
       <div className="hidden md:block">
         <Banner />
       </div>

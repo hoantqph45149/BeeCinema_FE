@@ -26,10 +26,10 @@ const PriceManage = () => {
   const [typeSeats, setTypeSeats] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [branches, setBranches] = useState([]);
-  console.log("branchesData", branches);
+  // console.log("branchesData", branches);
   // console.log("typeRoomsData", typeRooms);
-  console.log("cinemasData", cinemas);
-  // console.log("typeSeatsData", typeSeats);
+  // console.log("cinemasData", cinemas);
+  // console.log("typeRoomsData", typeRoomsData);
 
   useEffect(() => {
     if ((typeRoomsData, typeSeatsData, cinemasData, branchesData)) {

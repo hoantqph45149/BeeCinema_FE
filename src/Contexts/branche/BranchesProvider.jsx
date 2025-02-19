@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import BrancheContext from "./BrancheContext";
+import { useFetch } from "../../Hooks/useCRUD";
 
 const BrancheProvider = ({ children }) => {
+  const { data } = useFetch(["branchesActive"], "/branches/active");
   const [branches, setBranches] = useState([]);
   const [cinema, setCinema] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:3000/branches")
-      .then((res) => res.json())
-      .then((res) => {
-        setBranches(res);
-        setCinema(res[0].cinemas[0]);
-      });
-  }, []);
+    if (data) {
+      setBranches(data.branches);
+      setCinema(data.branches[0]?.cinemas[0]);
+    }
+  }, [data]);
 
   return (
     <BrancheContext.Provider value={{ branches, cinema, setCinema }}>

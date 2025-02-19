@@ -7,19 +7,21 @@ const api = axios.create({
   timeout: 3000,
 });
 
-// api.interceptors.request.use(
-//   (config) => {
-//     const token = localStorage.getItem("accessToken");
-//     // console.log(`bearer ${token}`);
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+api.interceptors.request.use(
+  (config) => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    // console.log(user);
+    const token = user?.token;
+    // console.log(`bearer ${token}`);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 export const apiService = {
   get: (url, params) => api.get(url, { params }).then((res) => res.data),

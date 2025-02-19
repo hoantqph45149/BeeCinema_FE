@@ -4,9 +4,15 @@ import Button from "../../../Components/Common/Button";
 const Contact = () => {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="absolute top-0 left-0 w-full h-1/2 bg-green-900"></div>
+      <div className="absolute top-0 left-0 w-full h-2/3 ">
+        <img
+          src="/images/contactbeecinema.jpg"
+          alt="contact-movie-beecinema"
+          className="w-full h-full object-fill"
+        />
+      </div>
 
-      <div className="relative w-full max-w-5xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-10 mt-6">
+      <div className="relative w-full max-w-7xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-10 mt-20">
         <div className="w-full md:w-2/3 p-6 md:p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
             Gửi tin nhắn cho chúng tôi
@@ -79,7 +85,7 @@ const Contact = () => {
           </form>
         </div>
 
-        <div className="w-full md:w-1/3 bg-blue-900 text-white p-6 md:p-8 text-center md:text-left">
+        <div className="w-full md:w-1/3 bg-accent text-white p-6 md:p-8 text-center md:text-left">
           <h3 className="text-lg font-semibold mb-4">Thông tin liên hệ</h3>
           <p className="text-sm mb-4">CÔNG TY TNHH BEECINEMA VIỆT NAM</p>
           <p className="flex items-center justify-center md:justify-start mb-2">
