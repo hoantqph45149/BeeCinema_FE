@@ -73,6 +73,7 @@ import Introduce from "../pages/Client/introduce";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
 import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
+import Profile from "../pages/Admin/profile";
 
 const authProtectedRoutes = [
   // quản lý tài khoản
@@ -82,6 +83,11 @@ const authProtectedRoutes = [
   {
     path: "/admin/ticket",
     component: <Ticket />,
+  },
+  // quản lý vé
+  {
+    path: "/admin/profile",
+    component: <Profile />,
   },
 
   // quản lý chi nhánh
@@ -199,8 +205,8 @@ const clientRoutes = [
     component: <ShowtimeClient />,
   },
   {
-    path:'/theaterinformation',
-    component:<TheaterInformation/>
+    path: "/theaterinformation",
+    component: <TheaterInformation />,
   },
 
   {
