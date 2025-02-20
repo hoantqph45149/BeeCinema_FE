@@ -296,6 +296,12 @@ const Navdata = () => {
           link: "/#",
           parentId: "taikhoan",
         },
+        {
+          id: 3,
+          label: "Quản lý cấp bậc",
+          link: "/admin/rank",
+          parentId: "taikhoan",
+        },
       ],
     },
   ];

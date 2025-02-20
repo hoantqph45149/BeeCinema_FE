@@ -73,6 +73,7 @@ import Introduce from "../pages/Client/introduce";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
 import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
+import Rank from "../pages/Admin/rank";
 
 const authProtectedRoutes = [
   // quản lý tài khoản
@@ -148,6 +149,8 @@ const authProtectedRoutes = [
   // quản lý banner
   { path: "/admin/slide-show", component: <SlideShow /> },
   { path: "/admin/slide-show/add", component: <AddSlideShow /> },
+  // quản lý cấp bậc (rank)
+  {path: "/admin/rank", component: <Rank />},
   // thống kê
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
