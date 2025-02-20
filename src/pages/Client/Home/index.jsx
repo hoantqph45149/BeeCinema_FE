@@ -5,8 +5,10 @@ import Banner from "./Banner";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import Modal from "../../../Components/Common/Modal";
 import VerifiedEmail from "../../Auth/verified-email";
+import { useFetch } from "../../../Hooks/useCRUD";
 
 const Home = () => {
+  const { data: movies } = useFetch(["movies"], "/moviesClientHome");
   const [openModalVeryfiedEmail, setOpenModalVeryfiedEmail] = useState(false);
   const { authUser } = useAuthContext();
   useEffect(() => {
@@ -19,20 +21,12 @@ const Home = () => {
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
   useEffect(() => {
-    Promise.all([
-      fetch("http://localhost:3000/moviesShowing").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesUpcoming").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesSpecial").then((res) => res.json()),
-    ])
-      .then(([moviesShowing, moviesUpcoming, moviesSpecial]) => {
-        setPhimDangChieu(moviesShowing);
-        setPhimSapChieu(moviesUpcoming);
-        setXuatChieuDB(moviesSpecial);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-      });
-  }, []);
+    if (movies) {
+      setPhimDangChieu(movies.moviesShowing);
+      setPhimSapChieu(movies.moviesUpcoming);
+      setXuatChieuDB(movies.moviesSpecial);
+    }
+  }, [movies]);
 
   const movieTabs = [
     {

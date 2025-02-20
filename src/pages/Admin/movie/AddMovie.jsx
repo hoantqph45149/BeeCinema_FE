@@ -343,13 +343,13 @@ const AddMovie = () => {
                             aria-label="Default select example"
                             {...formik.getFieldProps("rating")}
                           >
-                            <option defaultValue="T13">13 tuổi trở lên</option>
-                            <option defaultValue="T16">16 tuổi trở lên</option>
-                            <option defaultValue="T18">18 tuổi trở lên</option>
-                            <option defaultValue="P">
+                            <option value="T13">13 tuổi trở lên</option>
+                            <option value="T16">16 tuổi trở lên</option>
+                            <option value="T18">18 tuổi trở lên</option>
+                            <option value="P">
                               Phim được phổ biến đến mọi người
                             </option>
-                            <option defaultValue="K">
+                            <option value="K">
                               Phim được phổ biến đến người dưới 13T, có người
                               bảo hộ
                             </option>
