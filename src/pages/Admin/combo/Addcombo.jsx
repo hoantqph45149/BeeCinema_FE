@@ -180,17 +180,17 @@ const AddCombo = () => {
                             <Col sm={6}>
                               <div className="mb-3">
                                 <div>
-                                  <div className="input-step full-width">
+                                  <div className="input-step full-width d-flex gap-1">
                                     <button
                                       type="button"
-                                      className="minus material-shadow"
+                                      className="btn btn-primary minus material-shadow"
                                       onClick={() => countDown(index)}
                                     >
                                       –
                                     </button>
                                     <Input
                                       type="number"
-                                      className="product-quantity"
+                                      className="text-center product-quantity"
                                       value={food.quantity}
                                       min="0"
                                       max="100"
@@ -198,7 +198,7 @@ const AddCombo = () => {
                                     />
                                     <button
                                       type="button"
-                                      className="plus material-shadow"
+                                      className="btn btn-primary minus "
                                       onClick={() => countUP(index)}
                                     >
                                       +

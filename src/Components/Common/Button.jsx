@@ -9,6 +9,7 @@ const sizeClasses = {
 };
 
 const Button = ({
+  type,
   onClick,
   children,
   className = "",
@@ -17,6 +18,7 @@ const Button = ({
 }) => {
   return (
     <button
+      type={type}
       onClick={onClick}
       className={`relative w-full bg-gradient-to-r from-[#0a64a7] via-[#258dcf] to-[#3db1f3] bg-[length:200%_auto] text-white font-bold font-oswald rounded-md hover:opacity-90 transition  ${sizeClasses[size]} ${className}`}
     >

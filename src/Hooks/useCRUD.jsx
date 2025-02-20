@@ -14,79 +14,100 @@ export const useCRUD = (key) => {
   const queryClient = useQueryClient();
 
   const createMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.post(url, data);
       return res;
     },
-    onSuccess: () => {
+    onSuccess: (_, { shouldShowAlert = true }) => {
       Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
-      showAlert("Thành công!", "Thêm Thành công!");
+      {
+        shouldShowAlert && showAlert("Thành công!", "Thêm Thành công!");
+      }
     },
-    onError: (error) => {
+    onError: (error, { shouldShowAlert = true }) => {
       console.log(error);
       Swal.close();
-      showAlert(
-        "Thất Bại",
-        `${
-          error?.response?.data?.message
-            ? error?.response?.data?.message
-            : "Thêm Thất Bại"
-        }`,
-        "error"
-      );
+      {
+        shouldShowAlert &&
+          showAlert(
+            "Thất Bại",
+            `${
+              error?.response?.data?.message
+                ? error?.response?.data?.message
+                : "Thêm Thất Bại"
+            }`,
+            "error"
+          );
+      }
     },
   });
 
   const putMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.put(url, data);
       return res;
     },
-    onSuccess: () => {
+    onSuccess: (_, { shouldShowAlert = true }) => {
       Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
-      showAlert("Thành công!", "Thay Đổi Thành công!");
+      {
+        shouldShowAlert && showAlert("Thành công!", "Thay Đổi Thành công!");
+      }
     },
-    onError: (error) => {
+    onError: (error, { shouldShowAlert = true }) => {
       Swal.close();
-      showAlert(
-        "Thất Bại",
-        `${
-          error?.response?.data?.message
-            ? error?.response?.data?.message
-            : "Thay Đổi Thất Bại"
-        }`,
-        "error"
-      );
+      {
+        shouldShowAlert &&
+          showAlert(
+            "Thất Bại",
+            `${
+              error?.response?.data?.message
+                ? error?.response?.data?.message
+                : "Thay Đổi Thất Bại"
+            }`,
+            "error"
+          );
+      }
     },
   });
 
   const patchMutation = useMutation({
-    mutationFn: async ({ url, data }) => {
-      showLoadingAlert();
+    mutationFn: async ({ url, data, shouldShowLoadingAlert = true }) => {
+      {
+        shouldShowLoadingAlert && showLoadingAlert();
+      }
       const res = await apiService.patch(url, data);
       return res;
     },
-    onSuccess: () => {
+    onSuccess: (_, { shouldShowAlert = true }) => {
       Swal.close();
       queryClient.invalidateQueries({ queryKey: key });
-      showAlert("Thành công!", "Thay Đổi Thành công!");
+      {
+        shouldShowAlert && showAlert("Thành công!", "Thay Đổi Thành công!");
+      }
     },
-    onError: (error) => {
+    onError: (error, { shouldShowAlert = true }) => {
       console.log(error);
       Swal.close();
-      showAlert(
-        "Thất Bại",
-        `${
-          error?.response?.data?.message
-            ? error?.response?.data?.message
-            : "Thay Đổi Thất Bại"
-        }`,
-        "error"
-      );
+      {
+        shouldShowAlert &&
+          showAlert(
+            "Thất Bại",
+            `${
+              error?.response?.data?.message
+                ? error?.response?.data?.message
+                : "Thay Đổi Thất Bại"
+            }`,
+            "error"
+          );
+      }
     },
   });
 

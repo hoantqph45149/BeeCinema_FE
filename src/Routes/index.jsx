@@ -7,31 +7,73 @@ import NonAuthLayout from "../Layouts/admin/NonAuthLayout";
 import VerticalLayout from "../Layouts/admin/index";
 
 //routes
-import { authProtectedRoutes, publicRoutes, clientRoutes } from "./AllRoutes";
-import { AuthProtected } from "./AuthProtected";
+import {
+  authProtectedRoutes,
+  publicRoutesNonAuthLayout,
+  publicRoutes,
+  clientRoutes,
+  emailVerifiedRoutes,
+} from "./AllRoutes";
+import {
+  AuthProtected,
+  CheckRouteAuth,
+  CheckRouteAdmin,
+} from "./AuthProtected";
 
 const Index = () => {
   return (
     <React.Fragment>
       <Routes>
         <Route>
+          {publicRoutesNonAuthLayout.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <CheckRouteAuth>
+                  <NonAuthLayout>{route.component}</NonAuthLayout>
+                </CheckRouteAuth>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+        {/* Đường dẫn client không cần login */}
+        <Route>
           {publicRoutes.map((route, idx) => (
             <Route
               path={route.path}
-              element={<NonAuthLayout>{route.component}</NonAuthLayout>}
+              element={<LayoutClient>{route.component}</LayoutClient>}
               key={idx}
               exact={true}
             />
           ))}
         </Route>
 
+        {/* Đường dẫn admin cần login và phải lầ admin */}
         <Route>
           {authProtectedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={
-                <AuthProtected>
+                <CheckRouteAdmin>
                   <VerticalLayout>{route.component}</VerticalLayout>
+                </CheckRouteAdmin>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+
+        {/* Đường dẫn client cần login */}
+        <Route>
+          {clientRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <AuthProtected>
+                  <LayoutClient>{route.component}</LayoutClient>
                 </AuthProtected>
               }
               key={idx}
@@ -41,7 +83,7 @@ const Index = () => {
         </Route>
 
         <Route>
-          {clientRoutes.map((route, idx) => (
+          {emailVerifiedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={

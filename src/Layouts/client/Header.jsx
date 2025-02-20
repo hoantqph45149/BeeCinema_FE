@@ -3,8 +3,10 @@ import LocationSelect from "./LocationSelect";
 import MenuDropdown from "./MenuDropdown";
 import ProfileDropdownClient from "./ProfileDropdownClient";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
 
 const Header = () => {
+  const { authUser } = useAuthContext();
   const [isFixed, setIsFixed] = useState(false);
 
   useEffect(() => {
@@ -26,14 +28,17 @@ const Header = () => {
       <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
-            {/* <div className="flex">
-              <Link to={"/register"}>Đăng ký</Link>
-              <span className="mx-2">|</span>
-              <Link to={"/Login"}>Đăng nhập</Link>
-            </div> */}
-            <div className="py-2">
-              <ProfileDropdownClient />
-            </div>
+            {authUser?.user ? (
+              <div className="py-2">
+                <ProfileDropdownClient user={authUser.user} />
+              </div>
+            ) : (
+              <div className="flex">
+                <Link to={"/register"}>Đăng ký</Link>
+                <span className="mx-2">|</span>
+                <Link to={"/Login"}>Đăng nhập</Link>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -73,16 +78,16 @@ const Header = () => {
                 <Link to={"/#"}>Giá vé</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Tin tức</Link>
+                <Link to={"/news"}>Tin tức</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Liên hệ</Link>
+                <Link to={"/contact"}>Liên hệ</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
                 <Link to={"/introduce"}>Giới thiệu</Link>
               </li>
               <li className="hover:text-accent xl:text-lg lg:text-sm cursor-pointer">
-                <Link to={"/#"}>Thành viên</Link>
+                <Link to={"/profile"}>Thành viên</Link>
               </li>
             </ul>
           </div>
