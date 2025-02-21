@@ -1,4 +1,7 @@
+import dayjs from "dayjs";
+import { useFormik } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -12,13 +15,10 @@ import {
   Row,
 } from "reactstrap";
 import * as Yup from "yup";
+import api from "../../../apis/axios";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { useNavigate, useParams } from "react-router-dom";
-import { useFormik, validateYupSchema } from "formik";
-import api from "../../../apis/axios";
-import dayjs from "dayjs";
 
 const Updateshowtime = () => {
   const { id } = useParams();
@@ -172,7 +172,7 @@ const Updateshowtime = () => {
     }),
 
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);
       updateShowtime.mutate({
         url: `/showtimes/${id}`,
         data: values,
