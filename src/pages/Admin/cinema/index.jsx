@@ -21,6 +21,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Cinema = () => {
   const { data } = useFetch(["cinemas"], "/cinemas");
+  console.log(data);
   const { delete: deleteCinema } = useCRUD(["cinemas"]);
   const { patch: patchCinema } = useCRUD();
   const nav = useNavigate();
@@ -75,18 +76,8 @@ const Cinema = () => {
     },
     {
       header: "Chi nhánh",
-      accessorKey: "name_branch",
+      accessorKey: "branch.name",
       enableColumnFilter: false,
-      cell: (cell) => {
-        return (
-          console.log(cell.row.original),
-          (
-            <>
-              {/* <span className="fw-medium">{cell.row.original.branches.name}</span> */}
-            </>
-          )
-        );
-      },
     },
     {
       header: "Địa chỉ",

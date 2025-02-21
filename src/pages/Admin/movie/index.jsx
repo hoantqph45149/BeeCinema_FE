@@ -172,9 +172,12 @@ const Movie = () => {
               </p>
               <p>
                 <strong>Phiên bản:</strong>
-                {movie?.movieVersions.map((version) => (
-                  <span key={version} className="btn btn-primary btn-sm me-2">
-                    {version}
+                {movie?.movie_versions?.map((version) => (
+                  <span
+                    key={version.id}
+                    className="btn btn-primary btn-sm me-2"
+                  >
+                    {version.name}
                   </span>
                 ))}
               </p>
