@@ -13,11 +13,12 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { useQuill } from "react-quilljs";
 import "quill/dist/quill.snow.css";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+document.title =
+  "Thông tin bài viết | Velzon - React Admin & Dashboard Template";
 
 const AddPost = () => {
   const nav = useNavigate();
-  document.title =
-    "Thông tin bài viết | Velzon - React Admin & Dashboard Template";
 
   const { quill, quillRef } = useQuill({
     modules: {

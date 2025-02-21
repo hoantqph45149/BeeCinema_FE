@@ -28,7 +28,7 @@ const EditMovie = () => {
   const [movie, setMovie] = useState({});
   const [selectedMulti, setselectedMulti] = useState(null);
   const [action, setAction] = useState(null);
-  const { uploadImage, imageUrl, loading } = useUploadImage();
+  const { uploadImage } = useUploadImage();
   useEffect(() => {
     if (data) {
       setMovie(data.movie);
@@ -107,12 +107,9 @@ const EditMovie = () => {
         const movieVersion = selectedMulti.map((item) => item.value);
         // Chờ upload xong và lấy URL ảnh
         if (movie.img_thumbnail !== values.img_thumbnail) {
-          await uploadImage(values.img_thumbnail);
+          image = await uploadImage(values.img_thumbnail);
         }
-        if (imageUrl) {
-          //   console.log("imageUrl", imageUrl);
-          image = imageUrl;
-        }
+
         // console.log("image", image);
         const movieData = {
           ...values,

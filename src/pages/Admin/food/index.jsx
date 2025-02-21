@@ -90,7 +90,6 @@ const Food = () => {
         setFood({});
       } else {
         // Thêm mới đồ ăn
-
         create.mutate({
           url: "/foods",
           data: {

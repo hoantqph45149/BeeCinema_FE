@@ -52,6 +52,7 @@ const Branch = () => {
     },
     validationSchema: branchSchema,
     onSubmit: (values, { resetForm }) => {
+      console.log(values);
       if (isEdit) {
         // update chi nhánh
         try {
@@ -59,7 +60,7 @@ const Branch = () => {
             url: `/branches/${branche.id}`,
             data: values,
           });
-          console.log(res);
+          // console.log(res);
         } catch (error) {
           console.log(error);
         }
@@ -72,7 +73,7 @@ const Branch = () => {
         }
       }
 
-      resetForm();
+      formik.resetForm();
       setModal(false);
     },
   });

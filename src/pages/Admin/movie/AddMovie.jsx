@@ -26,7 +26,7 @@ const AddMovie = () => {
 
   const [selectedMulti, setselectedMulti] = useState(null);
   const [action, setAction] = useState(null);
-  const { uploadImage, imageUrl, loading } = useUploadImage();
+  const { uploadImage } = useUploadImage();
   const SingleOptions = [
     { value: "Phụ Đề", label: "Phụ Đề" },
     { value: "Lồng Tiếng", label: "Lồng Tiếng" },
@@ -101,7 +101,7 @@ const AddMovie = () => {
     onSubmit: async (values) => {
       try {
         // Chờ upload xong và lấy URL ảnh
-        await uploadImage(values.img_thumbnail);
+        const imageUrl = await uploadImage(values.img_thumbnail);
 
         const movieVersion = selectedMulti.map((item) => item.value);
 

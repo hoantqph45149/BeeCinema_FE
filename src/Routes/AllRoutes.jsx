@@ -41,8 +41,9 @@ import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
 import Showtime from "../pages/Admin/showtime";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
+import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
 
 // ticket
 import Ticket from "../pages/Admin/ticket";
@@ -154,8 +155,12 @@ const authProtectedRoutes = [
     component: <Addshowtime />,
   },
   {
-    path: "/admin/showtime/edit",
+    path: "/admin/showtime/:id/edit",
     component: <Updateshowtime />,
+  },
+  {
+    path: "/admin/showtime/:id/detail",
+    component: <ShowtimeDetail />,
   },
 
   // quản lý đồ ăn
