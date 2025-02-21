@@ -53,7 +53,7 @@ export function Login() {
   });
 
   return (
-    <section className="mx-8 my-4 flex">
+    <section className="mx-8 py-1 flex min-h-screen">
       <div className="w-full xl:w-3/5 mt-24">
         <div className="text-center text-accent">
           <h2 className="font-bold mb-4 text-3xl">Đăng Nhập</h2>
@@ -126,7 +126,7 @@ export function Login() {
           </p>
         </form>
       </div>
-      <div className="w-2/5 min-h-lvh hidden xl:block">
+      <div className="w-2/5 min-h-full hidden xl:block sticky top-10">
         <AuthSlideshow />
       </div>
       <Modal

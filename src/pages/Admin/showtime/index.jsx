@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -12,15 +13,103 @@ import {
   Row,
   Table,
 } from "reactstrap";
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+
+import api from "../../../apis/axios";
+import { useFetch } from "./../../../Hooks/useCRUD";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { Link, useNavigate } from "react-router-dom";
-
+dayjs.extend(isSameOrBefore);
 const Showtime = () => {
+  const { data: branchesData } = useFetch(["branches"], "/branches/active");
+  const [showtimes, setShowtimes] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [cinemas, setCinemas] = useState([]);
+  const [dataFilterShowtime, setDataFilterShowtime] = useState({
+    branch_id: "",
+    cinema_id: "",
+    date: "",
+    is_active: "",
+  });
   const nav = useNavigate();
+
+  useEffect(() => {
+    if (branchesData) {
+      setBranches(branchesData.branches);
+      setCinemas(branchesData.branches[0].cinemas);
+      setDataFilterShowtime({
+        branch_id: branchesData.branches[0].id,
+        cinema_id: branchesData.branches[0].cinemas[0].id,
+        date: dayjs().format("YYYY-MM-DD"),
+        is_active: "",
+      });
+    }
+  }, [branchesData]);
+  useEffect(() => {
+    if (
+      dataFilterShowtime &&
+      dataFilterShowtime.branch_id !== "" &&
+      dataFilterShowtime.cinema_id !== "" &&
+      dataFilterShowtime.date !== ""
+    ) {
+      const fetchData = async () => {
+        try {
+          const { data } = await api.get(
+            `/showtimes?branch_id=${dataFilterShowtime.branch_id}&cinema_id=${
+              dataFilterShowtime.cinema_id
+            }${
+              dataFilterShowtime.is_active !== ""
+                ? `&is_active=${dataFilterShowtime.is_active}`
+                : ""
+            }&date=${dataFilterShowtime.date}`
+          );
+          const showtimes = data.showtimes.reduce((acc, item) => {
+            const { movie, ...showtime } = item;
+            const existingMovie = acc.find((m) => m.id === movie.id);
+
+            if (existingMovie) {
+              existingMovie.showtimes.push(showtime);
+
+              // Sắp xếp showtimes theo start_time tăng dần
+              existingMovie.showtimes.sort(
+                (a, b) => new Date(a.start_time) - new Date(b.start_time)
+              );
+            } else {
+              acc.push({
+                ...movie,
+                showtimes: [showtime],
+              });
+            }
+
+            return acc;
+          }, []);
+
+          setShowtimes(showtimes);
+        } catch (error) {
+          console.error("Fetch error:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [dataFilterShowtime]);
+
+  console.log(showtimes);
+
+  const handleSetCinema = (id) => {
+    if (id === "") {
+      setCinemas([]);
+    } else {
+      const branche = branches.find((branche) => branche.id == id);
+      setCinemas(branche.cinemas);
+      setDataFilterShowtime({
+        ...dataFilterShowtime,
+        branch_id: id,
+        cinema_id: branche.cinemas[0].id,
+      });
+    }
+  };
 
   // Column
   const columns = useMemo(() => [
@@ -50,7 +139,6 @@ const Showtime = () => {
       ],
     },
   ]);
-
   const [visibleRows, setVisibleRows] = useState(
     columns.map(() => false) // Ban đầu, tất cả các dòng đều ẩn scheduler
   );
@@ -62,29 +150,7 @@ const Showtime = () => {
     });
   };
 
-  const option = [
-    {
-      options: [
-        { label: "Status", value: "Status" },
-        { label: "Approved", value: "Approved" },
-        { label: "New", value: "New" },
-        { label: "Pending", value: "Pending" },
-        { label: "Rejected", value: "Rejected" },
-      ],
-    },
-  ];
-
-  const option1 = [
-    {
-      options: [
-        { label: "Select Options", value: "Select Options" },
-        { label: "Full Time", value: "Full Time" },
-        { label: "Part Time", value: "Part Time" },
-      ],
-    },
-  ];
-
-  document.title = "";
+  document.title = "Danh sách xuất chiếu";
   return (
     <div className="page-content">
       <Container fluid>
@@ -97,37 +163,56 @@ const Showtime = () => {
                   <div className="col-sm">
                     <Form>
                       <Row className="g-3">
-                        <Col lg={3} md={6} sm={12}>
+                        <Col xl={3} lg={4} md={6} sm={12}>
                           <div>
-                            <Label className="form-label " for="address">
+                            <Label className="form-label " htmlFor="branches">
                               Chi nhánh
                             </Label>
-                            <select id="address" className="form-select">
-                              <option>Hà Nội</option>
-                              <option defaultValue="1">Hải Phòng</option>
-                              <option defaultValue="2">Thái Bình</option>
-                              <option defaultValue="3">
-                                Thành Phố Hồ Chí Minh
-                              </option>
+                            <select
+                              value={dataFilterShowtime.branch_id}
+                              onChange={(e) => {
+                                handleSetCinema(e.target.value);
+                              }}
+                              id="branches"
+                              className="form-select"
+                            >
+                              {branches.map((branch) => (
+                                <option
+                                  key={branch.id}
+                                  value={branch.id}
+                                  onClick={() => handleSetCinema(branch.id)}
+                                >
+                                  {branch.name}
+                                </option>
+                              ))}
                             </select>
                           </div>
                         </Col>
-                        <Col lg={2} md={6} sm={12}>
+                        <Col xl={3} lg={4} md={6} sm={12}>
                           <div>
-                            <Label className="form-label " for="rap">
+                            <Label className="form-label " htmlFor="cinemas">
                               Rạp
                             </Label>
-                            <select id="rap" className="form-select">
-                              <option>Hà Nội</option>
-                              <option defaultValue="1">Hải Phòng</option>
-                              <option defaultValue="2">Thái Bình</option>
-                              <option defaultValue="3">
-                                Thành Phố Hồ Chí Minh
-                              </option>
+                            <select
+                              value={dataFilterShowtime.cinema_id}
+                              onChange={(e) => {
+                                setDataFilterShowtime({
+                                  ...dataFilterShowtime,
+                                  cinema_id: e.target.value,
+                                });
+                              }}
+                              id="cinemas"
+                              className="form-select"
+                            >
+                              {cinemas.map((cinema) => (
+                                <option key={cinema.id} value={cinema.id}>
+                                  {cinema.name}
+                                </option>
+                              ))}
                             </select>
                           </div>
                         </Col>
-                        <Col xxl={2} md={6}>
+                        <Col xl={3} lg={4} md={6}>
                           <div>
                             <Label
                               htmlFor="exampleInputdate"
@@ -136,39 +221,39 @@ const Showtime = () => {
                               Ngày chiếu
                             </Label>
                             <Input
+                              value={dataFilterShowtime.date}
+                              onChange={(e) => {
+                                setDataFilterShowtime({
+                                  ...dataFilterShowtime,
+                                  date: e.target.value,
+                                });
+                              }}
                               type="date"
                               className="form-control"
                               id="exampleInputdate"
                             />
                           </div>
                         </Col>
-                        <Col lg={2} md={6} sm={12}>
+                        <Col xl={3} lg={4} md={6} sm={12}>
                           <div>
-                            <Label className="form-label" for="trangthai">
+                            <Label className="form-label" htmlFor="is_active">
                               Trạng thái
                             </Label>
-                            <select id="trangthai" className="form-select">
-                              <option>Hà Nội</option>
-                              <option defaultValue="1">Hải Phòng</option>
-                              <option defaultValue="2">Thái Bình</option>
-                              <option defaultValue="3">
-                                Thành Phố Hồ Chí Minh
-                              </option>
-                            </select>
-                          </div>
-                        </Col>
-                        <Col lg={2} md={12} sm={12}>
-                          <div>
-                            <Label className="form-label">&nbsp;</Label>
-                            <Button
-                              type="button"
-                              color="primary"
-                              className="btn w-100"
+                            <select
+                              onChange={(e) => {
+                                setDataFilterShowtime({
+                                  ...dataFilterShowtime,
+                                  is_active: e.target.value,
+                                });
+                              }}
+                              value={dataFilterShowtime.is_active}
+                              id="is_active"
+                              className="form-select"
                             >
-                              {" "}
-                              <i className="ri-equalizer-fill me-1 align-bottom"></i>
-                              Filters
-                            </Button>
+                              <option value="">Tất cả</option>
+                              <option value={1}>Đang hoạt động</option>
+                              <option value={0}>Không hoạt động</option>
+                            </select>
                           </div>
                         </Col>
                       </Row>
@@ -193,7 +278,7 @@ const Showtime = () => {
               </CardHeader>
               <CardBody className="pt-0">
                 <div className="table-responsive">
-                  <Table bordered>
+                  <Table className="table fw-medium  align-middle table-nowrap table-bordered">
                     <thead>
                       <tr>
                         <th></th>
@@ -203,39 +288,52 @@ const Showtime = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {columns.map((item, index) => (
+                      {showtimes.map((item, index) => (
                         <React.Fragment key={index}>
                           <tr>
-                            <td className="text-center">
-                              <button
-                                type="button"
-                                className="btn-soft-primary btn btn-sm"
-                                onClick={() => toggleScheduler(index)}
-                              >
-                                <i className="ri-add-circle-fill"></i>
-                              </button>
-                            </td>
                             <td>
-                              <img
-                                src={item.movie.image}
-                                alt={item.movie.name}
-                                className="img-fluid"
-                                style={{
-                                  width: "100px",
-                                  marginBottom: "10px",
-                                }}
-                              />
-                              <div>
-                                {item.movie.name}{" "}
-                                {item.movie.special && (
-                                  <span className="badge bg-danger">
-                                    ĐẶC BIỆT
-                                  </span>
-                                )}
+                              <div
+                                style={{ width: "100%", height: "100%" }}
+                                className="d-flex justify-content-center align-items-center"
+                              >
+                                <button
+                                  type="button"
+                                  className="btn-soft-primary btn btn-sm"
+                                  onClick={() => toggleScheduler(index)}
+                                >
+                                  <i className="ri-add-circle-fill"></i>
+                                </button>
                               </div>
                             </td>
-                            <td>{item.movie.duration}</td>
-                            <td>{item.movie.genre}</td>
+                            <td>
+                              <div className="d-flex gap-2 align-items-center">
+                                <img
+                                  src={item.img_thumbnail}
+                                  alt={item.name}
+                                  className="img-fluid"
+                                  style={{
+                                    width: "100px",
+                                    marginBottom: "10px",
+                                  }}
+                                />
+                                <div className="flex-grow-1 d-flex flex-column">
+                                  <span className="fw-medium ">
+                                    {" "}
+                                    {item.name}{" "}
+                                  </span>
+                                  {item.is_special && (
+                                    <span
+                                      style={{ width: "70px" }}
+                                      className=" badge bg-danger"
+                                    >
+                                      ĐẶC BIỆT
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td>{item.duration}</td>
+                            <td>{item.category}</td>
                           </tr>
                           {visibleRows[index] && (
                             <tr>
@@ -253,33 +351,104 @@ const Showtime = () => {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {item.schedules.map(
-                                        (schedule, scheduleIndex) => (
+                                      {item.showtimes.map(
+                                        (showtime, scheduleIndex) => (
                                           <tr key={scheduleIndex}>
-                                            <td>{schedule.time}</td>
-                                            <td>{schedule.room}</td>
-                                            <td>{schedule.seats}</td>
-                                            <td>{schedule.format}</td>
+                                            <td>{`${dayjs(
+                                              showtime.start_time
+                                            ).format("HH:mm")}-${dayjs(
+                                              showtime.end_time
+                                            ).format("HH:mm")}`}</td>
+                                            <td>{showtime.room.name}</td>
+                                            <td>{`${showtime.remainingSeats} / ${showtime.totalSeats}`}</td>
+                                            <td>{showtime.format}</td>
                                             <td>
-                                              <input
-                                                type="checkbox"
-                                                checked={schedule.active}
-                                                readOnly
-                                              />
+                                              <div className="form-check form-switch form-check-right">
+                                                <Input
+                                                  disabled={
+                                                    dayjs(
+                                                      showtime.start_time
+                                                    ).isSameOrBefore(
+                                                      dayjs().add(30, "minute")
+                                                    ) ||
+                                                    showtime.remainingSeats <
+                                                      showtime.totalSeats
+                                                  }
+                                                  className="form-check-input"
+                                                  type="checkbox"
+                                                  role="switch"
+                                                  id="flexSwitchCheckRightDisabled"
+                                                  defaultChecked={
+                                                    showtime.is_active
+                                                  }
+                                                  // onChange={() => handleUpdateActive(cell.row.original)}
+                                                />
+                                              </div>
                                             </td>
                                             <td>
-                                              <Link
-                                                to="#"
-                                                className="btn btn-sm btn-soft-success"
-                                              >
-                                                <i className="ri-edit-line"></i>
-                                              </Link>
-                                              <button
-                                                type="button"
-                                                className="btn btn-sm btn-soft-danger"
-                                              >
-                                                <i className="ri-delete-bin-2-line"></i>
-                                              </button>
+                                              <ul className="list-inline hstack gap-2 mb-0">
+                                                <li className="list-inline-item">
+                                                  <Button
+                                                    disabled={
+                                                      dayjs(
+                                                        showtime.start_time
+                                                      ).isSameOrBefore(
+                                                        dayjs().add(
+                                                          30,
+                                                          "minute"
+                                                        )
+                                                      ) ||
+                                                      showtime.remainingSeats <
+                                                        showtime.totalSeats
+                                                    }
+                                                    color="primary"
+                                                    className="btn-sm"
+                                                    onClick={() => {
+                                                      nav(
+                                                        `/admin/showtime/${showtime.id}/edit`
+                                                      );
+                                                    }}
+                                                  >
+                                                    <i className="ri-pencil-fill"></i>
+                                                  </Button>
+                                                </li>
+                                                <li className="list-inline-item">
+                                                  <Button
+                                                    disabled={
+                                                      dayjs(
+                                                        showtime.start_time
+                                                      ).isSameOrBefore(
+                                                        dayjs().add(
+                                                          30,
+                                                          "minute"
+                                                        )
+                                                      ) ||
+                                                      showtime.remainingSeats <
+                                                        showtime.totalSeats
+                                                    }
+                                                    color="primary"
+                                                    className="btn-sm "
+                                                    // onClick={() => {
+                                                    //   handleDeleteSeatTemplate(cell.row.original);
+                                                    // }}
+                                                  >
+                                                    <i className="ri-delete-bin-5-fill"></i>
+                                                  </Button>
+                                                </li>
+                                                <li className="list-inline-item">
+                                                  <Button
+                                                    color="primary"
+                                                    className="btn-sm "
+                                                    onClick={() => {
+                                                      nav(
+                                                        `/admin/showtime/${showtime.id}/detail`
+                                                      );
+                                                    }}
+                                                  >
+                                                    <i className="ri-eye-fill"></i>
+                                                  </Button>
+                                                </li>
+                                              </ul>
                                             </td>
                                           </tr>
                                         )
@@ -295,7 +464,6 @@ const Showtime = () => {
                     </tbody>
                   </Table>
                 </div>
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>

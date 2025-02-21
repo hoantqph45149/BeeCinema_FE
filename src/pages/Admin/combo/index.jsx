@@ -18,6 +18,7 @@ import { formatVND } from "./../../../utils/Currency";
 
 const Combo = () => {
   const { data } = useFetch(["combos"], "/combos");
+  console.log(data);
   const nav = useNavigate();
   const [combos, setCombos] = useState([]);
 

@@ -75,8 +75,18 @@ const Cinema = () => {
     },
     {
       header: "Chi nhánh",
-      accessorKey: "branch.name",
+      accessorKey: "name_branch",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          console.log(cell.row.original),
+          (
+            <>
+              {/* <span className="fw-medium">{cell.row.original.branches.name}</span> */}
+            </>
+          )
+        );
+      },
     },
     {
       header: "Địa chỉ",

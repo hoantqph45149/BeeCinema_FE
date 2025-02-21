@@ -9,3 +9,19 @@ File: Custom Css File
 .css-9jq23d {
   color: white !important;
 }
+
+.seat-inactive::before,
+.seat-inactive::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 100%;
+  background-color: rgb(117, 117, 117);
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.seat-inactive::after {
+  transform: translateX(-50%) rotate(-45deg);
+}

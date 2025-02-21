@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -9,11 +9,21 @@ import TableContainer from "../../../Components/Common/TableContainer";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useFetch } from "../../../Hooks/useCRUD";
 
 const Post = () => {
+  const { data: postsData } = useFetch(["posts"], "/posts");
+  console.log(postsData);
   const nav = useNavigate();
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    if (postsData) {
+      setPosts(postsData);
+    }
+  }, [postsData]);
 
   const toggle = () => setModal(!modal);
   // Customers Column
@@ -25,13 +35,24 @@ const Post = () => {
     },
     {
       header: "Tiêu đề",
-      accessorKey: "customer",
+      accessorKey: "title",
       enableColumnFilter: false,
     },
     {
       header: "Hình ảnh",
       accessorKey: "phone",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <div>
+            <img
+              style={{ maxWidth: "100px" }}
+              src={cell.row.original.img_post}
+              alt=""
+            />
+          </div>
+        );
+      },
     },
     {
       header: "Người tạo",
@@ -123,7 +144,7 @@ const Post = () => {
                   <div>
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={posts || []}
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}

@@ -71,20 +71,20 @@ export function Register() {
   });
 
   return (
-    <section className="mx-8 my-4 flex">
-      <div className="w-2/5 min-h-lvh hidden lg:block">
+    <section className="mx-8 flex min-h-screen">
+      <div className="w-2/5 max-h-screen hidden lg:block sticky top-2">
         <AuthSlideshow />
       </div>
       <div className="w-full lg:w-3/5 flex flex-col items-center justify-center">
         <div className="text-center text-accent">
-          <h2 className="font-bold mb-4 text-xl md:text-2xl">Đăng Ký</h2>
+          <h2 className="font-bold pb-4 text-xl md:text-2xl">Đăng Ký</h2>
           <p className="text-sm md:text-lg font-normal">
             Nhập thông tin của bạn để đăng ký.
           </p>
         </div>
         <form
           onSubmit={formik.handleSubmit}
-          className="mt-8 mb-2 w-full md:mx-auto max-w-[600px] lg:w-1/2"
+          className="pt-8 pb-2 w-full md:mx-auto max-w-[600px] lg:w-1/2"
         >
           {[
             {
@@ -129,7 +129,7 @@ export function Register() {
               autocomplete: "new-password",
             },
           ].map(({ name, type, placeholder, label, autocomplete }) => (
-            <div key={name} className={`mb-2 flex flex-col gap-2`}>
+            <div key={name} className={`pb-2 flex flex-col gap-2`}>
               <label className="text-sm font-medium text-gray-900">
                 {label}
               </label>
@@ -164,13 +164,13 @@ export function Register() {
 
           <button
             type="submit"
-            className="w-full py-3 mt-6 bg-accent text-white rounded-lg"
+            className="w-full py-3 pt-6 bg-accent text-white rounded-lg"
           >
             Đăng Ký
           </button>
         </form>
 
-        <p className="text-center text-gray-900 font-medium mt-4">
+        <p className="text-center text-gray-900 font-medium pt-4">
           Đã có tài khoản?
           <Link to="/login" className="text-gray-900 ml-1">
             Đăng nhập
