@@ -95,7 +95,7 @@ const Showtime = () => {
     }
   }, [dataFilterShowtime]);
 
-  console.log(showtimes);
+  // console.log(showtimes);
 
   const handleSetCinema = (id) => {
     if (id === "") {
