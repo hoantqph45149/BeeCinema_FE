@@ -17,13 +17,18 @@ import dayjs from "dayjs";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 import api from "../../../apis/axios";
-import { useFetch } from "./../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "./../../../Hooks/useCRUD";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import { showConfirm } from "../../../Components/Common/showAlert";
 
 dayjs.extend(isSameOrBefore);
 const Showtime = () => {
   const { data: branchesData } = useFetch(["branches"], "/branches/active");
+  const { patch: patchShowtime, delete: deleteShowtime } = useCRUD([
+    "showtimes",
+  ]);
   const [showtimes, setShowtimes] = useState([]);
+  const [showtime, setShowtime] = useState({});
   const [branches, setBranches] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [dataFilterShowtime, setDataFilterShowtime] = useState({
@@ -35,15 +40,18 @@ const Showtime = () => {
   const nav = useNavigate();
 
   useEffect(() => {
-    if (branchesData) {
+    if (branchesData?.branches?.length > 0) {
       setBranches(branchesData.branches);
-      setCinemas(branchesData.branches[0].cinemas);
-      setDataFilterShowtime({
-        branch_id: branchesData.branches[0].id,
-        cinema_id: branchesData.branches[0].cinemas[0].id,
-        date: dayjs().format("YYYY-MM-DD"),
-        is_active: "",
-      });
+
+      if (branchesData.branches[0]?.cinemas?.length > 0) {
+        setCinemas(branchesData.branches[0].cinemas);
+        setDataFilterShowtime({
+          branch_id: branchesData.branches[0].id,
+          cinema_id: branchesData.branches[0].cinemas[0].id,
+          date: dayjs().format("YYYY-MM-DD"),
+          is_active: "",
+        });
+      }
     }
   }, [branchesData]);
   useEffect(() => {
@@ -93,7 +101,7 @@ const Showtime = () => {
 
       fetchData();
     }
-  }, [dataFilterShowtime]);
+  }, [dataFilterShowtime, showtime]);
 
   // console.log(showtimes);
 
@@ -148,6 +156,51 @@ const Showtime = () => {
       newState[index] = !newState[index]; // Đảo trạng thái ẩn/hiện
       return newState;
     });
+  };
+
+  const handleUpdateActive = (showtime) => {
+    showConfirm(
+      "Thay đổi trạng thái",
+      "Bạn có chắc muốn thay đổi trạng thái không",
+      () => {
+        const start_time = dayjs(showtime.start_time).format("HH:mm");
+        const end_time = dayjs(showtime.end_time).format("HH:mm");
+        patchShowtime.mutate(
+          {
+            url: `/showtimes/${showtime.id}`,
+            data: {
+              ...showtime,
+              is_active: showtime.is_active === true ? false : true,
+              start_time,
+              end_time,
+            },
+          },
+          {
+            onSuccess: () => {
+              setShowtime({});
+            },
+          }
+        );
+      }
+    );
+  };
+
+  const handleDeleteShowtime = (showtime) => {
+    showConfirm(
+      "Xóa xuất chiếu",
+      `Bạn có chắc muốn xóa xuất chiếu lúc  ${dayjs(showtime.start_time).format(
+        "HH:mm"
+      )}-${dayjs(showtime.end_time).format("HH:mm")} ngày ${
+        showtime.date
+      } không ?`,
+      () => {
+        deleteShowtime.mutate(`/showtimes/${showtime.id}`, {
+          onSuccess: () => {
+            setShowtime({});
+          },
+        });
+      }
+    );
   };
 
   document.title = "Danh sách xuất chiếu";
@@ -317,7 +370,7 @@ const Showtime = () => {
                                   }}
                                 />
                                 <div className="flex-grow-1 d-flex flex-column">
-                                  <span className="fw-medium ">
+                                  <span className="fw-medium fs-5 text">
                                     {" "}
                                     {item.name}{" "}
                                   </span>
@@ -332,7 +385,7 @@ const Showtime = () => {
                                 </div>
                               </div>
                             </td>
-                            <td>{item.duration}</td>
+                            <td>{item.duration} Phút</td>
                             <td>{item.category}</td>
                           </tr>
                           {visibleRows[index] && (
@@ -360,7 +413,10 @@ const Showtime = () => {
                                               showtime.end_time
                                             ).format("HH:mm")}`}</td>
                                             <td>{showtime.room.name}</td>
-                                            <td>{`${showtime.remainingSeats} / ${showtime.totalSeats}`}</td>
+                                            <td>
+                                              {`${showtime.remainingSeats} / ${showtime.totalSeats}`}{" "}
+                                              Ghế
+                                            </td>
                                             <td>{showtime.format}</td>
                                             <td>
                                               <div className="form-check form-switch form-check-right">
@@ -377,11 +433,18 @@ const Showtime = () => {
                                                   className="form-check-input"
                                                   type="checkbox"
                                                   role="switch"
-                                                  id="flexSwitchCheckRightDisabled"
+                                                  id="is_active"
                                                   defaultChecked={
                                                     showtime.is_active
                                                   }
-                                                  // onChange={() => handleUpdateActive(cell.row.original)}
+                                                  checked={showtime.is_active}
+                                                  name="is_active"
+                                                  onChange={() => {
+                                                    handleUpdateActive(
+                                                      showtime
+                                                    );
+                                                    setShowtime(showtime);
+                                                  }}
                                                 />
                                               </div>
                                             </td>
@@ -428,9 +491,12 @@ const Showtime = () => {
                                                     }
                                                     color="primary"
                                                     className="btn-sm "
-                                                    // onClick={() => {
-                                                    //   handleDeleteSeatTemplate(cell.row.original);
-                                                    // }}
+                                                    onClick={() => {
+                                                      handleDeleteShowtime(
+                                                        showtime
+                                                      );
+                                                      setShowtime(showtime);
+                                                    }}
                                                   >
                                                     <i className="ri-delete-bin-5-fill"></i>
                                                   </Button>

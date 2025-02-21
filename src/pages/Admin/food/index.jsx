@@ -181,7 +181,7 @@ const Food = () => {
     },
     {
       header: "Hoạt động",
-      accessorKey: "acctive",
+      accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
         // console.log(cell);
@@ -192,8 +192,8 @@ const Food = () => {
                 className="form-check-input"
                 type="checkbox"
                 role="switch"
-                id="flexSwitchCheckRightDisabled"
-                defaultChecked={cell.row.original.is_active == 1 ? true : false}
+                id="is_active"
+                defaultChecked={cell.row.original.is_active}
                 onChange={() => handleUpdateActive(cell.row.original)}
               />
             </div>
