@@ -15,19 +15,43 @@ import { Link, useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 import TableContainer from "../../../Components/Common/TableContainer";
-import { useFetch } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "../../../utils/Currency";
+import dayjs from "dayjs";
+import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Voucher = () => {
   const { data } = useFetch(["vouchers"], "/vouchers");
+  const { patch: patchVoucher, delete: deleteVoucher } = useCRUD(["vouchers"]);
   const nav = useNavigate();
 
+  const handleUpdateActive = (voucher) => {
+    showConfirm(
+      "Thay đổi trạng thái",
+      "Bạn có chắc muốn thay đổi trạng thái không",
+      () => {
+        patchVoucher.mutate({
+          url: `/vouchers/${voucher.id}`,
+          data: {
+            ...voucher,
+            is_active: voucher.is_active === true ? false : true,
+          },
+        });
+      }
+    );
+  };
+
+  const handleDeleteVoucher = (voucher) => {
+    showConfirm(
+      "Xóa Chi Nhánh",
+      `Bạn có chắc muốn xóa voucher có mã là ${voucher.code} không?`,
+      () => {
+        deleteVoucher.mutate(`/vouchers/${voucher.id}`);
+      }
+    );
+  };
+
   const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-    },
     {
       header: "Mã voucher",
       accessorKey: "code",
@@ -69,6 +93,11 @@ const Voucher = () => {
       enableColumnFilter: false,
     },
     {
+      header: "Đã dùng",
+      accessorKey: "total_usage",
+      enableColumnFilter: false,
+    },
+    {
       header: "Giới hạn",
       accessorKey: "limit",
       enableColumnFilter: false,
@@ -83,12 +112,16 @@ const Voucher = () => {
           <>
             <div className="form-check form-switch form-check-right">
               <Input
+                disabled={
+                  cell.row.original.total_usage > 0 ||
+                  dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                }
                 className="form-check-input"
                 type="checkbox"
                 role="switch"
                 id="flexSwitchCheckRightDisabled"
                 defaultChecked={cell.row.original.is_active}
-                // onChange={() => handleUpdateActive(cell.row.original)}
+                onChange={() => handleUpdateActive(cell.row.original)}
               />
             </div>
           </>
@@ -103,6 +136,10 @@ const Voucher = () => {
             <ul className="list-inline hstack gap-2 mb-0">
               <li className="list-inline-item">
                 <Button
+                  disabled={
+                    cell.row.original.total_usage > 0 ||
+                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                  }
                   color="primary"
                   className="btn-sm "
                   onClick={() => {
@@ -114,12 +151,15 @@ const Voucher = () => {
               </li>
               <li className="list-inline-item">
                 <Button
-                  disabled={cell.row.original.is_publish}
+                  disabled={
+                    cell.row.original.total_usage > 0 ||
+                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                  }
                   color="primary"
                   className="btn-sm "
-                  // onClick={() => {
-                  //   handleDeleteSeatTemplate(cell.row.original);
-                  // }}
+                  onClick={() => {
+                    handleDeleteVoucher(cell.row.original);
+                  }}
                 >
                   <i className="ri-delete-bin-5-fill"></i>
                 </Button>

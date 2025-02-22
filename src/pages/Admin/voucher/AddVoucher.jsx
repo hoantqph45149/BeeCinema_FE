@@ -18,11 +18,13 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import dayjs from "dayjs";
 import { useCRUD } from "../../../Hooks/useCRUD";
+import { useNavigate } from "react-router-dom";
 
 document.title = "Quản lý mã giảm giá | Quản lý";
 const AddVoucher = () => {
   const { create: createVoucher } = useCRUD(["vouchers"]);
   const [code, setCode] = useState("");
+  const nav = useNavigate();
 
   useEffect(() => {
     const text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -100,6 +102,7 @@ const AddVoucher = () => {
         {
           onSuccess: () => {
             formik.resetForm();
+            nav("/admin/voucher");
           },
         }
       );

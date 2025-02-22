@@ -12,19 +12,25 @@ const MoviesClient = () => {
   useEffect(() => {
     if (movies) {
       setPhimDangChieu(
-        movies.moviesShowing.sort(
-          (a, b) => b.showtimes_count - a.showtimes_count
-        )
+        movies.moviesShowing
+          ? [...movies.moviesShowing].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
       );
       setPhimSapChieu(
-        movies.moviesUpcoming.sort(
-          (a, b) => b.showtimes_count - a.showtimes_count
-        )
+        movies.moviesUpcoming
+          ? [...movies.moviesUpcoming].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
       );
       setXuatChieuDB(
-        movies.moviesSpecial.sort(
-          (a, b) => b.showtimes_count - a.showtimes_count
-        )
+        movies.moviesSpecial
+          ? [...movies.moviesSpecial].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
       );
     }
   }, [movies]);
