@@ -14,10 +14,9 @@ const ContentDetail = ({ content }) => {
       .slice(0, 4) || [];
   return (
     <div className="container my-4 grid grid-cols-1 md:grid-cols-2 md:gap-10 xl:gap-16">
-      {/* Cột 1  */}
       <div className="col-span-1">
-        <div className="max-w-sm font-sans">
-          <h1 className="text-[24px] font-bold mb-2 text-[#1c2b33]">
+        <div className="w-full">
+          <h1 className="text-[24px] font-bold pb-4 text-[#1c2b33]">
             {content.name}
           </h1>
         </div>
@@ -42,10 +41,12 @@ const ContentDetail = ({ content }) => {
             Địa chỉ: {content.address}
           </p>
           <p className="font-bold mb-4">Hotline: {content.hotline}</p>
-          <p className="text-secondary mb-5">{content.contactInfo}</p>
+          <div
+            className="text-secondary mb-4"
+            dangerouslySetInnerHTML={{ __html: content.contactInfo }}
+          />
         </div>
       </div>
-      {/* Cột 2  */}
       <div className="col-span-1 text-center md:text-left">
         <h1 className="text-[24px] text-center font-bold mb-2 text-secondary">
           PHIM ĐANG HOT

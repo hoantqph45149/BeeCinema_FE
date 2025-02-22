@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
+import { useFetch } from "../../../Hooks/useCRUD";
 
 const MoviesClient = () => {
+  const { data: movies } = useFetch(["movies"], "/moviesClientHome");
   const [phimDangChieu, setPhimDangChieu] = useState([]);
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
+
   useEffect(() => {
-    Promise.all([
-      fetch("http://localhost:3000/moviesShowing").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesUpcoming").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesSpecial").then((res) => res.json()),
-    ])
-      .then(([moviesShowing, moviesUpcoming, moviesSpecial]) => {
-        setPhimDangChieu(moviesShowing);
-        setPhimSapChieu(moviesUpcoming);
-        setXuatChieuDB(moviesSpecial);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-      });
-  }, []);
+    if (movies) {
+      setPhimDangChieu(
+        movies.moviesShowing.sort(
+          (a, b) => b.showtimes_count - a.showtimes_count
+        )
+      );
+      setPhimSapChieu(
+        movies.moviesUpcoming.sort(
+          (a, b) => b.showtimes_count - a.showtimes_count
+        )
+      );
+      setXuatChieuDB(
+        movies.moviesSpecial.sort(
+          (a, b) => b.showtimes_count - a.showtimes_count
+        )
+      );
+    }
+  }, [movies]);
 
   const movieTabs = [
     {
