@@ -2,10 +2,12 @@ import React from "react";
 
 const Introduce = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row items-center gap-8">
-        <div className="md:w-2/3 w-full">
-          <h5 className="text-2xl font-bold mb-4">Giới thiệu về BeeCinemas</h5>
+    <div className="container py-10">
+      <div className="flex flex-col lg:flex-row items-center gap-4">
+        <div className="w-full lg:w-1/2 xl:w-2/3">
+          <h5 className="text-2xl font-bold mb-4">
+            Giới thiệu về <strong className="text-accent">BeeCinema</strong>
+          </h5>
           <p className="text-gray-700 mb-4">
             F5 Bee Media được thành lập bởi doanh nhân F5 Bee Cinemas (F5 Bee
             Beta) vào cuối năm 2014 với sứ mệnh "Mang trải nghiệm điện ảnh với
@@ -51,12 +53,17 @@ const Introduce = () => {
           </p>
         </div>
 
-        <div className="md:w-1/3 w-full flex justify-center  self-start mt-12">
-          <img
-            src="https://stcd02265632633.cloud.edgevnpay.vn/website-vnpay-public/fill/2023/11/0afpil4f5e9b1700211713083.jpg"
-            alt="BeeCinemas"
-            className="w-1/3 md:w-full h-auto rounded-lg shadow-lg"
-          />
+        <div className="w-full lg:w-1/2 xl:w-1/3 flex justify-center self-start">
+          <figure>
+            <img
+              src="https://stcd02265632633.cloud.edgevnpay.vn/website-vnpay-public/fill/2023/11/0afpil4f5e9b1700211713083.jpg"
+              alt="BeeCinemas"
+              className="w-full h-auto rounded-lg shadow-lg"
+            />
+            <figcaption className="text-sm text-center text-gray-500 mt-2">
+              Rạp chiếu BeeCinema Mỹ Đình
+            </figcaption>
+          </figure>
         </div>
       </div>
     </div>
