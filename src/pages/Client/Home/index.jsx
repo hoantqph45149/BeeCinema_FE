@@ -22,9 +22,27 @@ const Home = () => {
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
   useEffect(() => {
     if (movies) {
-      setPhimDangChieu(movies.moviesShowing);
-      setPhimSapChieu(movies.moviesUpcoming);
-      setXuatChieuDB(movies.moviesSpecial);
+      setPhimDangChieu(
+        movies.moviesShowing
+          ? [...movies.moviesShowing].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
+      setPhimSapChieu(
+        movies.moviesUpcoming
+          ? [...movies.moviesUpcoming].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
+      setXuatChieuDB(
+        movies.moviesSpecial
+          ? [...movies.moviesSpecial].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
     }
   }, [movies]);
 

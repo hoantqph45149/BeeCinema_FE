@@ -31,7 +31,7 @@ const ProfileDropdown = () => {
           window.location.href = "/login";
         },
         onError: (error) => {
-          if (error?.response?.data?.message == "Unauthenticated") {
+          if (error?.response?.data?.message == "Unauthenticated.") {
             localStorage.removeItem("user");
             setAuthUser(null);
             window.location.href = "/login";

@@ -206,7 +206,7 @@ const authProtectedRoutes = [
 
   { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
-  { path: "/admin/voucher/edit", component: <EditVoucher /> },
+  { path: "/admin/voucher/:id/edit", component: <EditVoucher /> },
 
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },

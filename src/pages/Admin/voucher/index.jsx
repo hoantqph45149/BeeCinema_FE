@@ -1,93 +1,171 @@
 import React, { useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Modal,
+  Row,
+} from "reactstrap";
 
 import { Link, useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { formatVND } from "../../../utils/Currency";
+import dayjs from "dayjs";
+import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Voucher = () => {
+  const { data } = useFetch(["vouchers"], "/vouchers");
+  const { patch: patchVoucher, delete: deleteVoucher } = useCRUD(["vouchers"]);
   const nav = useNavigate();
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
 
-  const toggle = () => setModal(!modal);
-  // Customers Column
+  const handleUpdateActive = (voucher) => {
+    showConfirm(
+      "Thay đổi trạng thái",
+      "Bạn có chắc muốn thay đổi trạng thái không",
+      () => {
+        patchVoucher.mutate({
+          url: `/vouchers/${voucher.id}`,
+          data: {
+            ...voucher,
+            is_active: voucher.is_active === true ? false : true,
+          },
+        });
+      }
+    );
+  };
+
+  const handleDeleteVoucher = (voucher) => {
+    showConfirm(
+      "Xóa Chi Nhánh",
+      `Bạn có chắc muốn xóa voucher có mã là ${voucher.code} không?`,
+      () => {
+        deleteVoucher.mutate(`/vouchers/${voucher.id}`);
+      }
+    );
+  };
+
   const columns = useMemo(() => [
     {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-    },
-    {
       header: "Mã voucher",
-      accessorKey: "customer",
+      accessorKey: "code",
       enableColumnFilter: false,
     },
     {
       header: "Tiêu đề",
-      accessorKey: "phone",
+      accessorKey: "title",
       enableColumnFilter: false,
     },
     {
       header: "Thời gian sử dụng",
-      accessorKey: "userName",
+      accessorKey: "time",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <div className="d-flex flex-column">
+            <span>
+              <strong>Bắt đầu:</strong> {cell.row.original.start_date_time}
+            </span>
+            <span>
+              <strong>Kết thúc:</strong> {cell.row.original.end_date_time}
+            </span>
+          </div>
+        );
+      },
     },
     {
       header: "Giảm giá",
-      accessorKey: "viewCount",
+      accessorKey: "discount",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return <span>{formatVND(cell.row.original.discount)}</span>;
+      },
     },
     {
       header: "Số lượng",
-      accessorKey: "DateCreate",
+      accessorKey: "quantity",
+      enableColumnFilter: false,
+    },
+    {
+      header: "Đã dùng",
+      accessorKey: "total_usage",
       enableColumnFilter: false,
     },
     {
       header: "Giới hạn",
-      accessorKey: "online",
+      accessorKey: "limit",
       enableColumnFilter: false,
     },
     {
       header: "Hoạt động",
-      accessorKey: "online",
+      accessorKey: "online1",
       enableColumnFilter: false,
+      cell: (cell) => {
+        // console.log(cell);
+        return (
+          <>
+            <div className="form-check form-switch form-check-right">
+              <Input
+                disabled={
+                  cell.row.original.total_usage > 0 ||
+                  dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                }
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="flexSwitchCheckRightDisabled"
+                defaultChecked={cell.row.original.is_active}
+                onChange={() => handleUpdateActive(cell.row.original)}
+              />
+            </div>
+          </>
+        );
+      },
     },
     {
       header: "Action",
-      cell: (cellProps) => {
+      cell: (cell) => {
         return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
-          </ul>
+          <>
+            <ul className="list-inline hstack gap-2 mb-0">
+              <li className="list-inline-item">
+                <Button
+                  disabled={
+                    cell.row.original.total_usage > 0 ||
+                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                  }
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    nav(`/admin/voucher/${cell.row.original.id}/edit`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+              <li className="list-inline-item">
+                <Button
+                  disabled={
+                    cell.row.original.total_usage > 0 ||
+                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                  }
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    handleDeleteVoucher(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            </ul>
+          </>
         );
       },
     },
@@ -115,10 +193,10 @@ const Voucher = () => {
                           type="button"
                           className="btn btn-success add-btn"
                           id="create-btn"
-                          onClick={() => nav("/admin/post/add")}
+                          onClick={() => nav("/admin/voucher/add")}
                         >
                           <i className="ri-add-line align-bottom me-1"></i> Thêm
-                          bài viết
+                          voucher
                         </button>{" "}
                       </div>
                     </div>
@@ -128,21 +206,16 @@ const Voucher = () => {
                   <div>
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={data || []}
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Search for order ID, customer, order status or something..."
                     />
                   </div>
-                  <Modal
-                    id="showModal"
-                    isOpen={modal}
-                    toggle={toggle}
-                    centered
-                  ></Modal>
-                  <ToastContainer closeButton={false} limit={1} />
                 </div>
               </Card>
             </Col>
