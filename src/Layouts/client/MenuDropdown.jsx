@@ -5,10 +5,6 @@ import {
   Clapperboard,
   Contact,
   Flame,
-  FolderClock,
-  IdCard,
-  LockKeyhole,
-  LogOut,
   MenuIcon,
   Milestone,
   Newspaper,
@@ -30,7 +26,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/showtime"
+            to="/showtime"
           >
             <CalendarCheck size={16} strokeWidth={1.5} className="mr-2" /> Lịch
             Chiếu Theo Rạp
@@ -39,7 +35,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/profile"
+            to="/profile"
           >
             <UserPen size={16} strokeWidth={1.5} className="mr-2" /> Thông Tin
             Tài Khoản
@@ -48,7 +44,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/movies"
+            to="/movies"
           >
             <Clapperboard size={16} strokeWidth={1.5} className="mr-2" /> Phim
           </Link>
@@ -56,7 +52,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            to="/license"
           >
             <Siren size={16} strokeWidth={1.5} className="mr-2" /> Ưu Đãi
           </Link>
@@ -64,7 +60,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            to="/license"
           >
             <CircleDollarSign size={16} strokeWidth={1.5} className="mr-2" />
             Gía vé
@@ -98,7 +94,7 @@ function MenuDropdown() {
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
-            href="/license"
+            to="/profile"
           >
             <Flame size={16} strokeWidth={1.5} className="mr-2" /> Thành Viên
           </Link>

@@ -32,6 +32,13 @@ function ProfileDropdownClient() {
           setAuthUser(null);
           nav("/login");
         },
+        onError: (error) => {
+          if (error?.response?.data?.message == "Unauthenticated") {
+            localStorage.removeItem("user");
+            setAuthUser(null);
+            nav("/login");
+          }
+        },
       }
     );
   };
