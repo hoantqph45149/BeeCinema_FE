@@ -80,6 +80,7 @@ import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
 import ProfileClient from "../pages/Client/Profile";
 import TheaterInformation from "../pages/Client/theater-information";
+import MovieDetails from "../pages/Client/movie/MovieDetail";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -106,11 +107,37 @@ const publicRoutes = [
     path: "/showtime",
     component: <ShowtimeClient />,
   },
+  {
+    path: "/news",
+    component: <News />,
+  },
+  {
+    path: "/contact",
+    component: <Contact />,
+  },
+
+  {
+    path: "/theaterinformation",
+    component: <TheaterInformation />,
+  },
 
   {
     path: "/movies",
     component: <MoviesClient />,
   },
+
+  {
+    path: "/movies/:id/detail",
+    component: <MovieDetails />,
+  },
+
+  {
+    path: "/",
+    exact: true,
+    component: <Navigate to="/" />,
+  },
+
+  { path: "*", component: <Navigate to="/" /> },
 ];
 
 const authProtectedRoutes = [
@@ -217,33 +244,6 @@ const emailVerifiedRoutes = [
 ];
 
 const clientRoutes = [
-  {
-    path: "/news",
-    component: <News />,
-  },
-  {
-    path: "/contact",
-    component: <Contact />,
-  },
-  {
-    path: "/introduce",
-    component: <Introduce />,
-  },
-
-  {
-    path: "/showtime",
-    component: <ShowtimeClient />,
-  },
-  {
-    path: "/theaterinformation",
-    component: <TheaterInformation />,
-  },
-
-  {
-    path: "/movies",
-    component: <MoviesClient />,
-  },
-
   {
     path: "/profile",
     component: <ProfileClient />,
