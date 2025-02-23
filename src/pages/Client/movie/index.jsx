@@ -2,38 +2,54 @@ import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
 import { useFetch } from "../../../Hooks/useCRUD";
+import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import api from "../../../apis/axios";
 
 const MoviesClient = () => {
-  const { data: movies } = useFetch(["movies"], "/moviesClientHome");
+  const { cinema } = useBrancheContext();
   const [phimDangChieu, setPhimDangChieu] = useState([]);
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
 
   useEffect(() => {
-    if (movies) {
-      setPhimDangChieu(
-        movies.moviesShowing
-          ? [...movies.moviesShowing].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
-      setPhimSapChieu(
-        movies.moviesUpcoming
-          ? [...movies.moviesUpcoming].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
-      setXuatChieuDB(
-        movies.moviesSpecial
-          ? [...movies.moviesSpecial].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
+    if (cinema?.id) {
+      const fetchData = async () => {
+        try {
+          const { data } = await api.get(`/movies/tab?cinema_id=${cinema.id}`);
+
+          if (!data) {
+            return;
+          }
+
+          setPhimDangChieu(
+            data.moviesShowing
+              ? [...data.moviesShowing].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setPhimSapChieu(
+            data.moviesUpcoming
+              ? [...data.moviesUpcoming].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setXuatChieuDB(
+            data.moviesSpecial
+              ? [...data.moviesSpecial].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+        } catch (error) {
+          console.error("Lỗi khi fetch dữ liệu:", error);
+        }
+      };
+
+      fetchData();
     }
-  }, [movies]);
+  }, [cinema]);
 
   const movieTabs = [
     {

@@ -73,7 +73,7 @@ import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
 import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
-import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
+import ChooseSeat from "../pages/Client/choose-seat";
 import Introduce from "../pages/Client/introduce";
 import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
@@ -238,7 +238,7 @@ const authProtectedRoutes = [
 
 const emailVerifiedRoutes = [
   {
-    path: "/choose-seat",
+    path: "/choose-seat/:slug",
     component: <ChooseSeat />,
   },
 ];

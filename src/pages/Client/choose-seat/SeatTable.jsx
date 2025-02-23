@@ -4,9 +4,8 @@ const SeatTable = ({
   seatsByRow,
   selectedSeats,
   toggleSeatSelection,
-  matrixSeat,
+  matrix,
 }) => {
-  const matrix = matrixSeat[0];
   return (
     <table
       border="1"
