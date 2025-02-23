@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary text-secondary border-t-2  py-10">
       <div className="container ">
-        <div className="grid grid-cols-1 sm:grid-cols-2  gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4  gap-6">
           {/* Language Movies */}
           <div>
             <img

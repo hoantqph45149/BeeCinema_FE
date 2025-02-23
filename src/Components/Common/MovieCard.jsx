@@ -1,10 +1,10 @@
 import { useState } from "react";
-import AnimationPlay from "./AnimationPlay";
-import Modal from "./modal";
-import TabShowtime from "./TabShowtime";
-import { Ticket } from "lucide-react";
-import Button from "./Button";
 import { Link } from "react-router-dom";
+
+import Modal from "./modal";
+import Button from "./Button";
+import TabShowtime from "./TabShowtime";
+import AnimationPlay from "./AnimationPlay";
 
 const MovieCard = ({ movie, showInfo = true }) => {
   const [openModalTrailer, setOpenModalTrailer] = useState(false);
@@ -55,10 +55,20 @@ const MovieCard = ({ movie, showInfo = true }) => {
           </div>
 
           {/* Age Rating */}
-          {movie?.rating && (
-            <span className="absolute top-2 left-2 bg-yellow-400 text-white text-xs font-bold px-2 py-1 rounded-md">
-              {movie?.rating}
-            </span>
+          {movie?.rating == "T13" ? (
+            <div className="absolute top-2 left-2">
+              <img src="/images/T13.png" alt="T13" />
+            </div>
+          ) : movie?.rating == "T16" ? (
+            <div className="absolute top-2 left-2">
+              <img src="/images/T16.png" alt="T16" />
+            </div>
+          ) : movie?.rating == "T18" ? (
+            <div className="absolute top-2 left-2">
+              <img src="/images/T18.png" alt="T18" />
+            </div>
+          ) : (
+            <></>
           )}
 
           {/* Hot Badge */}

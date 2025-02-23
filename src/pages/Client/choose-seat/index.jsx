@@ -1,4 +1,4 @@
-import { replateName } from "./../../../utils/ReplateName";
+import { replateName } from "../../../utils/ReplateName";
 import DialogCus from "../../../Components/Common/Dialog";
 
 import React, { useEffect, useState } from "react";
@@ -12,8 +12,17 @@ import SeatInfo from "./SeatInfo";
 import SeatLegend from "./SeatLegend";
 import { handleSeatSelection } from "./SeatSelectionLogic";
 import SeatTable from "./SeatTable";
+import { useParams } from "react-router-dom";
+import { useFetch } from "../../../Hooks/useCRUD";
+import dayjs from "dayjs";
 
 const ChooseSeat = () => {
+  const { slug } = useParams();
+  const { data: showtimeData } = useFetch(
+    ["showtime", slug],
+    `/showtimes/slug/${slug}`
+  );
+  console.log(showtimeData);
   const [dialog, setDialog] = useState({
     isOpen: false,
     title: "",
@@ -21,26 +30,17 @@ const ChooseSeat = () => {
   });
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
-
+  const [movie, setMovie] = useState({});
   const [seatsByRow, setSeatsByRow] = useState([]);
-  const [matrixSeat, setMatrixSeat] = useState([]);
-
+  const [matrixSeat, setMatrixSeat] = useState({});
   useEffect(() => {
-    Promise.all([
-      fetch("http://localhost:3000/seatMap").then((res) => res.json()),
-      fetch("http://localhost:3000/matrixSeat").then((res) => res.json()),
-    ])
-      .then(([seatMap, matrixSeat]) => {
-        // console.log("seatMap", seatMap);
-        // console.log("matrixSeat", matrixSeat);
-        setSeatsByRow(seatMap);
-        setMatrixSeat(matrixSeat);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-      });
-  }, []);
-
+    if (showtimeData) {
+      setMovie(showtimeData.showtime.movie);
+      setSeatsByRow(showtimeData.seatMap);
+      setMatrixSeat(showtimeData.matrixSeat);
+    }
+  }, [showtimeData]);
+  console.log(movie);
   const toggleSeatSelection = (seat) => {
     handleSeatSelection(
       seat,
@@ -62,11 +62,9 @@ const ChooseSeat = () => {
     setTotalAmount(totalAmount);
   }, [selectedSeats]);
 
-  console.log("selectedSeats", selectedSeats);
-
   return (
     <div className="container my-10">
-      <div className="flex flex-col md:flex-row gap-8 min-h-10">
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-16 xl:gap-20 min-h-10">
         <div className="flex-1">
           <div className="flex flex-col gap-5">
             <SeatLegend />
@@ -74,7 +72,7 @@ const ChooseSeat = () => {
               seatsByRow={seatsByRow}
               selectedSeats={selectedSeats}
               toggleSeatSelection={toggleSeatSelection}
-              matrixSeat={matrixSeat}
+              matrix={matrixSeat}
             />
             <SeatInfo totalAmount={totalAmount} />
           </div>
@@ -87,15 +85,17 @@ const ChooseSeat = () => {
             <div>
               <div className="flex justify-between py-5 gap-2">
                 <img
-                  src="https://files.betacorp.vn/media%2fimages%2f2024%2f12%2f20%2f400x633%2D2%2D104903%2D201224%2D49.jpg"
-                  alt="Movie Poster"
+                  src={movie.img_thumbnail}
+                  alt={movie.name}
                   className="w-36 mb-4"
                 />
                 <div className="flex-1 flex flex-col gap-3 font-lato">
                   <h2 className="text-lg font-semibold text-accent">
-                    Nhím Sonic III
+                    {movie.name}
                   </h2>
-                  <p className="text-secondary text-sm">2D Lồng Tiếng</p>
+                  <p className="text-secondary text-sm">
+                    {showtimeData?.showtime?.format}
+                  </p>
                 </div>
               </div>
               <div className="mt-4 space-y-2 px-4">
@@ -106,7 +106,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-secondary">Thể loại</span>
                   </span>
-                  <span className="text-accent font-semibold">Hoạt hình</span>
+                  <span className="text-accent font-semibold">
+                    {movie.category}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center space-x-2">
@@ -115,7 +117,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-scondary">Thời lượng</span>
                   </span>
-                  <span className="text-accent font-semibold">61 phút</span>
+                  <span className="text-accent font-semibold">
+                    {movie.duration} phút
+                  </span>
                 </div>
               </div>
               <hr className="my-4 border-secondary border-dashed" />
@@ -127,7 +131,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-secondary">Rạp chiếu</span>
                   </span>
-                  <span className="text-accent font-semibold">Hà Đông</span>
+                  <span className="text-accent font-semibold">
+                    {showtimeData?.showtime?.room?.cinema?.name}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center space-x-2">
@@ -136,7 +142,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-secondary">Ngày chiếu</span>
                   </span>
-                  <span className="text-accent font-semibold">09/02/2025</span>
+                  <span className="text-accent font-semibold">
+                    {showtimeData?.showtime?.date}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center space-x-2">
@@ -145,7 +153,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-secondary">Giờ chiếu</span>
                   </span>
-                  <span className="text-accent font-semibold">14:20</span>
+                  <span className="text-accent font-semibold">
+                    {dayjs(showtimeData?.showtime?.start_time).format("HH:mm")}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center space-x-2">
@@ -154,7 +164,9 @@ const ChooseSeat = () => {
                     </span>
                     <span className="text-secondary">Phòng chiếu</span>
                   </span>
-                  <span className="text-accent font-semibold">P404</span>
+                  <span className="text-accent font-semibold">
+                    {showtimeData?.showtime?.room?.name}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="flex items-center space-x-2">

@@ -6,45 +6,63 @@ import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import Modal from "../../../Components/Common/Modal";
 import VerifiedEmail from "../../Auth/verified-email";
 import { useFetch } from "../../../Hooks/useCRUD";
+import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import api from "../../../apis/axios";
 
 const Home = () => {
-  const { data: movies } = useFetch(["movies"], "/moviesClientHome");
-  const [openModalVeryfiedEmail, setOpenModalVeryfiedEmail] = useState(false);
+  const { cinema } = useBrancheContext();
   const { authUser } = useAuthContext();
+
+  const [phimDangChieu, setPhimDangChieu] = useState([]);
+  const [phimSapChieu, setPhimSapChieu] = useState([]);
+  const [xuatChieuDB, setXuatChieuDB] = useState([]);
+  const [openModalVeryfiedEmail, setOpenModalVeryfiedEmail] = useState(false);
+
+  useEffect(() => {
+    if (cinema?.id) {
+      const fetchData = async () => {
+        try {
+          const { data } = await api.get(`/movies/tab?cinema_id=${cinema.id}`);
+
+          if (!data) {
+            return;
+          }
+
+          setPhimDangChieu(
+            data.moviesShowing
+              ? [...data.moviesShowing].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setPhimSapChieu(
+            data.moviesUpcoming
+              ? [...data.moviesUpcoming].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setXuatChieuDB(
+            data.moviesSpecial
+              ? [...data.moviesSpecial].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+        } catch (error) {
+          console.error("Lỗi khi fetch dữ liệu:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [cinema]);
+
   useEffect(() => {
     if (authUser?.user && authUser?.user?.email_verified_at === null) {
       setOpenModalVeryfiedEmail(true);
     }
   }, [authUser?.user]);
-
-  const [phimDangChieu, setPhimDangChieu] = useState([]);
-  const [phimSapChieu, setPhimSapChieu] = useState([]);
-  const [xuatChieuDB, setXuatChieuDB] = useState([]);
-  useEffect(() => {
-    if (movies) {
-      setPhimDangChieu(
-        movies.moviesShowing
-          ? [...movies.moviesShowing].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
-      setPhimSapChieu(
-        movies.moviesUpcoming
-          ? [...movies.moviesUpcoming].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
-      setXuatChieuDB(
-        movies.moviesSpecial
-          ? [...movies.moviesSpecial].sort(
-              (a, b) => b.showtimes_count - a.showtimes_count
-            )
-          : []
-      );
-    }
-  }, [movies]);
 
   const movieTabs = [
     {
