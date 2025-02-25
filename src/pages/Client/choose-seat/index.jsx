@@ -13,8 +13,10 @@ import SeatLegend from "./SeatLegend";
 import { handleSeatSelection } from "./SeatSelectionLogic";
 import SeatTable from "./SeatTable";
 import { useParams } from "react-router-dom";
-import { useFetch } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import dayjs from "dayjs";
+import Button from "../../../Components/Common/Button";
+import echo from "../../../pusher/echo";
 
 const ChooseSeat = () => {
   const { slug } = useParams();
@@ -22,7 +24,7 @@ const ChooseSeat = () => {
     ["showtime", slug],
     `/showtimes/slug/${slug}`
   );
-  console.log(showtimeData);
+  const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const [dialog, setDialog] = useState({
     isOpen: false,
     title: "",
@@ -40,16 +42,36 @@ const ChooseSeat = () => {
       setMatrixSeat(showtimeData.matrixSeat);
     }
   }, [showtimeData]);
-  console.log(movie);
   const toggleSeatSelection = (seat) => {
-    handleSeatSelection(
-      seat,
-      selectedSeats,
-      setSelectedSeats,
-      seatsByRow,
-      setDialog
-    );
+    console.log("toggleSeatSelection", seat);
+    chooseSeat.mutate({
+      url: "/update-seat",
+      data: {
+        seat_id: seat.id,
+        showtime_id: seat?.pivot?.showtime_id,
+        action: "hold",
+      },
+    });
   };
+
+  useEffect(() => {
+    const channel = echo.channel(`showtime.${showtimeData?.showtime?.id}`);
+
+    channel.listen(".SeatStatusChange", (data) => {
+      console.log("🔴 Ghế cập nhật:", data);
+
+      // setSeats((prevSeats) =>
+      //   prevSeats.map((seat) =>
+      //     seat.id === data.seatId ? { ...seat, status: data.status } : seat
+      //   )
+      // );
+    });
+
+    return () => {
+      channel.stopListening(".SeatStatusChange");
+      echo.leaveChannel(`showtime.${showtimeData?.showtime?.id}`);
+    };
+  }, [showtimeData?.showtime?.id]);
 
   useEffect(() => {
     const totalAmount = selectedSeats.reduce((amount, s) => {
@@ -187,9 +209,7 @@ const ChooseSeat = () => {
                 </div>
               </div>
               <div className="text-center py-5">
-                <button className="relative px-4 bg-gradient-to-r from-[#0a64a7] via-[#258dcf] to-[#3db1f3] bg-[length:200%_auto] text-white font-bold py-2 rounded-md hover:opacity-90 transition">
-                  Tiếp Tục
-                </button>
+                <Button className="w-[150px]">Tiếp Tục</Button>
               </div>
             </div>
           </div>

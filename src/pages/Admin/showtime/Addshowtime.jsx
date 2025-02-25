@@ -167,9 +167,6 @@ const Addshowtime = () => {
                 if (!date || !start_hour || !value) return false;
 
                 const formattedDate = dayjs(date).format("YYYY-MM-DD");
-                console.log("Formatted date:", formattedDate);
-                console.log("Raw start_hour:", start_hour);
-                console.log("Raw end_hour:", value);
 
                 const startTime = dayjs(
                   `${formattedDate} ${start_hour}`,
@@ -183,22 +180,8 @@ const Addshowtime = () => {
                 );
 
                 if (!startTime.isValid() || !endTime.isValid()) {
-                  console.log("Lỗi: Giá trị thời gian không hợp lệ");
                   return false;
                 }
-
-                console.log(
-                  "Parsed startTime:",
-                  startTime.format("YYYY-MM-DD HH:mm")
-                );
-                console.log(
-                  "Parsed endTime:",
-                  endTime.format("YYYY-MM-DD HH:mm")
-                );
-                console.log(
-                  "Thời gian chênh lệch:",
-                  endTime.diff(startTime, "hour")
-                );
 
                 return endTime.diff(startTime, "hour") >= 12;
               }
@@ -328,8 +311,6 @@ const Addshowtime = () => {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: (values) => {
-      console.log(values);
-
       createShowtime.mutate(
         { url: "/showtimes", data: values },
         {
