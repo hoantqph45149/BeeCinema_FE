@@ -81,6 +81,7 @@ import Contact from "../pages/Client/contact";
 import ProfileClient from "../pages/Client/Profile";
 import TheaterInformation from "../pages/Client/theater-information";
 import MovieDetails from "../pages/Client/movie/MovieDetail";
+import Checkout from "../pages/Client/checkout";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -245,14 +246,17 @@ const emailVerifiedRoutes = [
 
 const clientRoutes = [
   {
-    path: "/profile",
-    component: <ProfileClient />,
-  },
-
-  {
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
+  },
+  {
+    path: "/profile",
+    component: <ProfileClient />,
+  },
+  {
+    path: "/checkout",
+    component: <Checkout />,
   },
 
   { path: "*", component: <Navigate to="/" /> },
