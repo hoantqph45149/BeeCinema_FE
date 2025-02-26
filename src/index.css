@@ -37,4 +37,20 @@ body {
     background-size: 40px 40px;
     animation: move-stripes 20s linear infinite;
   }
+
+  .seat-inactive::before,
+  .seat-inactive::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background-color: rgb(117, 117, 117);
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+
+  .seat-inactive::after {
+    transform: translateX(-50%) rotate(-45deg);
+  }
 }
