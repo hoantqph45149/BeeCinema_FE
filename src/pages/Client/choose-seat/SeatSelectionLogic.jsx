@@ -1,64 +1,34 @@
+import { showAlert } from "./../../../Components/Common/showAlert";
 import {
-  validateMaxSeats,
-  checkAdjacentEdgeSeats,
-  checkSoleSeats,
+  checkStaggeredChairs,
+  checkTerminalSeat,
 } from "./../../../utils/CheckChooseSeat";
-export const handleSeatSelection = (
-  seat,
-  selectedSeats,
-  setSelectedSeats,
-  seatsByRow,
-  setDialog
-) => {
-  const isSelected = selectedSeats.includes(seat);
-  const updatedSeats = isSelected
-    ? selectedSeats.filter((s) => s !== seat)
-    : [...selectedSeats, seat];
-
-  if (!validateMaxSeats(updatedSeats)) {
-    setDialog({
-      isOpen: true,
-      title: "Warning",
-      message: "Bạn chỉ được đặt tối đa 8 ghế.",
-    });
-    return;
+export const handleSeatSelection = (seatsByRow, user_id) => {
+  const { errorTerminalSeat, messageTerminalSeat } = checkTerminalSeat(
+    seatsByRow,
+    user_id
+  );
+  if (errorTerminalSeat) {
+    showAlert(
+      "Hãy chọn lại ghế!",
+      `Không được để trống ghế: ${messageTerminalSeat}`,
+      "warning"
+    );
+    return false;
   }
 
-  const { isEdgeSeatIssue, edgeSeatsMessage } = checkAdjacentEdgeSeats(
-    seatsByRow.map((rowData) => ({
-      ...rowData,
-      seats: rowData.seats.map((s) =>
-        updatedSeats.includes(s) ? { ...s, selected: true } : s
-      ),
-    }))
+  const { errorStaggeredChairs, messageStaggeredChairs } = checkStaggeredChairs(
+    seatsByRow,
+    user_id
   );
 
-  if (isEdgeSeatIssue) {
-    setDialog({
-      isOpen: true,
-      title: "Hãy chọn lại ghế!",
-      message: `Không được để trống ghế : ${edgeSeatsMessage}`,
-    });
-    return;
+  if (errorStaggeredChairs) {
+    showAlert(
+      "Hãy chọn lại ghế!",
+      `Không được để trống ghế: ${messageStaggeredChairs}`,
+      "warning"
+    );
+    return false;
   }
-
-  const { isSoleSeatIssue, soleSeatsMessage } = checkSoleSeats(
-    seatsByRow.map((rowData) => ({
-      ...rowData,
-      seats: rowData.seats.map((s) =>
-        updatedSeats.includes(s) ? { ...s, selected: true } : s
-      ),
-    }))
-  );
-
-  if (isSoleSeatIssue) {
-    setDialog({
-      isOpen: true,
-      title: "Hãy chọn lại ghế!",
-      message: `Không được để trống ghế: ${soleSeatsMessage}`,
-    });
-    return;
-  }
-
-  setSelectedSeats(updatedSeats);
+  return true;
 };
