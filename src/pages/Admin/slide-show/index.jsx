@@ -63,7 +63,7 @@ const SlideShow = () => {
       enableColumnFilter: false,
       cell: (cell) => {
         // const images = JSON.parse(cell.row.original.img_thumbnail_url);
-        const images = cell.row.original.img_thumbnail_url;
+        const images = cell.row.original?.img_thumbnail_url;
         return (
           <div className="container">
             <div className="row g-2">

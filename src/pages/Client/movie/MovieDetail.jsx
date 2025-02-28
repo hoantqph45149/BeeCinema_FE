@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useFetch } from "../../../Hooks/useCRUD";
 import MovieCard from "../../../Components/Common/MovieCard";
 import Button from "../../../Components/Common/Button";
-import Modal from "../../../Components/Common/Modal";
+
 import TabShowtime from "../../../Components/Common/TabShowtime";
 
 const MovieDetail = () => {

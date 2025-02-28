@@ -1,7 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Modal,
+  Row,
+} from "reactstrap";
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useNavigation } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
@@ -9,16 +18,53 @@ import TableContainer from "../../../Components/Common/TableContainer";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useFetch } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+
+import dayjs from "dayjs";
+import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Post = () => {
+  const { data } = useFetch(["posts"], "/posts");
   const nav = useNavigate();
-  const [isEdit, setIsEdit] = useState(false);
+  const { patch: patchPost } = useCRUD();
+  const { delete: deletePost } = useCRUD();
+
   const [modal, setModal] = useState(false);
   const [posts, setPosts] = useState([]);
 
   const toggle = () => setModal(!modal);
   // Customers Column
+  useEffect(() => {
+    if (data) {
+      setPosts(data);
+      console.log(data);
+    }
+  }, [data]);
+  const handleDeletePosts = (post) => {
+    showConfirm(
+      "Xóa Bài Viết",
+      `Bạn có chắc muốn xóa bài viết ${post.title} không?`,
+      () => {
+        deletePost.mutate(`/posts/${post.id}`);
+      }
+    );
+  };
+  const handleUpdateActive = (post) => {
+    showConfirm(
+      "Thay đổi trạng thái",
+      "Bạn có chắc muốn thay đổi trạng thái không",
+      () => {
+        patchPost.mutate({
+          url: `/posts/${post.id}`,
+          data: {
+            ...post,
+            is_active: post.is_active == true ? false : true,
+          },
+        });
+      }
+    );
+    // setPosts([]);
+  };
   const columns = useMemo(() => [
     {
       header: "#",
@@ -32,57 +78,93 @@ const Post = () => {
     },
     {
       header: "Hình ảnh",
-      accessorKey: "phone",
+      accessorKey: "img_post",
+
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <img
+            style={{
+              maxWidth: "250px",
+            }}
+            src={cell.row.original.img_post}
+            alt={cell.row.original.title}
+          />
+        );
+      },
     },
     {
       header: "Người tạo",
-      accessorKey: "userName",
+      accessorKey: "user.name",
       enableColumnFilter: false,
     },
     {
       header: "Lượt xem",
-      accessorKey: "viewCount",
+      accessorKey: "view_count",
       enableColumnFilter: false,
     },
     {
       header: "Ngày tạo",
-      accessorKey: "DateCreate",
+      accessorKey: "created_at",
+
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <span>
+            {dayjs(cell.row.original.created_at).format("DD/MM/YYYY")}
+          </span>
+        );
+      },
     },
     {
       header: "Hoạt động",
-      accessorKey: "online",
+      accessorKey: "is_active",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <>
+            <div className="form-check form-switch form-check-right">
+              <Input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id="is_active"
+                defaultChecked={
+                  cell.row.original.is_active == true ? false : true
+                }
+                onChange={() => handleUpdateActive(cell.row.original)}
+              />
+            </div>
+          </>
+        );
+      },
     },
     {
       header: "Action",
-      cell: (cellProps) => {
+      cell: (cell) => {
         return (
           <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                className="btn-sm "
                 onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
+                  nav(`/admin/post/${cell.row.original.id}/edit`);
                 }}
               >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
+                <i className="ri-pencil-fill"></i>
+              </Button>
             </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                className="btn-sm "
                 onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
+                  handleDeletePosts(cell.row.original);
                 }}
               >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
+                <i className="ri-delete-bin-5-fill"></i>
+              </Button>
             </li>
           </ul>
         );
@@ -108,7 +190,7 @@ const Post = () => {
                     </div>
                     <div className="col-sm-auto">
                       <div>
-                        <button
+                        <Button
                           type="button"
                           className="btn btn-success add-btn"
                           id="create-btn"
@@ -116,7 +198,7 @@ const Post = () => {
                         >
                           <i className="ri-add-line align-bottom me-1"></i> Thêm
                           bài viết
-                        </button>{" "}
+                        </Button>{" "}
                       </div>
                     </div>
                   </Row>
@@ -125,7 +207,7 @@ const Post = () => {
                   <div>
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={posts || []}
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}

@@ -212,7 +212,7 @@ const authProtectedRoutes = [
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },
   { path: "/admin/post/add", component: <AddPost /> },
-  { path: "/admin/post/edit", component: <UpdatePost /> },
+  { path: "/admin/post/:id/edit", component: <UpdatePost /> },
   // quản lý giá vé
   { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
