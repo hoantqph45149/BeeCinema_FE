@@ -100,19 +100,19 @@ function ProfileClient() {
       </div>
 
       {activeTab === "membership" && (
-        <>
+        <div className="mx-2 lg:mx-8">
           <MemberShip />
-        </>
+        </div>
       )}
       {activeTab === "bookingHistory" && (
-        <>
+        <div className="mx-2 lg:mx-8">
           <TicketHistory />
-        </>
+        </div>
       )}
       {activeTab === "Voucher" && (
-        <>
+        <div className="mx-2 lg:mx-8">
           <MyVoucher />
-        </>
+        </div>
       )}
     </div>
   );

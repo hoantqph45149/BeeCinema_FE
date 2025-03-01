@@ -9,6 +9,7 @@ function App() {
       import("./index.css");
     }
   }, [location]);
+
   return (
     <>
       <Route />

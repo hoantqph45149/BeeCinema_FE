@@ -52,9 +52,9 @@ const Header = () => {
             <div className="flex items-center space-x-4">
               <Link to={"/"}>
                 <img
-                  src="https://betacinemas.vn/Assets/Common/logo/logo.png"
+                  src="/images/logo/beecinema.png"
                   alt="Poly Cinemas"
-                  className="h-10 mr-4"
+                  className="h-[55px] mr-4"
                 />
               </Link>
               <div>
