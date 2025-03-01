@@ -32,7 +32,6 @@ const Food = () => {
   const { uploadImage, imageUrl, loading } = useUploadImage();
   const [foods, setFoods] = useState([]);
   const [food, setFood] = useState({});
-
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
@@ -106,15 +105,15 @@ const Food = () => {
 
   const toggle = () => setModal(!modal);
 
-  const handleUpdateActive = (food) => {
+  const handleUpdateActive = (rank) => {
     showConfirm(
       "Thay đổi trạng thái",
       "Bạn có chắc muốn thay đổi trạng thái không",
       () => {
         patch.mutate({
-          url: `/foods/${food.id}`,
+          url: `/ranks/${rank.id}`,
           data: {
-            ...food,
+            ...rank,
             is_active: food.is_active == 1 ? 0 : 1,
           },
         });

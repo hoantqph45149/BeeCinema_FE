@@ -1,4 +1,5 @@
 import classnames from "classnames";
+import dayjs from "dayjs";
 import React, { useMemo, useState } from "react";
 import * as Yup from "yup";
 import {
@@ -23,12 +24,23 @@ import TableContainer from "../../../Components/Common/TableContainer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { showConfirm } from "../../../Components/Common/showAlert";
+import { useEffect } from "react";
 
 const Rank = () => {
   const [isEdit, setIsEdit] = useState(false);
+  const { create, patch, delete: deleteRanks } = useCRUD(["ranks"]);
   const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
-
+  const { data } = useFetch(["ranks"], "/ranks");
+  const [rank, setRank] = useState({});
+  const [ranks, setRanks] = useState([]);
+  useEffect(() => {
+    if (data?.data) {
+      setRanks(data.data);
+    }
+  }, [data]);
   const toggleTab = (tab, status) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
@@ -41,30 +53,61 @@ const Rank = () => {
     total_spent: Yup.number()
       .required("Tổng số tiền VNĐ chi tiêu để đạt được cấp bậc đó")
       .min(1, "Tổng chi tiêu phải lớn hơn 0"),
-    ticket_discount: Yup.number()
+    ticket_percentage: Yup.number()
       .required("Tỷ phần trăm(%) điểm tích lũy nhận được khi đặt vé")
       .min(0, "Không thể nhỏ hơn 0")
       .max(100, "Không thể lớn hơn 100"),
-    combo_discount: Yup.number()
+    combo_percentage: Yup.number()
       .required("Tỷ lệ phần trăm(%) điểm tích lũy nhận được khi đặt combo")
       .min(0, "Không thể nhỏ hơn 0")
       .max(100, "Không thể lớn hơn 100"),
   });
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      name: "",
-      total_spent: "",
-      ticket_discount: "",
-      combo_discount: "",
+      name: (rank && rank?.name) || "",
+      total_spent: (rank && rank?.total_spent) || 0,
+      ticket_percentage: (rank && rank?.ticket_percentage) || "",
+      combo_percentage: (rank && rank?.combo_percentage) || "",
     },
     validationSchema: rankSchema,
     onSubmit: (values, { resetForm }) => {
-      console.log("Form Data:", values);
-      toggle();
+      if (isEdit) {
+        // update chi nhánh
+        try {
+          patch.mutate({
+            url: `/ranks/${rank.id}`,
+            data: { ...values, is_default: rank.is_default },
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        // Thêm mới chi nhánh
+        try {
+          create.mutate({
+            url: "/ranks",
+            data: { ...values, is_default: false },
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
       resetForm();
+      setModal(false);
     },
   });
+  const handleDeleteRank = (rank) => {
+    showConfirm(
+      "Bạn có chắc muốn xóa cấp bậc này không? ",
+      `Xóa cấp bậc ${rank.name}`,
+      () => {
+        deleteRanks.mutate(`/ranks/${rank.id}`);
+        setRank({});
+      }
+    );
+  };
   const toggle = () => setModal(!modal);
   // Column
   const columns = useMemo(() => [
@@ -76,38 +119,75 @@ const Rank = () => {
     },
     {
       header: "Cấp bậc",
-      accessorKey: "orderId",
+      accessorKey: "name",
       enableColumnFilter: false,
     },
     {
       header: "Tổng chi tiêu",
-      accessorKey: "customer",
+      accessorKey: "total_spent",
       enableColumnFilter: false,
     },
     {
       header: "% vé",
-      accessorKey: "",
+      accessorKey: "ticket_percentage",
       enableColumnFilter: false,
     },
     {
       header: "% combo",
-      accessorKey: "",
+      accessorKey: "combo_percentage",
       enableColumnFilter: false,
     },
     {
       header: "Ngày tạo",
-      accessorKey: "",
+      accessorKey: "created_at",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return dayjs(cell.row.original.created_at).format("DD/MM/YYYY");
+      },
     },
     {
       header: "Ngày cập nhật",
-      accessorKey: "status",
+      accessorKey: "updated_at",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return dayjs(cell.row.original.created_at).format("DD/MM/YYYY");
+      },
     },
     {
       header: "Action",
-      accessorKey: "payment",
-      enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <>
+            <ul className="list-inline hstack gap-2 mb-0">
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    setRank(cell.row.original);
+                    toggle();
+                    setIsEdit(true);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    handleDeleteRank(cell.row.original);
+                    setRank(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            </ul>
+          </>
+        );
+      },
     },
   ]);
 
@@ -135,22 +215,24 @@ const Rank = () => {
                         onClick={() => {
                           setIsEdit(false);
                           toggle();
+                          setRank({});
+                          formik.resetForm();
                         }}
                       >
                         <i className="ri-add-line align-bottom me-1"></i>
                         Thêm mới
                       </button>{" "}
                     </div>
+                    <div className="col-sm-auto"></div>
                   </div>
                 </Row>
               </CardHeader>
               <CardBody className="pt-0">
-                <div>
-
+                <div className="mt-4">
                   <TableContainer
                     columns={columns}
-                    data={[]}
-                    isGlobalFilter={true}
+                    data={ranks || []}
+                    // isGlobalFilter={true}
                     isAddUserList={false}
                     customPageSize={8}
                     divClass="table-responsive table-card mb-1"
@@ -190,6 +272,7 @@ const Rank = () => {
                         <label className="form-label">Tổng chi tiêu</label>
                         <input
                           type="number"
+                          disabled={rank.is_default } 
                           className={`form-control ${
                             formik.touched.total_spent &&
                             formik.errors.total_spent
@@ -213,18 +296,18 @@ const Rank = () => {
                         <input
                           type="number"
                           className={`form-control ${
-                            formik.touched.ticket_discount &&
-                            formik.errors.ticket_discount
+                            formik.touched.ticket_percentage &&
+                            formik.errors.ticket_percentage
                               ? "is-invalid"
                               : ""
                           }`}
                           placeholder="Nhập phần trăm vé"
-                          {...formik.getFieldProps("ticket_discount")}
+                          {...formik.getFieldProps("ticket_percentage")}
                         />
-                        {formik.touched.ticket_discount &&
-                          formik.errors.ticket_discount && (
+                        {formik.touched.ticket_percentage &&
+                          formik.errors.ticket_percentage && (
                             <div className="invalid-feedback">
-                              {formik.errors.ticket_discount}
+                              {formik.errors.ticket_percentage}
                             </div>
                           )}
                       </div>
@@ -235,18 +318,18 @@ const Rank = () => {
                         <input
                           type="number"
                           className={`form-control ${
-                            formik.touched.combo_discount &&
-                            formik.errors.combo_discount
+                            formik.touched.combo_percentage &&
+                            formik.errors.combo_percentage
                               ? "is-invalid"
                               : ""
                           }`}
                           placeholder="Nhập phần trăm combo"
-                          {...formik.getFieldProps("combo_discount")}
+                          {...formik.getFieldProps("combo_percentage")}
                         />
-                        {formik.touched.combo_discount &&
-                          formik.errors.combo_discount && (
+                        {formik.touched.combo_percentage &&
+                          formik.errors.combo_percentage && (
                             <div className="invalid-feedback">
-                              {formik.errors.combo_discount}
+                              {formik.errors.combo_percentage}
                             </div>
                           )}
                       </div>
