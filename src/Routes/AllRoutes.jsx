@@ -77,7 +77,7 @@ import Introduce from "../pages/Client/introduce";
 import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
-import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
+// import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
 import ProfileClient from "../pages/Client/Profile";
 import TheaterInformation from "../pages/Client/theater-information";
 
