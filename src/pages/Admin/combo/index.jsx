@@ -25,7 +25,6 @@ const Combo = () => {
     }
   }, [data]);
 
-  console.log(combos);
   // Customers Column
   const columns = useMemo(() => [
     {
@@ -44,7 +43,6 @@ const Combo = () => {
       accessorKey: "img_thumbnail",
       enableColumnFilter: false,
       cell: (cell) => {
-        // console.log(cell);
         return (
           <>
             <img
@@ -108,7 +106,6 @@ const Combo = () => {
       accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
-        // console.log(cell);
         return (
           <>
             <div className="form-check form-switch form-check-right">

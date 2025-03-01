@@ -11,7 +11,6 @@ const TabShowtime = ({ idMovie }) => {
   const [activeTab, setActiveTab] = useState("");
   const [data, setData] = useState([]);
   const [showtimes, setShowtime] = useState([]);
-  console.log(cinema);
   useEffect(() => {
     if (cinema?.id) {
       const fetchData = async () => {

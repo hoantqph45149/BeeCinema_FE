@@ -85,7 +85,10 @@ const FormUpdateProfile = () => {
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} className="lg:min-w-[800px] px-2">
+    <form
+      onSubmit={formik.handleSubmit}
+      className="w-[300px] sm:w-[400px] md:w-[600px] lg:min-w-[800px] px-2"
+    >
       <div className="flex flex-col gap-3 mb-4">
         <div className="relative">
           <img

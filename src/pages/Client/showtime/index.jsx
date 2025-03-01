@@ -1,10 +1,18 @@
 import React, { useEffect, useState } from "react";
+import Loading from "../../../Components/Common/Loading";
 import MovieShowtimes from "../../../Components/Common/MovieShowtime";
-import api from "../../../apis/axios";
 import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import { useFetch } from "../../../Hooks/useCRUD";
 
 const ShowtimeClient = () => {
   const { cinema } = useBrancheContext();
+  const { data: showtimes, isLoading } = useFetch(
+    ["showtimes", cinema?.id],
+    `/showtimespage?cinema_id=${cinema.id}`,
+    {
+      enabled: !!cinema?.id,
+    }
+  );
   const [activeTab, setActiveTab] = useState("");
   const [data, setData] = useState([]);
   const [movieShowtimes, setMovieShowtimes] = useState([]);
@@ -13,82 +21,73 @@ const ShowtimeClient = () => {
     const findShowtime = data.find((item) => item.date === dateId);
     setMovieShowtimes(findShowtime);
   };
-
+  console.log(showtimes);
   useEffect(() => {
-    if (cinema?.id) {
-      const fetchData = async () => {
-        try {
-          const { data } = await api.get(
-            `/showtimespage?cinema_id=${cinema.id}`
-          );
+    if (showtimes) {
+      const res = showtimes.dates[0];
 
-          if (!data?.dates || data.dates.length === 0) {
-            return;
-          }
+      if (!res.showtimes || res.showtimes.length === 0) {
+        setData([]);
+        setActiveTab(null);
+        setMovieShowtimes(null);
+      }
 
-          const res = data.dates[0];
+      setData(res.showtimes);
+      setActiveTab(res.showtimes[0]?.date || null);
 
-          if (!res.showtimes || res.showtimes.length === 0) {
-            setData([]);
-            setActiveTab(null);
-            setMovieShowtimes(null);
-            return;
-          }
-
-          setData(res.showtimes);
-          setActiveTab(res.showtimes[0]?.date || null);
-
-          const findShowtime = res.showtimes.find(
-            (item) => item.date === res.showtimes[0]?.date
-          );
-          setMovieShowtimes(findShowtime || null);
-        } catch (error) {
-          console.error("Lỗi khi fetch dữ liệu:", error);
-        }
-      };
-
-      fetchData();
+      const findShowtime = res.showtimes.find(
+        (item) => item.date === res.showtimes[0]?.date
+      );
+      setMovieShowtimes(findShowtime || null);
     }
-  }, [cinema]);
+  }, [showtimes, cinema?.id]);
 
   return (
     <>
-      {data?.length > 0 ? (
-        <div className="container my-10 font-oswald">
-          <ul className="grid grid-cols-3 sm:grid-cols-7 border-b">
-            {data.map((item) => (
-              <li
-                key={item.date}
-                className={`text-center px-2 lg:px-6 py-2 sm:text-sm lg:text-base xl:text-xl font-extrabold transition-colors cursor-pointer ${
-                  activeTab === item.date
-                    ? "text-accent border-b-2 border-accent"
-                    : "text-secondary border-b-2 border-transparent"
-                }`}
-                onClick={() => handleTabClick(item.date)}
-              >
-                {item.day_label}
-              </li>
-            ))}
-          </ul>
+      {isLoading ? (
+        <div className="container my-40">
+          <Loading />
         </div>
       ) : (
-        <div className="container my-40">
-          <h3 className="text-center text-secondary text-xl font-semibold">
-            Không có xuất chiếu nào ở rạp{" "}
-            <strong className="text-accent">{`Beecinema ${cinema?.name}`}</strong>{" "}
-            chiếu
-          </h3>
-        </div>
+        <>
+          {data?.length === 0 && !isLoading ? (
+            <div className="container my-40">
+              <h3 className="text-center text-secondary text-xl font-semibold">
+                Không có xuất chiếu nào ở rạp{" "}
+                <strong className="text-accent">{`Beecinema ${cinema?.name}`}</strong>{" "}
+                chiếu
+              </h3>
+            </div>
+          ) : (
+            <div className="container my-10 font-oswald">
+              <ul className="grid grid-cols-3 sm:grid-cols-7 border-b">
+                {data.map((item) => (
+                  <li
+                    key={item.date}
+                    className={`text-center px-2 lg:px-6 py-2 sm:text-sm lg:text-base xl:text-xl font-extrabold transition-colors cursor-pointer ${
+                      activeTab === item.date
+                        ? "text-accent border-b-2 border-accent"
+                        : "text-secondary border-b-2 border-transparent"
+                    }`}
+                    onClick={() => handleTabClick(item.date)}
+                  >
+                    {item.day_label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {movieShowtimes?.movies?.map((item, index) => (
+            <MovieShowtimes
+              key={item.id}
+              movieShowtimes={item}
+              className={
+                index === movieShowtimes.movies.length - 1 ? "border-b-0" : ""
+              }
+            />
+          ))}
+        </>
       )}
-      {movieShowtimes?.movies?.map((item, index) => (
-        <MovieShowtimes
-          key={item.id}
-          movieShowtimes={item}
-          className={
-            index === movieShowtimes.movies.length - 1 ? "border-b-0" : ""
-          }
-        />
-      ))}
     </>
   );
 };

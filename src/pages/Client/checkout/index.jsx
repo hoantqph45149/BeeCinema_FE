@@ -1,16 +1,61 @@
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
+import { useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "./../../../utils/Currency";
 import Combo from "./Combo";
 import Discount from "./Discount";
 import InforMovie from "./InforMovie";
 import PaymentMethod from "./PaymentMethod";
-import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import TotalPriceSeat from "./TotalPriceSeat";
+
 const Checkout = () => {
+  const { slug } = useParams();
+  const { data } = useFetch(["checkout"], `/userHoldSeats/${slug}`);
   const { authUser } = useAuthContext();
+  const [showtime, setShowtime] = useState({});
+  const [selectVoucher, setSelectVoucher] = useState(null);
+  const [time, setTime] = useState(null);
+  const [point, setPoint] = useState(0);
+  const [priceDiscountVoucher, setPriceDiscountVoucher] = useState(0);
+  const [priceDiscountPoint, setPriceDiscountPoint] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [priceDiscount, setPriceDiscount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
+  const now = dayjs();
+  useEffect(() => {
+    if (data) {
+      setShowtime(data?.showtime);
+
+      const closestItem = data.holdSeats
+        .map((item) => ({
+          ...item,
+          original_hold_expires_at: item.hold_expires_at,
+          hold_expires_at: dayjs(item.hold_expires_at).diff(
+            now,
+            "milliseconds"
+          ),
+        }))
+        .filter((item) => item.hold_expires_at > 0)
+        .reduce(
+          (min, item) =>
+            item.hold_expires_at < min.hold_expires_at ? item : min,
+          {
+            hold_expires_at: Infinity,
+            original_hold_expires_at: null,
+          }
+        );
+      setTime(closestItem.original_hold_expires_at);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    const priceDis = priceDiscountVoucher + priceDiscountPoint;
+    setPriceDiscount(priceDis);
+    setTotalPayment(Math.max(totalAmount - priceDis, 0));
+  }, [priceDiscountVoucher, priceDiscountPoint]);
+
   const handleCalculateTotalPriceSeat = (data) => {
     const { seatRegular, seatVip, seatDouble } = data;
     const totalPrice =
@@ -19,23 +64,39 @@ const Checkout = () => {
     setTotalPayment(totalPrice);
   };
 
-  const handleCalculatePriceVoucher = (price, type) => {
-    let discount = 0;
+  const handleCalculatePoint = (point, isUsingPoint) => {
+    if (!point) return;
 
-    if (type === "voucher") {
-      discount = totalAmount * (price / 100);
-    } else if (type === "fixed") {
-      discount = price;
+    if (!isUsingPoint) {
+      // đổi điểm
+      setPoint(point);
+      setPriceDiscountPoint(point);
+    } else {
+      // hủy điểm
+      setPoint(0);
+      setPriceDiscountPoint(0);
     }
+  };
 
-    const newTotalPayment = Math.max(totalAmount - discount, 0);
+  const handleCalculatePriceVoucher = (price) => {
+    if (price === null) return;
 
-    setPriceDiscount(discount);
-    setTotalPayment(newTotalPayment);
+    setSelectVoucher(price);
+    let discount = 0;
+    if (price.id && price.id !== selectVoucher?.id) {
+      if (price.type === "percent") {
+        discount = totalAmount * (price.discount / 100);
+      } else if (price.type === "amount") {
+        discount = price.discount;
+      }
+      setPriceDiscountVoucher(discount);
+    } else {
+      setPriceDiscountVoucher(0);
+      setSelectVoucher(null);
+    }
   };
 
   const handleCalculatePriceCombo = (price, isAdding) => {
-    console.log(price, isAdding);
     const newTotalAmount = isAdding
       ? totalAmount + price
       : Math.max(totalAmount - price, 0);
@@ -44,11 +105,6 @@ const Checkout = () => {
     setTotalPayment(newTotalPayment);
   };
 
-  const handleCalculatePoint = (price) => {
-    const newTotalPayment = Math.max(totalAmount - price, 0);
-    setTotalPayment(newTotalPayment);
-    setPriceDiscount(price);
-  };
   return (
     <div className="container grid grid-cols-1 md:grid-cols-6 gap-8 my-10 text-secondary">
       <div className="col-span-6 lg:col-span-4 divide-y-2">
@@ -80,7 +136,10 @@ const Checkout = () => {
         </div>
 
         <div className="flex flex-col gap-2 py-4">
-          <TotalPriceSeat onSeatPrices={handleCalculateTotalPriceSeat} />
+          <TotalPriceSeat
+            holdSeats={data?.holdSeats}
+            onSeatPrices={handleCalculateTotalPriceSeat}
+          />
         </div>
 
         <div className="py-4">
@@ -88,7 +147,10 @@ const Checkout = () => {
         </div>
 
         <div className="py-4">
-          <Discount handleCalculatePoint={handleCalculatePoint} />
+          <Discount
+            handleCalculatePoint={handleCalculatePoint}
+            selectedVoucher={handleCalculatePriceVoucher}
+          />
         </div>
         <div className="py-4">
           <div className="flex flex-col items-end gap-4">
@@ -119,7 +181,12 @@ const Checkout = () => {
         </div>
       </div>
       <div className="col-span-6 lg:col-span-2">
-        <InforMovie />
+        <InforMovie
+          holdSeats={data?.holdSeats}
+          showtime={showtime}
+          time={time}
+          slug={slug}
+        />
       </div>
     </div>
   );

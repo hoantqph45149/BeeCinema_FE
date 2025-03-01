@@ -255,7 +255,7 @@ const clientRoutes = [
     component: <ProfileClient />,
   },
   {
-    path: "/checkout",
+    path: "/checkout/:slug",
     component: <Checkout />,
   },
 

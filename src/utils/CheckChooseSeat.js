@@ -42,7 +42,6 @@ export const checkTerminalSeat = (seatsByRow, user_id) => {
 // kiểm tra ghế so le nhau
 
 export const checkStaggeredChairs = (seatsByRow, user_id) => {
-  console.log(seatsByRow);
   let errorStaggeredChairs = false;
   let messageStaggeredChairs = "";
   seatsByRow.forEach((rowData) => {
@@ -54,10 +53,8 @@ export const checkStaggeredChairs = (seatsByRow, user_id) => {
           : null
       )
       .filter((index) => index !== null);
-    console.log(selectedIndexes);
     for (let i = 0; i < selectedIndexes.length - 1; i++) {
       const gap = selectedIndexes[i + 1] - selectedIndexes[i];
-      console.log(gap);
       if (gap === 2) {
         const emptySeatIndex = selectedIndexes[i] + 1;
         const emptySeat = seatsInRow[emptySeatIndex];

@@ -1,22 +1,19 @@
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
-import { FaCalendarAlt, FaRegClock } from "react-icons/fa";
-import { GiCarSeat } from "react-icons/gi";
-import { MdDiscount, MdOutlineMeetingRoom } from "react-icons/md";
-import { SiHomeassistantcommunitystore } from "react-icons/si";
-import { useNavigate, useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import SeatInfo from "./SeatInfo";
 import SeatLegend from "./SeatLegend";
 import SeatTable from "./SeatTable";
 
-import Button from "../../../Components/Common/Button";
 import { showAlert } from "../../../Components/Common/showAlert";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import echo from "../../../pusher/echo";
-import { replateName } from "../../../utils/ReplateName";
+
+import CountDown from "./CountDown";
 import { handleSeatSelection } from "./SeatSelectionLogic";
+import MovieInfo from "./MovieInfo";
 
 const ChooseSeat = () => {
   const nav = useNavigate();
@@ -27,13 +24,46 @@ const ChooseSeat = () => {
     `/choose-seat/${slug}`
   );
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
-  const countdownDuration = 10 * 60;
-  const [timeLeft, setTimeLeft] = useState(countdownDuration);
+  const location = useLocation();
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [movie, setMovie] = useState({});
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [matrixSeat, setMatrixSeat] = useState({});
+  const [holdExpiresAt, setHoldExpiresAt] = useState(null);
+  const now = dayjs();
+  const selectedSeatsRef = useRef(selectedSeats);
+  useEffect(() => {
+    selectedSeatsRef.current = selectedSeats;
+  }, [selectedSeats]);
+
+  useEffect(() => {
+    const handlePageLeave = () => {
+      if (selectedSeatsRef.current.length > 0) {
+        console.log("selectedSeatsRef.current", selectedSeatsRef.current);
+        selectedSeatsRef.current.forEach((seat) => {
+          chooseSeat.mutate({
+            url: "/update-seat",
+            data: {
+              seat_id: seat.id,
+              showtime_id: seat?.pivot?.showtime_id,
+              action: "release",
+            },
+            shouldShowLoadingAlert: false,
+            shouldShowAlert: false,
+          });
+        });
+      }
+    };
+
+    return () => {
+      const newPath = window.location.pathname;
+
+      if (newPath !== `/checkout/${slug}`) {
+        handlePageLeave();
+      }
+    };
+  }, [location.pathname]);
 
   useEffect(() => {
     if (showtimeData) {
@@ -49,6 +79,31 @@ const ChooseSeat = () => {
             seat.pivot?.status === "hold"
         );
 
+      const closestItem = filteredSeats
+        .map((item) => ({
+          ...item,
+          pivot: {
+            ...item.pivot,
+            original_hold_expires_at: item.pivot.hold_expires_at, // Lưu giá trị ban đầu
+            hold_expires_at: dayjs(item.pivot.hold_expires_at).diff(
+              now,
+              "milliseconds"
+            ),
+          },
+        }))
+        .filter((item) => item.pivot.hold_expires_at > 0) // Lọc ra các item chưa hết hạn
+        .reduce(
+          (min, item) =>
+            item.pivot.hold_expires_at < min.pivot.hold_expires_at ? item : min,
+          {
+            pivot: {
+              hold_expires_at: Infinity,
+              original_hold_expires_at: null, // Giữ chỗ để lưu giá trị ban đầu
+            },
+          }
+        );
+
+      setHoldExpiresAt(closestItem.pivot.original_hold_expires_at);
       setSelectedSeats(filteredSeats);
     }
   }, [showtimeData]);
@@ -87,66 +142,8 @@ const ChooseSeat = () => {
       return amount + Number(s.pivot.price);
     }, 0);
     setTotalAmount(totalAmount);
+    if (selectedSeats.length === 0) setHoldExpiresAt(null);
   }, [selectedSeats]);
-
-  useEffect(() => {
-    const storedData = localStorage.getItem("countdownData");
-    const now = Math.floor(Date.now() / 1000); // Thời gian hiện tại (giây)
-
-    if (storedData) {
-      const { slug: storedSlug, endTime } = JSON.parse(storedData);
-
-      if (storedSlug === slug) {
-        // Slug trùng khớp → tiếp tục đếm ngược
-        const remainingTime = endTime - now;
-        setTimeLeft(remainingTime > 0 ? remainingTime : 0);
-        return;
-      }
-    }
-
-    // Slug không khớp hoặc chưa có dữ liệu → tạo mới
-    const newEndTime = now + countdownDuration;
-    localStorage.setItem(
-      "countdownData",
-      JSON.stringify({ slug: slug, endTime: newEndTime })
-    );
-    setTimeLeft(countdownDuration);
-  }, [slug]);
-
-  useEffect(() => {
-    if (timeLeft <= 0) {
-      localStorage.removeItem("countdownData");
-      nav("/");
-      selectedSeats.forEach((seat) => {
-        chooseSeat.mutate({
-          url: "/update-seat",
-          data: {
-            seat_id: seat.id,
-            showtime_id: seat?.pivot?.showtime_id,
-            action: "release",
-          },
-          shouldShowLoadingAlert: false,
-          shouldShowAlert: false,
-        });
-      });
-      showAlert("", "Hết thời gian chọn ghế", "warning");
-    }
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(
-      2,
-      "0"
-    )}`;
-  };
 
   const toggleSeatSelection = (selectSeat) => {
     const currentSeatCount = selectedSeats.reduce((total, seat) => {
@@ -200,16 +197,25 @@ const ChooseSeat = () => {
       return updatedSeatsByRow;
     });
 
-    chooseSeat.mutate({
-      url: "/update-seat",
-      data: {
-        seat_id: selectSeat.id,
-        showtime_id: selectSeat?.pivot?.showtime_id,
-        action: selectSeat.pivot?.status === "available" ? "hold" : "release",
+    chooseSeat.mutate(
+      {
+        url: "/update-seat",
+        data: {
+          seat_id: selectSeat.id,
+          showtime_id: selectSeat?.pivot?.showtime_id,
+          action: selectSeat.pivot?.status === "available" ? "hold" : "release",
+        },
+        shouldShowLoadingAlert: false,
+        shouldShowAlert: false,
       },
-      shouldShowLoadingAlert: false,
-      shouldShowAlert: false,
-    });
+      {
+        onSuccess: (data) => {
+          if (holdExpiresAt === null) {
+            setHoldExpiresAt(data?.seat?.hold_expires_at);
+          }
+        },
+      }
+    );
   };
 
   const handleCheckOut = () => {
@@ -220,7 +226,7 @@ const ChooseSeat = () => {
     const isValid = handleSeatSelection(seatsByRow, authUser?.user.id);
 
     if (isValid) {
-      nav(`/checkout/${slug}`, { selectedSeats });
+      nav(`/checkout/${slug}`);
     }
   };
   return (
@@ -238,132 +244,18 @@ const ChooseSeat = () => {
           </div>
         </div>
         <div className="w-full md:w-[38%] lg:w-1/3 flex flex-col gap-5 ">
-          <div className="bg-primary rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-accent text-sm lg:text-base text-primary text-center py-2 font-semibold">
-              Thông tin phim
-            </div>
-            <div>
-              <div className="flex justify-between py-5 gap-2">
-                <img
-                  src={movie.img_thumbnail}
-                  alt={movie.name}
-                  className="w-36 mb-4"
-                />
-                <div className="flex-1 flex flex-col gap-3 font-lato">
-                  <h2 className="lg:text-lg font-semibold text-accent">
-                    {movie.name}
-                  </h2>
-                  <p className="text-secondary text-xs lg:text-sm font-semibold">
-                    {showtimeData?.showtime?.format}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 space-y-2 px-4 text-sm lg:text-base">
-                <div className="flex justify-between items-center ">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <MdDiscount />
-                    </span>
-                    <span className="text-secondary">Thể loại</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {movie.category}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center ">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <FaRegClock />
-                    </span>
-                    <span className="text-scondary">Thời lượng</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {movie.duration} phút
-                  </span>
-                </div>
-              </div>
-              <hr className="my-4 border-secondary border-dashed" />
-              <div className="space-y-2 px-4 text-sm lg:text-base">
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <SiHomeassistantcommunitystore />
-                    </span>
-                    <span className="text-secondary">Rạp chiếu</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {showtimeData?.showtime?.room?.cinema?.name}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <FaCalendarAlt />
-                    </span>
-                    <span className="text-secondary">Ngày chiếu</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {showtimeData?.showtime?.date}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <FaRegClock />
-                    </span>
-                    <span className="text-secondary">Giờ chiếu</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {dayjs(showtimeData?.showtime?.start_time).format("HH:mm")}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <MdOutlineMeetingRoom />
-                    </span>
-                    <span className="text-secondary">Phòng chiếu</span>
-                  </span>
-                  <span className="text-accent font-semibold">
-                    {showtimeData?.showtime?.room?.name}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center gap-10">
-                  <span className="flex items-center space-x-2">
-                    <span className="text-accent">
-                      <GiCarSeat />
-                    </span>
-                    <span className="text-secondary">Ghế</span>
-                  </span>
-                  <span className="text-accent font-semibold flex flex-wrap gap-2">
-                    {selectedSeats.map((seat) =>
-                      seat.type_seat_id === 3 ? (
-                        <span key={seat.id}>{replateName(seat.name)}</span>
-                      ) : (
-                        <span key={seat.id}>{seat.name}</span>
-                      )
-                    )}
-                  </span>
-                </div>
-              </div>
-              <div className="text-center py-5">
-                <Button onClick={handleCheckOut} className="w-[100px]">
-                  Tiếp Tục
-                </Button>
-              </div>
-            </div>
-          </div>
-          <div className="bg-primary rounded-lg w-full shadow-lg py-5">
-            <div className=" text-accent text-center py-5 font-semibold">
-              Thời gian còn lại
-            </div>
-            <div className="flex justify-center items-center">
-              <div className="text-3xl font-semibold text-accent">
-                {" "}
-                {formatTime(timeLeft)}{" "}
-              </div>
-            </div>
-          </div>
+          <MovieInfo
+            movie={movie}
+            showtimeData={showtimeData}
+            selectedSeats={selectedSeats}
+            handleCheckOut={handleCheckOut}
+          />
+          {holdExpiresAt !== null && selectedSeats.length > 0 && (
+            <CountDown
+              holdExpiresAt={holdExpiresAt}
+              selectedSeats={selectedSeats}
+            />
+          )}
         </div>
       </div>
     </div>

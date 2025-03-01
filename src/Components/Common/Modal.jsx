@@ -26,7 +26,7 @@ function Modal({
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       {/* Modal Container */}
       <div
-        className={`bg-white rounded-xl p-6 shadow-lg transform transition-all duration-300 max-h-screen overflow-y-auto max-w-[90%] xl:w-1/2${
+        className={`bg-white rounded-xl p-6 shadow-lg transform transition-all duration-300 max-h-screen overflow-y-auto max-w-[95%] xl:w-1/2${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0"
         }`}
       >

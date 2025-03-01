@@ -9,16 +9,16 @@ const Footer = () => {
           {/* Language Movies */}
           <div>
             <img
-              src="https://betacinemas.vn/Assets/Common/logo/logo.png"
+              src="/images/logo/beecinema.png"
               alt=""
               className="w-32 mb-4"
             />
             <ul className="space-y-2">
-              {["Chính sách", "Gía vé", "Tin tức", "Liên hệ"].map(
+              {["Chính sách", "Giá vé", "Tin tức", "Liên hệ"].map(
                 (movie, index) => (
                   <li key={index} className="flex items-center">
-                    <span className="text-blue-400 text-sm mr-2">●</span>
-                    <a href="#" className="hover:text-blue-400">
+                    <span className="text-accent text-sm mr-2">●</span>
+                    <a href="#" className="hover:text-accent">
                       {movie}
                     </a>
                   </li>
@@ -41,8 +41,8 @@ const Footer = () => {
                 "Vũng Tàu",
               ].map((movie, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="text-blue-400 text-sm mr-2">●</span>
-                  <a href="#" className="hover:text-blue-400">
+                  <span className="text-accent text-sm mr-2">●</span>
+                  <a href="#" className="hover:text-accent">
                     {movie}
                   </a>
                 </li>
@@ -75,10 +75,8 @@ const Footer = () => {
                 },
               ].map((item, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="text-blue-400 text-sm mr-2">
-                    {item.icon}
-                  </span>
-                  <a href="#" className="hover:text-blue-400">
+                  <span className="text-accent text-sm mr-2">{item.icon}</span>
+                  <a href="#" className="hover:text-accent">
                     {item.link}
                   </a>
                 </li>
@@ -112,7 +110,7 @@ const Footer = () => {
                 },
               ].map((item, index) => (
                 <li key={index} className="flex items-center">
-                  <span className="text-blue-400  mr-2">
+                  <span className="text-accent  mr-2">
                     {item.icon}:{" "}
                     <span className="text-secondary font-semibold">
                       {item.link}
@@ -128,11 +126,11 @@ const Footer = () => {
         <div className="mt-10 border-t border-gray-700 pt-6 flex flex-col md:flex-row items-center justify-between text-sm">
           <p>
             Bản Quyền{" "}
-            <a href="#" className="text-blue-400">
+            <a href="#" className="text-accent">
               Beecinema
             </a>
             .Cung cấp{" "}
-            <a href="#" className="text-blue-400">
+            <a href="#" className="text-accent">
               FPT Software
             </a>
           </p>

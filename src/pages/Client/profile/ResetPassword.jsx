@@ -61,7 +61,7 @@ const ResetPassword = ({ setModal }) => {
 
   return (
     <div className="w-full">
-      <form onSubmit={formik.handleSubmit} className="w-[600px]">
+      <form onSubmit={formik.handleSubmit} className="mx-auto w-[600px]">
         <div className="mb-3 flex flex-col gap-2 px-1">
           <label
             className="text-sm text-accent font-medium"
