@@ -32,7 +32,12 @@ const PriceManage = () => {
   // console.log("typeRoomsData", typeRoomsData);
 
   useEffect(() => {
-    if ((typeRoomsData, typeSeatsData, cinemasData, branchesData)) {
+    if (
+      typeRoomsData?.data &&
+      typeSeatsData?.data &&
+      cinemasData &&
+      branchesData?.data
+    ) {
       setCinemas(cinemasData);
       setTypeRooms(typeRoomsData.data);
       setTypeSeats(typeSeatsData.data);

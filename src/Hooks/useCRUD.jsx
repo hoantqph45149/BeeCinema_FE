@@ -3,10 +3,11 @@ import { apiService } from "../apis/axios";
 import { showAlert, showLoadingAlert } from "../Components/Common/showAlert";
 import Swal from "sweetalert2";
 
-export const useFetch = (key, url, params) => {
+export const useFetch = (key, url, options = {}, params) => {
   return useQuery({
     queryKey: key,
     queryFn: async () => await apiService.get(url, params),
+    ...options, // Gộp options tùy chỉnh
   });
 };
 

@@ -37,7 +37,7 @@ const Banner = () => {
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}
         >
-          {banners.map((banner, index) => (
+          {banners?.map((banner, index) => (
             <div key={index} className="min-w-full h-full">
               <img
                 src={banner}

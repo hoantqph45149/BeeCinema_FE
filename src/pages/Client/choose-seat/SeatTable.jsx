@@ -1,12 +1,9 @@
 import React from "react";
+import { useAuthContext } from "./../../../Contexts/auth/UseAuth";
+import { showAlert } from "../../../Components/Common/showAlert";
 
-const SeatTable = ({
-  seatsByRow,
-  selectedSeats,
-  toggleSeatSelection,
-  matrixSeat,
-}) => {
-  const matrix = matrixSeat[0];
+const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
+  const { authUser } = useAuthContext();
   return (
     <table
       border="1"
@@ -31,7 +28,6 @@ const SeatTable = ({
                   const seat = rowData.seats.find(
                     (seat) => seat.coordinates_x === x
                   );
-                  // console.log("seat ", seat);
 
                   if (hideNextSeat) {
                     hideNextSeat = false;
@@ -42,22 +38,53 @@ const SeatTable = ({
                     hideNextSeat = true;
                   }
 
-                  const isSelected = selectedSeats.includes(seat);
-
                   return (
                     <td
-                      onClick={() => toggleSeatSelection(seat)}
+                      onClick={() => {
+                        if (seat.pivot?.status === "booked") {
+                          return;
+                        } else if (
+                          seat.pivot?.status === "hold" &&
+                          seat.pivot?.user_id !== authUser.user.id
+                        ) {
+                          showAlert(
+                            "Vui lòng chọn ghế khác",
+                            "Ghế đã được giữ bởi người khác",
+                            "error"
+                          );
+                          return;
+                        } else if (!seat.is_active) {
+                          showAlert(
+                            "Vui lòng chọn ghế khác",
+                            "Ghế đã hỏng",
+                            "error"
+                          );
+                          return;
+                        }
+                        toggleSeatSelection(seat);
+                      }}
                       colSpan={seat?.type_seat_id === 3 ? 2 : 1}
                       key={x}
-                      className={`w-8 max-w-8 h-6 max-h-8 cursor-pointer text-center ${
+                      className={`w-8 h-8 sm:h-14 md:h-8 lg:w-12 lg:h-12 cursor-pointer text-center p-0 ${
                         seat?.type_seat_id === 3 && "px-[2px] sm:px-1"
                       }`}
                     >
                       {seat && seat?.type_seat_id === 3 ? (
                         <div
                           className={`${
-                            isSelected ? "bg-[#32a9ef]" : "bg-[#d1d1d1]"
-                          } relative inline-flex justify-center items-center w-full h-8 sm:h-14 text-center text-[20px]`}
+                            seat.pivot?.status == "hold" &&
+                            seat.pivot?.user_id == authUser.user.id
+                              ? "bg-accent"
+                              : seat.pivot?.status == "hold" &&
+                                seat.pivot?.user_id !== authUser.user.id
+                              ? "bg-[#082f49]"
+                              : seat.pivot?.status == "booked"
+                              ? "bg-[#ef4444]"
+                              : "bg-[#d1d1d1]"
+                          }
+                          } relative inline-flex justify-center items-center w-full h-full text-center text-[20px] ${
+                            !seat.is_active ? "seat-inactive" : ""
+                          }`}
                           style={{
                             maskImage: "url('/svg/seat-double.svg')",
                             maskRepeat: "no-repeat",
@@ -66,10 +93,18 @@ const SeatTable = ({
                         >
                           <span
                             style={{
-                              wordSpacing: "1.2em",
+                              wordSpacing: "clamp(0.2rem, 0.5rem, 0.1rem)",
                             }}
-                            className={`select-none absolute top-[45%] sm:top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] sm:text-[10px] font-bold ${
-                              isSelected ? "text-white" : "text-secondary"
+                            className={`w-auto select-none absolute top-[45%] sm:top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-bold ${
+                              seat.pivot?.status == "hold" &&
+                              seat.pivot?.user_id == authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "hold" &&
+                                  seat.pivot?.user_id !== authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "booked"
+                                ? "text-primary"
+                                : "text-secondary"
                             } w-[66px]`}
                           >
                             {seat.name}
@@ -78,8 +113,18 @@ const SeatTable = ({
                       ) : seat && seat?.type_seat_id === 2 ? (
                         <div
                           className={`${
-                            isSelected ? "bg-[#32a9ef]" : "bg-[#d1d1d1]"
-                          } relative inline-flex justify-center items-center w-full h-6 sm:h-12 text-center text-xl z-5`}
+                            seat.pivot?.status == "hold" &&
+                            seat.pivot?.user_id == authUser.user.id
+                              ? "bg-accent"
+                              : seat.pivot?.status == "hold" &&
+                                seat.pivot?.user_id !== authUser.user.id
+                              ? "bg-[#082f49]"
+                              : seat.pivot?.status == "booked"
+                              ? "bg-[#ef4444]"
+                              : "bg-[#d1d1d1]"
+                          } relative inline-flex justify-center items-center w-full h-full text-center text-xl z-5  ${
+                            !seat.is_active ? "seat-inactive" : ""
+                          }`}
                           style={{
                             maskImage: "url('/svg/seat-vip.svg')",
                             maskRepeat: "no-repeat",
@@ -87,11 +132,16 @@ const SeatTable = ({
                           }}
                         >
                           <span
-                            style={{
-                              wordSpacing: "1.2em",
-                            }}
-                            className={`select-none absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] sm:text-[10px] font-medium ${
-                              isSelected ? "text-white" : "text-secondary"
+                            className={`w-auto h-auto absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-medium  ${
+                              seat.pivot?.status == "hold" &&
+                              seat.pivot?.user_id == authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "hold" &&
+                                  seat.pivot?.user_id !== authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "booked"
+                                ? "text-primary"
+                                : "text-secondary"
                             } w-[66px]`}
                           >
                             {seat.name}
@@ -100,8 +150,19 @@ const SeatTable = ({
                       ) : seat && seat?.type_seat_id === 1 ? (
                         <div
                           className={`${
-                            isSelected ? "bg-[#32a9ef]" : "bg-[#d1d1d1]"
-                          } relative inline-flex justify-center items-center w-full h-6 sm:h-12 text-center text-xl z-5`}
+                            seat.pivot?.status == "hold" &&
+                            seat.pivot?.user_id == authUser.user.id
+                              ? "bg-accent"
+                              : seat.pivot?.status == "hold" &&
+                                seat.pivot?.user_id !== authUser.user.id
+                              ? "bg-[#082f49]"
+                              : seat.pivot?.status == "booked"
+                              ? "bg-[#ef4444]"
+                              : "bg-[#d1d1d1]"
+                          }
+                          } relative inline-flex justify-center items-center w-full h-full text-center text-xl z-5 ${
+                            !seat.is_active ? "seat-inactive" : ""
+                          }`}
                           style={{
                             maskImage: "url('/svg/seat-regular.svg')",
                             maskRepeat: "no-repeat",
@@ -109,11 +170,16 @@ const SeatTable = ({
                           }}
                         >
                           <span
-                            style={{
-                              wordSpacing: "1.2em",
-                            }}
-                            className={`select-none absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7px] sm:text-[10px] font-medium ${
-                              isSelected ? "text-white" : "text-secondary"
+                            className={`w-auto absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-medium  ${
+                              seat.pivot?.status == "hold" &&
+                              seat.pivot?.user_id == authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "hold" &&
+                                  seat.pivot?.user_id !== authUser.user.id
+                                ? "text-primary"
+                                : seat.pivot?.status == "booked"
+                                ? "text-primary"
+                                : "text-secondary"
                             } w-[66px]`}
                           >
                             {seat?.name}

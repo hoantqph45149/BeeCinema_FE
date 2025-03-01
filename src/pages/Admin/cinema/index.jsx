@@ -21,6 +21,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Cinema = () => {
   const { data } = useFetch(["cinemas"], "/cinemas");
+  console.log(data);
   const { delete: deleteCinema } = useCRUD(["cinemas"]);
   const { patch: patchCinema } = useCRUD();
   const nav = useNavigate();

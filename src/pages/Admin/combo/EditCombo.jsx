@@ -1,3 +1,4 @@
+import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -11,12 +12,10 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import { useFormik } from "formik";
 import * as Yup from "yup";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { showAlert } from "../../../Components/Common/showAlert";
 import useUploadImage from "../../../Hooks/useUploadImage";
 
 document.title = "";
@@ -157,31 +156,32 @@ const EditCombo = () => {
                             <Col sm={12}>
                               <div className="mb-3">
                                 <div>
-                                  <div className="input-step full-width">
-                                    <Button
+                                  <div className="input-step full-width d-flex gap-1">
+                                    <button
                                       disabled
                                       type="button"
-                                      className="minus material-shadow"
+                                      className="btn btn-primary minus material-shadow"
                                       onClick={() => countDown(index)}
                                     >
                                       –
-                                    </Button>
+                                    </button>
                                     <Input
+                                      disabled
                                       type="number"
-                                      className="product-quantity"
+                                      className="text-center product-quantity"
                                       value={food.quantity}
                                       min="0"
                                       max="100"
                                       readOnly
                                     />
-                                    <Button
+                                    <button
                                       disabled
                                       type="button"
-                                      className="plus material-shadow"
+                                      className="btn btn-primary minus "
                                       onClick={() => countUP(index)}
                                     >
                                       +
-                                    </Button>
+                                    </button>
                                   </div>
                                 </div>
                               </div>

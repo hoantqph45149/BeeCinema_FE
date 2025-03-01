@@ -25,23 +25,23 @@ const queryClient = new QueryClient({
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <Provider store={store}>
-      <AuthContextProvider>
-        <BranchesProvider>
-          <BrowserRouter
-            future={{
-              v7_fetcherPersist: true,
-              v7_normalizeFormMethod: true,
-              v7_partialHydration: true,
-              v7_relativeSplatPath: true,
-              v7_skipActionErrorRevalidation: true,
-              v7_startTransition: true,
-            }}
-          >
+    <BrowserRouter
+      future={{
+        v7_fetcherPersist: true,
+        v7_normalizeFormMethod: true,
+        v7_partialHydration: true,
+        v7_relativeSplatPath: true,
+        v7_skipActionErrorRevalidation: true,
+        v7_startTransition: true,
+      }}
+    >
+      <Provider store={store}>
+        <AuthContextProvider>
+          <BranchesProvider>
             <App />
-          </BrowserRouter>
-        </BranchesProvider>
-      </AuthContextProvider>
-    </Provider>
+          </BranchesProvider>
+        </AuthContextProvider>
+      </Provider>
+    </BrowserRouter>
   </QueryClientProvider>
 );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import dayjs from "dayjs";
 
 const data = [
   { id: 1, date: "2024-02-15", points: 500, type: "Nhận điểm" },
@@ -14,11 +15,11 @@ const data = [
 
 const ITEMS_PER_PAGE = 5;
 
-const PointHistory = () => {
+const PointHistory = ({ pointsHistory }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(pointsHistory?.length / ITEMS_PER_PAGE);
 
-  const paginatedData = data.slice(
+  const paginatedData = pointsHistory?.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -28,13 +29,15 @@ const PointHistory = () => {
       <h2 className="text-xl font-semibold mb-4">Lịch sử điểm</h2>
 
       <div className="space-y-4">
-        {paginatedData.map((item) => (
+        {paginatedData?.map((item) => (
           <div
             key={item.id}
             className="p-4 border rounded-lg shadow-md bg-white flex justify-between items-center"
           >
             <div>
-              <p className="text-gray-600">{item.date}</p>
+              <p className="text-gray-600">
+                {dayjs(item.created_at).format("DD-MM-YYYY")}
+              </p>
               <p className="font-medium">{item.type}</p>
             </div>
             <p
@@ -42,7 +45,7 @@ const PointHistory = () => {
                 item.points > 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              {item.points > 0 ? `+${item.points}` : item.points} điểm
+              {item.points > 0 ? `+${item.points}` : item.points} Điểm
             </p>
           </div>
         ))}

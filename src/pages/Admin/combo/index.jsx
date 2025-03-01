@@ -6,11 +6,9 @@ import {
   Col,
   Container,
   Input,
-  Modal,
   Row,
 } from "reactstrap";
-
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useFetch } from "../../../Hooks/useCRUD";
@@ -18,8 +16,8 @@ import { formatVND } from "./../../../utils/Currency";
 
 const Combo = () => {
   const { data } = useFetch(["combos"], "/combos");
-  const nav = useNavigate();
   const [combos, setCombos] = useState([]);
+  const nav = useNavigate();
 
   useEffect(() => {
     if (data) {
@@ -27,7 +25,6 @@ const Combo = () => {
     }
   }, [data]);
 
-  console.log(combos);
   // Customers Column
   const columns = useMemo(() => [
     {
@@ -46,7 +43,6 @@ const Combo = () => {
       accessorKey: "img_thumbnail",
       enableColumnFilter: false,
       cell: (cell) => {
-        // console.log(cell);
         return (
           <>
             <img
@@ -100,7 +96,7 @@ const Combo = () => {
       accessorKey: "discount_price",
       enableColumnFilter: false,
       cell: (cell) => {
-        const price = formatVND(Number(cell.row.discount_price));
+        const price = formatVND(Number(cell.row.original.discount_price));
         console.log(price);
         return price;
       },
@@ -110,7 +106,6 @@ const Combo = () => {
       accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
-        // console.log(cell);
         return (
           <>
             <div className="form-check form-switch form-check-right">

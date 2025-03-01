@@ -1,26 +1,55 @@
 import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
+import { useFetch } from "../../../Hooks/useCRUD";
+import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import api from "../../../apis/axios";
 
 const MoviesClient = () => {
+  const { cinema } = useBrancheContext();
   const [phimDangChieu, setPhimDangChieu] = useState([]);
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
+
   useEffect(() => {
-    Promise.all([
-      fetch("http://localhost:3000/moviesShowing").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesUpcoming").then((res) => res.json()),
-      fetch("http://localhost:3000/moviesSpecial").then((res) => res.json()),
-    ])
-      .then(([moviesShowing, moviesUpcoming, moviesSpecial]) => {
-        setPhimDangChieu(moviesShowing);
-        setPhimSapChieu(moviesUpcoming);
-        setXuatChieuDB(moviesSpecial);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi fetch dữ liệu:", error);
-      });
-  }, []);
+    if (cinema?.id) {
+      const fetchData = async () => {
+        try {
+          const { data } = await api.get(`/movies/tab?cinema_id=${cinema.id}`);
+
+          if (!data) {
+            return;
+          }
+
+          setPhimDangChieu(
+            data.moviesShowing
+              ? [...data.moviesShowing].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setPhimSapChieu(
+            data.moviesUpcoming
+              ? [...data.moviesUpcoming].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+          setXuatChieuDB(
+            data.moviesSpecial
+              ? [...data.moviesSpecial].sort(
+                  (a, b) => b.showtimes_count - a.showtimes_count
+                )
+              : []
+          );
+        } catch (error) {
+          console.error("Lỗi khi fetch dữ liệu:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [cinema]);
 
   const movieTabs = [
     {

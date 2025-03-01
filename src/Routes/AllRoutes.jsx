@@ -41,8 +41,9 @@ import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
 import Showtime from "../pages/Admin/showtime";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
+import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
 
 // ticket
 import Ticket from "../pages/Admin/ticket";
@@ -72,14 +73,15 @@ import Register from "../pages/Auth/register";
 import Home from "../pages/Client/Home";
 import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
-import ChooseSeat from "../pages/Client/choose-seat/ChooseSeat";
+import ChooseSeat from "../pages/Client/choose-seat";
 import Introduce from "../pages/Client/introduce";
 import Voucher from "../pages/Admin/voucher/Index";
 import News from "../pages/Client/News";
 import Contact from "../pages/Client/contact";
-// import TheaterInformation from "../pages/Client/theater-information/TheaterInformation";
 import ProfileClient from "../pages/Client/Profile";
 import TheaterInformation from "../pages/Client/theater-information";
+import MovieDetails from "../pages/Client/movie/MovieDetail";
+import Checkout from "../pages/Client/checkout";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -106,11 +108,37 @@ const publicRoutes = [
     path: "/showtime",
     component: <ShowtimeClient />,
   },
+  {
+    path: "/news",
+    component: <News />,
+  },
+  {
+    path: "/contact",
+    component: <Contact />,
+  },
+
+  {
+    path: "/theaterinformation",
+    component: <TheaterInformation />,
+  },
 
   {
     path: "/movies",
     component: <MoviesClient />,
   },
+
+  {
+    path: "/movies/:id/detail",
+    component: <MovieDetails />,
+  },
+
+  {
+    path: "/",
+    exact: true,
+    component: <Navigate to="/" />,
+  },
+
+  { path: "*", component: <Navigate to="/" /> },
 ];
 
 const authProtectedRoutes = [
@@ -155,8 +183,12 @@ const authProtectedRoutes = [
     component: <Addshowtime />,
   },
   {
-    path: "/admin/showtime/edit",
+    path: "/admin/showtime/:id/edit",
     component: <Updateshowtime />,
+  },
+  {
+    path: "/admin/showtime/:id/detail",
+    component: <ShowtimeDetail />,
   },
 
   // quản lý đồ ăn
@@ -175,19 +207,19 @@ const authProtectedRoutes = [
 
   { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
-  { path: "/admin/voucher/edit", component: <EditVoucher /> },
+  { path: "/admin/voucher/:id/edit", component: <EditVoucher /> },
 
   // quản lý bài viết
   { path: "/admin/post", component: <Post /> },
   { path: "/admin/post/add", component: <AddPost /> },
-  { path: "/admin/post/edit", component: <UpdatePost /> },
+  { path: "/admin/post/:id/edit", component: <UpdatePost /> },
   // quản lý giá vé
   { path: "/admin/price", component: <PriceManage /> },
   // quản lý banner
   { path: "/admin/slide-show", component: <SlideShow /> },
   { path: "/admin/slide-show/add", component: <AddSlideShow /> },
   // quản lý cấp bậc (rank)
-  {path: "/admin/rank", component: <Rank />},
+  { path: "/admin/rank", component: <Rank /> },
   // thống kê
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
@@ -207,48 +239,24 @@ const authProtectedRoutes = [
 
 const emailVerifiedRoutes = [
   {
-    path: "/choose-seat",
+    path: "/choose-seat/:slug",
     component: <ChooseSeat />,
   },
 ];
 
 const clientRoutes = [
   {
-    path: "/news",
-    component: <News />,
+    path: "/",
+    exact: true,
+    component: <Navigate to="/" />,
   },
-  {
-    path: "/contact",
-    component: <Contact />,
-  },
-  {
-    path: "/introduce",
-    component: <Introduce />,
-  },
-
-  {
-    path: "/showtime",
-    component: <ShowtimeClient />,
-  },
-  {
-    path: "/theaterinformation",
-    component: <TheaterInformation />,
-  },
-
-  {
-    path: "/movies",
-    component: <MoviesClient />,
-  },
-
   {
     path: "/profile",
     component: <ProfileClient />,
   },
-
   {
-    path: "/",
-    exact: true,
-    component: <Navigate to="/" />,
+    path: "/checkout/:slug",
+    component: <Checkout />,
   },
 
   { path: "*", component: <Navigate to="/" /> },

@@ -1,12 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaRegClock } from "react-icons/fa";
 import { MdDiscount } from "react-icons/md";
+
 import MovieCard from "./MovieCard";
-import { Link } from "react-router-dom";
 
 const MovieShowtimes = ({ movieShowtimes, className = "" }) => {
   const { showtimes, ...movie } = movieShowtimes;
-
   return (
     <div className="container">
       <div
@@ -40,7 +40,9 @@ const MovieShowtimes = ({ movieShowtimes, className = "" }) => {
                     key={index}
                     className="p-2 bg-gray-200 rounded-sm text-center font-semibold transition-all hover:text-sky-500 duration-300 hover:bg-gray-300"
                   >
-                    <Link to={"/#"}>{item.start_time}</Link>
+                    <Link to={`/choose-seat/${item.slug}`}>
+                      {item.start_time}
+                    </Link>
                   </li>
                 ))}
               </ul>
