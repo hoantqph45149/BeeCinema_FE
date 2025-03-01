@@ -33,7 +33,10 @@ const EditMovie = () => {
     if (data) {
       setMovie(data.movie);
       setselectedMulti(
-        data.movie.movieVersions.map((item) => ({ value: item, label: item }))
+        data.movie.movie_versions.map((item) => ({
+          value: item.name,
+          label: item.name,
+        }))
       );
     }
   }, [data]);
