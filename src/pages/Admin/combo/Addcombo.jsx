@@ -107,7 +107,7 @@ const AddCombo = () => {
         {
           onSuccess: () => {
             formik.resetForm();
-            nav("/admin/combos");
+            nav("/admin/combo");
           },
         }
       );

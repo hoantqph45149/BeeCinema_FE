@@ -108,7 +108,7 @@ const EditMovie = () => {
       try {
         let image = movie.img_thumbnail;
         const movieVersion = selectedMulti.map((item) => item.value);
-        // Chờ upload xong và lấy URL ảnh
+
         if (movie.img_thumbnail !== values.img_thumbnail) {
           image = await uploadImage(values.img_thumbnail);
         }
@@ -120,7 +120,6 @@ const EditMovie = () => {
           versions: movieVersion,
           ...(action === "publish" && { action: "publish" }),
         };
-        console.log("movieData", movieData);
 
         patchMovie.mutate(
           { url: `/movies/${id}`, data: movieData },

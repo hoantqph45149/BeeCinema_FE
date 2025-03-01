@@ -10,107 +10,15 @@ import { showAlert } from "../../../Components/Common/showAlert";
 
 const Discount = ({ handleCalculatePoint, selectedVoucher }) => {
   const { authUser } = useAuthContext();
-  // const { data: vouchers } = useFetch(
-  //   ["voucherUser", authUser.user.id],
-  //   "/user/vouchers"
-  // );
+  const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
+  const { data: membership } = useFetch(["membership"], "/user/membership");
 
-  const vouchers = [
-    {
-      id: 11,
-      code: "SPRING30",
-      title: "Giảm giá mùa xuân",
-      discount: 30000,
-      type: "amount",
-      start_date_time: "2025-02-20 08:00:00",
-      end_date_time: "2025-03-15 23:59:59",
-      limit: 2,
-      remaining_usage: "350",
-      total_usage: "10",
-      usage_count: 0,
-      user_id: 20,
-      voucher_id: 7,
-      created_at: null,
-      updated_at: null,
-      description: "Giảm ngay 30K cho đơn hàng từ 300K",
-    },
-    {
-      id: 12,
-      code: "SUMMER15",
-      title: "Ưu đãi hè nóng bỏng",
-      discount: 15,
-      type: "percent",
-      start_date_time: "2025-01-01 00:00:00",
-      end_date_time: "2025-06-30 23:59:59",
-      limit: 1,
-      remaining_usage: "500",
-      total_usage: "20",
-      usage_count: 0,
-      user_id: 25,
-      voucher_id: 8,
-      created_at: null,
-      updated_at: null,
-      description: "Giảm 15% cho đơn từ 500K",
-    },
-    {
-      id: 13,
-      code: "AUTUMN50",
-      title: "Sale lớn mùa thu",
-      discount: 50000,
-      type: "amount",
-      start_date_time: "2025-09-01 10:00:00",
-      end_date_time: "2025-09-15 23:59:59",
-      limit: 1,
-      remaining_usage: "200",
-      total_usage: "5",
-      usage_count: 0,
-      user_id: 30,
-      voucher_id: 9,
-      created_at: null,
-      updated_at: null,
-      description: "Giảm 50K cho đơn từ 800K",
-    },
-    {
-      id: 14,
-      code: "WINTER25",
-      title: "Khuyến mãi mùa đông",
-      discount: 25,
-      type: "percent",
-      start_date_time: "2025-12-01 00:00:00",
-      end_date_time: "2025-12-31 23:59:59",
-      limit: 3,
-      remaining_usage: "100",
-      total_usage: "2",
-      usage_count: 0,
-      user_id: 35,
-      voucher_id: 10,
-      created_at: null,
-      updated_at: null,
-      description: "Giảm 25% cho đơn từ 1 triệu",
-    },
-    {
-      id: 15,
-      code: "VIP100",
-      title: "Ưu đãi dành riêng cho VIP",
-      discount: 100000,
-      type: "amount",
-      start_date_time: "2025-01-01 00:00:00",
-      end_date_time: "2025-12-31 23:59:59",
-      limit: 1,
-      remaining_usage: "50",
-      total_usage: "0",
-      usage_count: 0,
-      user_id: 40,
-      voucher_id: 11,
-      created_at: null,
-      updated_at: null,
-      description: "Giảm 100K cho thành viên VIP",
-    },
-  ];
+  console.log("vouchers", vouchers);
+  console.log("membership", membership);
 
   const [selectVoucher, setSelectVoucher] = useState(null);
   const [points, setPoints] = useState("");
-  const currentPoints = 5000;
+  const currentPoints = membership?.points ?? 0;
   const conversionRate = 1 / 2;
   const [isPointConverted, setIsPointConverted] = useState(false);
 

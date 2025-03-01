@@ -70,6 +70,7 @@ const AddVoucher = () => {
       .integer("Giới hạn sử dụng phải là số nguyên")
       .required("Giới hạn sử dụng không được để trống"),
     title: Yup.string().required("Tiêu đề không được để trống"),
+    type: Yup.string().required("Loại giảm giá không được để trống"),
     description: Yup.string().max(255, "Mô tả không được vượt quá 255 ký tự"),
   });
 
@@ -83,6 +84,7 @@ const AddVoucher = () => {
       end_date_time: null,
       limit: "",
       title: "",
+      type: "",
       description: "",
       is_active: false,
     },
@@ -183,7 +185,51 @@ const AddVoucher = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg={4} md={12}>
+                    <Col lg={6} md={12}>
+                      <div className="mb-3">
+                        <Label htmlFor="type" className="form-label">
+                          Kiểu voucher
+                        </Label>
+                        <select
+                          id="type"
+                          className="form-select mb-3"
+                          {...formik.getFieldProps("type")}
+                        >
+                          <option value="">--- Chọn kiểu voucher ---</option>
+                          <option value="amount">Giá tiền</option>
+                          <option value="percent">Phần trăm</option>
+                        </select>
+                        {formik.touched.type && formik.errors.type && (
+                          <div className="text-danger">
+                            {formik.errors.type}
+                          </div>
+                        )}
+                      </div>
+                    </Col>
+                    <Col lg={6} md={12}>
+                      <div className="mb-3">
+                        <Label className="form-label" htmlFor="limit">
+                          Giới hạn sử dụng:
+                        </Label>
+                        <Input
+                          type="number"
+                          className="form-control"
+                          id="limit"
+                          name="limit"
+                          placeholder="Nhập số lượng..."
+                          {...formik.getFieldProps("limit")}
+                        />
+                        {formik.touched.limit && formik.errors.limit ? (
+                          <div className="text-danger">
+                            {formik.errors.limit}
+                          </div>
+                        ) : null}
+                      </div>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col lg={6} md={12}>
                       <div className="mb-3">
                         <Label htmlFor="start_date_time" className="form-label">
                           Thời gian bắt đầu:
@@ -215,8 +261,7 @@ const AddVoucher = () => {
                           )}
                       </div>
                     </Col>
-
-                    <Col lg={4} md={12}>
+                    <Col lg={6} md={12}>
                       <div className="mb-3">
                         <Label htmlFor="end_date_time" className="form-label">
                           Thời gian kết thúc:
@@ -246,26 +291,6 @@ const AddVoucher = () => {
                               {formik.errors.end_date_time}
                             </div>
                           )}
-                      </div>
-                    </Col>
-                    <Col lg={4} md={12}>
-                      <div className="mb-3">
-                        <Label className="form-label" htmlFor="limit">
-                          Giới hạn sử dụng:
-                        </Label>
-                        <Input
-                          type="number"
-                          className="form-control"
-                          id="limit"
-                          name="limit"
-                          placeholder="Nhập số lượng..."
-                          {...formik.getFieldProps("limit")}
-                        />
-                        {formik.touched.limit && formik.errors.limit ? (
-                          <div className="text-danger">
-                            {formik.errors.limit}
-                          </div>
-                        ) : null}
                       </div>
                     </Col>
                   </Row>

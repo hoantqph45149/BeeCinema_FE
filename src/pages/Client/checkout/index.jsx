@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
-import { useFetch } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "./../../../utils/Currency";
 import Combo from "./Combo";
 import Discount from "./Discount";
@@ -11,9 +11,11 @@ import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
 
 const Checkout = () => {
+  const { authUser } = useAuthContext();
   const { slug } = useParams();
   const { data } = useFetch(["checkout"], `/userHoldSeats/${slug}`);
-  const { authUser } = useAuthContext();
+  const { create: chooseSeat } = useCRUD(["chooseSeats"]);
+  const location = useLocation();
   const [showtime, setShowtime] = useState({});
   const [selectVoucher, setSelectVoucher] = useState(null);
   const [time, setTime] = useState(null);
@@ -24,10 +26,40 @@ const Checkout = () => {
   const [priceDiscount, setPriceDiscount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
   const now = dayjs();
+  const selectedSeatsRef = useRef(data?.holdSeats);
+
+  useEffect(() => {
+    const handlePageLeave = () => {
+      if (selectedSeatsRef.current.length > 0) {
+        console.log("selectedSeatsRef.current", selectedSeatsRef.current);
+        selectedSeatsRef.current.forEach((seat) => {
+          chooseSeat.mutate({
+            url: "/update-seat",
+            data: {
+              seat_id: seat.seat_id,
+              showtime_id: seat?.showtime_id,
+              action: "release",
+            },
+            shouldShowLoadingAlert: false,
+            shouldShowAlert: false,
+          });
+        });
+      }
+    };
+
+    return () => {
+      const newPath = window.location.pathname;
+
+      if (newPath !== `/choose-seat/${slug}`) {
+        handlePageLeave();
+      }
+    };
+  }, [location.pathname]);
+
   useEffect(() => {
     if (data) {
       setShowtime(data?.showtime);
-
+      selectedSeatsRef.current = data?.holdSeats;
       const closestItem = data.holdSeats
         .map((item) => ({
           ...item,

@@ -1,24 +1,19 @@
-import { useState } from "react";
 import {
-  Clipboard,
   Check,
   ChevronLeft,
   ChevronRight,
+  Clipboard,
   Tags,
 } from "lucide-react";
-import { useFetch } from "../../../Hooks/useCRUD";
-import { useAuthContext } from "../../../Contexts/auth/UseAuth";
-import { formatVND } from "../../../utils/Currency";
+import { useState } from "react";
 import Loading from "../../../Components/Common/Loading";
+import { useFetch } from "../../../Hooks/useCRUD";
+import { formatVND } from "../../../utils/Currency";
 
 const itemsPerPage = 6;
 
 const MyVoucher = () => {
-  const { authUser } = useAuthContext();
-  const { data: vouchers } = useFetch(
-    ["voucherUser", authUser.user.id],
-    "/user/vouchers"
-  );
+  const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
   const [currentPage, setCurrentPage] = useState(1);
   const [copied, setCopied] = useState(null);
 
