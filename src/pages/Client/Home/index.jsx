@@ -3,11 +3,12 @@ import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
 import Banner from "./Banner";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
-import Modal from "../../../Components/Common/Modal";
+
 import VerifiedEmail from "../../Auth/verified-email";
 import { useFetch } from "../../../Hooks/useCRUD";
 import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
 import api from "../../../apis/axios";
+import { Modal } from "reactstrap";
 
 const Home = () => {
   const { cinema } = useBrancheContext();

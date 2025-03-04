@@ -1,33 +1,45 @@
-import React from "react";
-import NewsCard from "../../../Components/Common/NewCard";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+import api from "../../../apis/axios";
+import NewsCard from "./../../../Components/Common/NewCard";
 
 const News = () => {
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await api.get(`/posts`);
+        setNews(data);
+      } catch (error) {
+        console.error("Lỗi khi fetch dữ liệu:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="container grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-20 my-14 lg:my-24 ">
-      <NewsCard
-        image="https://atgt.bacgiang.gov.vn/documents/20181/15135109/1665885626871_final_logo+beta.jpg"
-        title="ĐẶT VÉ BETA CINEMAS, MOMO LIỀN..."
-        description="Đặt vé tại Beta Cinemas qua MoMo nhanh chóng, tiện lợi và nhận ngay ưu đãi hấp dẫn. Trải nghiệm phim..."
-        link="/chi-tiet-1"
-      />
-      <NewsCard
-        image="https://atgt.bacgiang.gov.vn/documents/20181/15135109/1665885626871_final_logo+beta.jpg"
-        title="ĐẶT VÉ BETA CINEMAS, MOMO LIỀN..."
-        description="Đặt vé tại Beta Cinemas qua MoMo nhanh chóng, tiện lợi và nhận ngay ưu đãi hấp dẫn. Trải nghiệm phim..."
-        link="/chi-tiet-1"
-      />
-      <NewsCard
-        image="https://atgt.bacgiang.gov.vn/documents/20181/15135109/1665885626871_final_logo+beta.jpg"
-        title="ĐẶT VÉ BETA CINEMAS, MOMO LIỀN..."
-        description="Đặt vé tại Beta Cinemas qua MoMo nhanh chóng, tiện lợi và nhận ngay ưu đãi hấp dẫn. Trải nghiệm phim..."
-        link="/chi-tiet-1"
-      />
-      <NewsCard
-        image="https://atgt.bacgiang.gov.vn/documents/20181/15135109/1665885626871_final_logo+beta.jpg"
-        title="ĐẶT VÉ BETA CINEMAS, MOMO LIỀN..."
-        description="Đặt vé tại Beta Cinemas qua MoMo nhanh chóng, tiện lợi và nhận ngay ưu đãi hấp dẫn. Trải nghiệm phim..."
-        link="/chi-tiet-1"
-      />
+    <div className="container grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-20 my-14 lg:my-24">
+      {loading ? (
+        <p>Đang tải dữ liệu...</p>
+      ) : news.length > 0 ? (
+        news.map((post) => (
+          <NewsCard
+            key={post.id}
+            image={post.img_post}
+            title={post.title}
+            description={post.description}
+            link={`/news/${post.id}`}
+          />
+        ))
+      ) : (
+        <p>Không có bài viết nào.</p>
+      )}
     </div>
   );
 };
