@@ -8,7 +8,7 @@ import Button from "../../../Components/Common/Button";
 import CountDown from "./CountDown";
 import dayjs from "dayjs";
 
-const InforMovie = ({ holdSeats, time, slug, showtime }) => {
+const InforMovie = ({ holdSeats, time, slug, showtime, onCheckout }) => {
   const nav = useNavigate();
 
   return (
@@ -127,7 +127,9 @@ const InforMovie = ({ holdSeats, time, slug, showtime }) => {
               >
                 Quay lại
               </Button>
-              <Button className="w-1/2">Tiếp Tục</Button>
+              <Button onClick={onCheckout} className="w-1/2">
+                Tiếp Tục
+              </Button>
             </div>
           </div>
         </div>

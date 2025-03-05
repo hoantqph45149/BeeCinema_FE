@@ -9,6 +9,7 @@ import Discount from "./Discount";
 import InforMovie from "./InforMovie";
 import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
+import api from "../../../apis/axios";
 
 const Checkout = () => {
   const { authUser } = useAuthContext();
@@ -17,9 +18,11 @@ const Checkout = () => {
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const location = useLocation();
   const [showtime, setShowtime] = useState({});
+  const [combos, setcombos] = useState([]);
   const [selectVoucher, setSelectVoucher] = useState(null);
   const [time, setTime] = useState(null);
   const [point, setPoint] = useState(0);
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const [priceDiscountVoucher, setPriceDiscountVoucher] = useState(0);
   const [priceDiscountPoint, setPriceDiscountPoint] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -27,7 +30,6 @@ const Checkout = () => {
   const [totalpayment, setTotalPayment] = useState(0);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
-  console.log(totalpayment);
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
@@ -83,9 +85,11 @@ const Checkout = () => {
   }, [data]);
 
   useEffect(() => {
-    const priceDis = priceDiscountVoucher + priceDiscountPoint;
-    setPriceDiscount(priceDis);
-    setTotalPayment(Math.max(totalAmount - priceDis, 0));
+    if (priceDiscountVoucher > 0 || priceDiscountPoint > 0) {
+      const priceDis = priceDiscountVoucher + priceDiscountPoint;
+      setPriceDiscount(priceDis);
+      setTotalPayment(Math.max(totalAmount - priceDis, 0));
+    }
   }, [priceDiscountVoucher, priceDiscountPoint]);
 
   const handleCalculateTotalPriceSeat = (data) => {
@@ -137,6 +141,28 @@ const Checkout = () => {
     setTotalPayment(newTotalPayment);
   };
 
+  const handleCheckout = async () => {
+    const combo = combos.reduce((acc, item) => {
+      acc[item.id] = item.quantity;
+      return acc;
+    }, {});
+    const dataPost = {
+      showtime_id: showtime.id,
+      seat_id: selectedSeatsRef.current.map((seat) => seat.seat_id),
+      combo,
+      voucher_code: selectVoucher?.code,
+      use_point: point,
+      payment_name: paymentMethod,
+      total_amount: totalAmount,
+      total_payment: totalpayment,
+    };
+    const { data } = await api.post("/payment", dataPost);
+
+    if (data?.payment_url) {
+      window.location.href = data?.payment_url;
+    }
+  };
+
   return (
     <div className="container grid grid-cols-1 md:grid-cols-6 gap-8 my-10 text-secondary">
       <div className="col-span-6 lg:col-span-4 divide-y-2">
@@ -175,7 +201,10 @@ const Checkout = () => {
         </div>
 
         <div className="py-4">
-          <Combo handleCalculatePriceCombo={handleCalculatePriceCombo} />
+          <Combo
+            handleCalculatePriceCombo={handleCalculatePriceCombo}
+            chooseCombos={setcombos}
+          />
         </div>
 
         <div className="py-4">
@@ -209,7 +238,7 @@ const Checkout = () => {
           </div>
         </div>
         <div className="py-4 flex flex-col gap-4">
-          <PaymentMethod />
+          <PaymentMethod paymentMethod={setPaymentMethod} />
         </div>
       </div>
       <div className="col-span-6 lg:col-span-2">
@@ -218,6 +247,7 @@ const Checkout = () => {
           showtime={showtime}
           time={time}
           slug={slug}
+          onCheckout={handleCheckout}
         />
       </div>
     </div>

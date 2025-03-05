@@ -1,37 +1,32 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Disclosure from "../../../Components/Common/Disclosure";
 import { ArrowBigRight } from "lucide-react";
 
-const PaymentMethod = () => {
+const PaymentMethod = ({ paymentMethod }) => {
   const paymentMethods = [
     {
-      id: "domestic",
-      label: "Thẻ nội địa",
-      img: "https://betacinemas.vn/Assets/global/img/booking/ic-card-vn.png",
-    },
-    {
-      id: "international",
-      label: "Thẻ quốc tế",
-      img: "https://betacinemas.vn/Assets/global/img/booking/ic-card-gb.png",
-    },
-    {
-      id: "shopeepay",
-      label: "Ví ShopeePay",
-      img: "https://betacinemas.vn/Assets/global/img/booking/shopeepay.png",
+      id: "VNPAY",
+      label: "Ví VNPay",
+      img: "/images/payment/vnpay.png",
     },
     {
       id: "momo",
       label: "Ví MoMo",
-      img: "https://betacinemas.vn/Assets/global/img/booking/momo.ico",
+      img: "/images/payment/momo.png",
     },
     {
-      id: "zalopay",
+      id: "ZALOPAY",
       label: "Ví ZaloPay",
-      img: "https://betacinemas.vn/Assets/global/img/booking/zalopay.png",
+      img: "/images/payment/zalopay.png",
     },
   ];
 
-  const [selected, setSelected] = useState("domestic");
+  const [selectedPayment, setSelectedPayment] = useState("VNPAY");
+
+  useEffect(() => {
+    paymentMethod(selectedPayment);
+  }, [selectedPayment]);
+
   return (
     <>
       {" "}
@@ -66,17 +61,17 @@ const PaymentMethod = () => {
                 type="radio"
                 name="payment"
                 value={method.id}
-                checked={selected === method.id}
-                onChange={() => setSelected(method.id)}
+                checked={selectedPayment === method.id}
+                onChange={() => setSelectedPayment(method.id)}
                 className="hidden"
               />
               <div
                 className={`w-4 h-4 lg:w-5 lg:h-5 border-2 border-gray-600 rounded-full flex items-center justify-center`}
               >
-                {selected === method.id && (
+                {selectedPayment === method.id && (
                   <div
                     className={`w-2.5 h-2.5 rounded-full  ${
-                      selected === method.id
+                      selectedPayment === method.id
                         ? "bg-blue-600 border-blue-600"
                         : "bg-white"
                     }`}

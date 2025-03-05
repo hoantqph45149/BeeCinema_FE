@@ -20,7 +20,7 @@ const AuthSlideshow = () => {
   }, []);
 
   return (
-    <div className=" min-w-full h-full relative">
+    <div className="min-w-full h-full relative">
       {images.map((image, index) => (
         <img
           key={index}

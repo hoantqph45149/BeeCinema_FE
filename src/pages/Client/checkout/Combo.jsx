@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFetch } from "../../../Hooks/useCRUD";
 
-const Combo = ({ handleCalculatePriceCombo }) => {
+const Combo = ({ handleCalculatePriceCombo, chooseCombos }) => {
   const { data: combos } = useFetch(["combosActive"], "/combosActive");
   const [selectedCombos, setSelectedCombos] = useState([]);
+
+  useEffect(() => {
+    chooseCombos(selectedCombos);
+  }, [selectedCombos]);
 
   const handleIncrease = (id, price) => {
     setSelectedCombos((prev) => {
@@ -77,7 +81,7 @@ const Combo = ({ handleCalculatePriceCombo }) => {
                 <p className="font-semibold">{combo.name}</p>
                 <p className="text-xs text-gray-600">{combo.description}</p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="w-18 flex items-center gap-2">
                 <button
                   onClick={() => handleDecrease(combo.id, combo.discount_price)}
                   className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50"
@@ -85,7 +89,7 @@ const Combo = ({ handleCalculatePriceCombo }) => {
                 >
                   -
                 </button>
-                <span>{selectedItem?.quantity || 0}</span>
+                <span className="px-1">{selectedItem?.quantity || 0}</span>
                 <button
                   onClick={() => handleIncrease(combo.id, combo.discount_price)}
                   className="px-2 py-1 bg-gray-200 rounded"

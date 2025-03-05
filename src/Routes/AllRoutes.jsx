@@ -84,6 +84,7 @@ import TheaterInformation from "../pages/Client/theater-information";
 import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
 import NewsDetail from "../pages/Client/News/NewDetail";
+import Thanks from "../pages/Client/Thanks";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -267,6 +268,10 @@ const clientRoutes = [
   {
     path: "/checkout/:slug",
     component: <Checkout />,
+  },
+  {
+    path: "/thanks/:code",
+    component: <Thanks />,
   },
 
   { path: "*", component: <Navigate to="/" /> },

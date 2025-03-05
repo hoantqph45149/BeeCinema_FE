@@ -34,7 +34,7 @@ const ChooseSeat = () => {
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [matrixSeat, setMatrixSeat] = useState({});
   const [holdExpiresAt, setHoldExpiresAt] = useState(null);
-  const now = dayjs();
+  console.log(showtimeData);
   const selectedSeatsRef = useRef(selectedSeats);
   useEffect(() => {
     selectedSeatsRef.current = selectedSeats;
