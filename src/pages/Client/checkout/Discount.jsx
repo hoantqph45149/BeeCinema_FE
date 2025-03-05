@@ -13,8 +13,8 @@ const Discount = ({ handleCalculatePoint, selectedVoucher }) => {
   const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
   const { data: membership } = useFetch(["membership"], "/user/membership");
 
-  console.log("vouchers", vouchers);
-  console.log("membership", membership);
+  // console.log("vouchers", vouchers);
+  // console.log("membership", membership);
 
   const [selectVoucher, setSelectVoucher] = useState(null);
   const [points, setPoints] = useState("");
@@ -132,7 +132,7 @@ const Discount = ({ handleCalculatePoint, selectedVoucher }) => {
             </div>
           }
         >
-          <div className="flex flex-col lg:flex-row ld:items-center gap-4 lg:gap-8 font-semibold">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 lg:gap-8 font-semibold">
             <div className="text-sm lg:text-base">
               <p>Điểm hiện có:</p>
               <p className="font-semibold">{currentPoints}</p>

@@ -6,6 +6,7 @@ import GenderCheckbox from "./GenderCheckbox";
 import { useCRUD } from "../../../Hooks/useCRUD";
 import AuthSlideshow from "../common/AuthSlideshow";
 import { showAlert } from "../../../Components/Common/showAlert";
+import api from "../../../apis/axios";
 
 export function Register() {
   const nav = useNavigate();
@@ -70,12 +71,22 @@ export function Register() {
     },
   });
 
+  const handleGoogleRegister = async () => {
+    try {
+      const { data } = await api.get("/auth/google");
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <section className="mx-8 flex min-h-screen">
       <div className="w-2/5 max-h-screen hidden lg:block sticky top-2">
         <AuthSlideshow />
       </div>
-      <div className="w-full lg:w-3/5 flex flex-col items-center justify-center">
+      <div className="w-full lg:w-3/5 flex flex-col items-center justify-center py-10">
         <div className="text-center text-accent">
           <h2 className="font-bold pb-4 text-xl md:text-2xl">Đăng Ký</h2>
           <p className="text-sm md:text-lg font-normal">
@@ -164,15 +175,28 @@ export function Register() {
 
           <button
             type="submit"
-            className="w-full py-3 pt-6 bg-accent text-white rounded-lg"
+            className="w-full py-3 bg-accent text-white rounded-lg"
           >
             Đăng Ký
+          </button>
+
+          <button
+            onClick={handleGoogleRegister}
+            type="button"
+            className="flex w-full items-center justify-center gap-3.5 rounded-lg border hover:bg-secondary/5 p-3 mt-2"
+          >
+            <span>
+              <img src="/svg/google.svg" alt="" />
+            </span>
+            <span className="text-sm text-secondary font-medium">
+              Đăng ký với Google
+            </span>
           </button>
         </form>
 
         <p className="text-center text-gray-900 font-medium pt-4">
           Đã có tài khoản?
-          <Link to="/login" className="text-gray-900 ml-1">
+          <Link to="/login" className="text-accent ml-1">
             Đăng nhập
           </Link>
         </p>

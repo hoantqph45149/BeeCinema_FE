@@ -25,7 +25,7 @@ const AddVoucher = () => {
   const { create: createVoucher } = useCRUD(["vouchers"]);
   const [code, setCode] = useState("");
   const nav = useNavigate();
-
+  const [type, setType] = useState("");
   useEffect(() => {
     const text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let randomCode = "";
@@ -43,10 +43,17 @@ const AddVoucher = () => {
       .positive("Số lượng phải lớn hơn 0")
       .integer("Số lượng phải là số nguyên")
       .required("Số lượng không được để trống"),
-    discount: Yup.number()
-      .typeError("Giảm giá phải là số")
-      .min(1000, "Giảm giá tối thiểu là 1,000 VNĐ")
-      .required("Giảm giá không được để trống"),
+    discount:
+      type === "percent"
+        ? Yup.number()
+            .typeError("Giảm giá phải là số")
+            .min(1, "Giảm giá tối thiểu là 1%")
+            .max(100, "Giảm giá tối đa là 100%")
+            .required("Giảm giá không được sé trống")
+        : Yup.number()
+            .typeError("Giảm giá phải là số")
+            .min(1000, "Giảm giá tối thiểu là 1,000 VNĐ")
+            .required("Giảm giá không được để trống"),
     start_date_time: Yup.date()
       .required("Bắt buộc nhập")
       .test("is-future", "Thời gian bắt đầu phải ở tương lai", (value) => {
@@ -193,7 +200,11 @@ const AddVoucher = () => {
                         <select
                           id="type"
                           className="form-select mb-3"
-                          {...formik.getFieldProps("type")}
+                          name="type"
+                          onChange={(e) => {
+                            formik.setFieldValue("type", e.target.value);
+                            setType(e.target.value);
+                          }}
                         >
                           <option value="">--- Chọn kiểu voucher ---</option>
                           <option value="amount">Giá tiền</option>

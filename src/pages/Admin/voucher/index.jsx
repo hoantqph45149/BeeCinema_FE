@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Card,
@@ -6,19 +6,18 @@ import {
   Col,
   Container,
   Input,
-  Modal,
   Row,
 } from "reactstrap";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
+import dayjs from "dayjs";
+import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "../../../utils/Currency";
-import dayjs from "dayjs";
-import { showConfirm } from "../../../Components/Common/showAlert";
 
 const Voucher = () => {
   const { data } = useFetch(["vouchers"], "/vouchers");
@@ -84,7 +83,13 @@ const Voucher = () => {
       accessorKey: "discount",
       enableColumnFilter: false,
       cell: (cell) => {
-        return <span>{formatVND(cell.row.original.discount)}</span>;
+        return (
+          <span>
+            {cell.row.original.type === "percent"
+              ? `${cell.row.original.discount}%`
+              : formatVND(cell.row.original.discount)}
+          </span>
+        );
       },
     },
     {
