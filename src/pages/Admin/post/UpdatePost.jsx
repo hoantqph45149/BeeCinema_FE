@@ -78,6 +78,7 @@ const UpdatePost = () => {
           img_post: image,
         },
       });
+      nav("/admin/post");
     },
   });
 
@@ -179,8 +180,8 @@ const UpdatePost = () => {
               </Card>
 
               <div className="text-end mb-3">
-                <Button type="submit" className="btn btn-success w-sm">
-                  Cập nhật
+                <Button color="primary" type="submit" className="btn w-sm">
+                  Submit
                 </Button>
               </div>
             </Form>

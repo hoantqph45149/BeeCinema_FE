@@ -82,6 +82,7 @@ import ProfileClient from "../pages/Client/Profile";
 import TheaterInformation from "../pages/Client/theater-information";
 import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
+import NewsDetail from "../pages/Client/News/NewDetail";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -111,6 +112,10 @@ const publicRoutes = [
   {
     path: "/news",
     component: <News />,
+  },
+  {
+    path: "/news/:id",
+    component: <NewsDetail />,
   },
   {
     path: "/contact",
