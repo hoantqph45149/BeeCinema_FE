@@ -70,6 +70,7 @@ import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
+import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Home from "../pages/Client/Home";
 import ShowtimeClient from "../pages/Client/showtime";
 import MoviesClient from "../pages/Client/movie";
@@ -91,6 +92,10 @@ const publicRoutesNonAuthLayout = [
   {
     path: "/register",
     component: <Register />,
+  },
+  {
+    path: "/google/callback",
+    component: <GoogleCallback />,
   },
 ];
 

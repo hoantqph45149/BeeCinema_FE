@@ -20,8 +20,11 @@ const ChooseSeat = () => {
   const { slug } = useParams();
   const { authUser } = useAuthContext();
   const { data: showtimeData } = useFetch(
-    ["choose-seat", slug],
-    `/choose-seat/${slug}`
+    ["choose-seat"],
+    `/choose-seat/${slug}`,
+    {
+      refetchOnMount: true,
+    }
   );
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const location = useLocation();
@@ -36,7 +39,7 @@ const ChooseSeat = () => {
   useEffect(() => {
     selectedSeatsRef.current = selectedSeats;
   }, [selectedSeats]);
-
+  // console.log(holdExpiresAt);
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
@@ -79,35 +82,42 @@ const ChooseSeat = () => {
             seat.pivot?.status === "hold"
         );
 
-      const closestItem = filteredSeats
-        .map((item) => ({
-          ...item,
-          pivot: {
-            ...item.pivot,
-            original_hold_expires_at: item.pivot.hold_expires_at, // Lưu giá trị ban đầu
-            hold_expires_at: dayjs(item.pivot.hold_expires_at).diff(
-              now,
-              "milliseconds"
-            ),
-          },
-        }))
-        .filter((item) => item.pivot.hold_expires_at > 0) // Lọc ra các item chưa hết hạn
-        .reduce(
-          (min, item) =>
-            item.pivot.hold_expires_at < min.pivot.hold_expires_at ? item : min,
-          {
-            pivot: {
-              hold_expires_at: Infinity,
-              original_hold_expires_at: null, // Giữ chỗ để lưu giá trị ban đầu
-            },
-          }
-        );
-
-      setHoldExpiresAt(closestItem.pivot.original_hold_expires_at);
       setSelectedSeats(filteredSeats);
     }
   }, [showtimeData]);
 
+  useEffect(() => {
+    // Tính tổng tiền
+    const totalAmount = selectedSeats.reduce(
+      (amount, seat) => amount + Number(seat.pivot.price),
+      0
+    );
+    setTotalAmount(totalAmount);
+
+    // Nếu không có ghế nào được chọn, reset holdExpiresAt
+    if (selectedSeats.length === 0) {
+      setHoldExpiresAt(null);
+      return;
+    }
+
+    // Chỉ set nếu holdExpiresAt đang là null
+    if (holdExpiresAt === null) {
+      const closestSeat = selectedSeats.reduce((minSeat, seat) => {
+        return !minSeat ||
+          dayjs(seat.pivot.hold_expires_at).isBefore(
+            dayjs(minSeat.pivot.hold_expires_at)
+          )
+          ? seat
+          : minSeat;
+      }, null);
+
+      if (closestSeat) {
+        setHoldExpiresAt(closestSeat.pivot.hold_expires_at);
+      }
+    }
+  }, [selectedSeats]);
+
+  // Bắt sự kiện realtime
   useEffect(() => {
     const channel = echo.channel(`showtime.${showtimeData?.showtime?.id}`);
 
@@ -136,14 +146,6 @@ const ChooseSeat = () => {
       echo.leaveChannel(`showtime.${showtimeData?.showtime?.id}`);
     };
   }, [showtimeData?.showtime?.id]);
-
-  useEffect(() => {
-    const totalAmount = selectedSeats.reduce((amount, s) => {
-      return amount + Number(s.pivot.price);
-    }, 0);
-    setTotalAmount(totalAmount);
-    if (selectedSeats.length === 0) setHoldExpiresAt(null);
-  }, [selectedSeats]);
 
   const toggleSeatSelection = (selectSeat) => {
     const currentSeatCount = selectedSeats.reduce((total, seat) => {

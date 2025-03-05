@@ -8,6 +8,7 @@ import { showAlert } from "../../../Components/Common/showAlert";
 import Modal from "../../../Components/Common/Modal";
 import { useState } from "react";
 import ForgotPassword from "../forgot-password";
+import api from "../../../apis/axios";
 
 export function Login() {
   const { setAuthUser } = useAuthContext();
@@ -51,6 +52,17 @@ export function Login() {
       );
     },
   });
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { data } = await api.get("/auth/google");
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <section className="mx-8 py-1 flex min-h-screen">
@@ -118,9 +130,22 @@ export function Login() {
             Đăng nhập
           </button>
 
+          <button
+            onClick={handleGoogleLogin}
+            type="button"
+            className="flex w-full items-center justify-center gap-3.5 rounded-lg border hover:bg-secondary/5 p-4 mt-2"
+          >
+            <span>
+              <img src="/svg/google.svg" alt="" />
+            </span>
+            <span className="text-sm text-secondary font-medium">
+              Đăng nhập với Google
+            </span>
+          </button>
+
           <p className="text-center text-gray-900 font-medium mt-4">
             Chưa đăng ký?
-            <Link to="/register" className="text-gray-900 ml-1">
+            <Link to="/register" className="text-accent ml-1">
               Tạo tài khoản
             </Link>
           </p>

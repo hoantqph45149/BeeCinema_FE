@@ -45,19 +45,35 @@ const Sidebar = () => {
         <div className="navbar-brand-box">
           <Link to="/admin" className="logo logo-dark">
             <span className="logo-sm">
-              <img src={logoSm} alt="" height="22" />
+              <img
+                src="/images/logo/beecinemaadmin-sm.png"
+                alt="beecinemaadmin-sm"
+                height="22"
+              />
             </span>
             <span className="logo-lg">
-              <img src={logoDark} alt="" height="17" />
+              <img
+                src="/images/logo/beecinemaadmin.png"
+                alt="beecinemaadmin"
+                height="17"
+              />
             </span>
           </Link>
 
           <Link to="/" className="logo logo-light">
             <span className="logo-sm">
-              <img src={logoSm} alt="" height="22" />
+              <img
+                src="/images/logo/beecinemaadmin-sm.png"
+                alt="beecinemaadmin-sm"
+                height="22"
+              />
             </span>
             <span className="logo-lg">
-              <img src={logoLight} alt="" height="17" />
+              <img
+                src="/images/logo/beecinemaadmin.png"
+                alt="beecinemaadmin"
+                height="17"
+              />
             </span>
           </Link>
           <button

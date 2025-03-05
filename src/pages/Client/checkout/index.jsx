@@ -27,7 +27,7 @@ const Checkout = () => {
   const [totalpayment, setTotalPayment] = useState(0);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
-
+  console.log(totalpayment);
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
