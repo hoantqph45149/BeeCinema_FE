@@ -43,14 +43,16 @@ const CountDown = ({ time, seats }) => {
 
   return (
     <>
-      <div className="bg-primary rounded-lg w-full shadow-lg py-5">
-        <div className=" text-accent text-center py-5 font-semibold">
-          Thời gian còn lại
+      {timeLeft !== "" && (
+        <div className="bg-primary rounded-lg w-full shadow-lg py-5">
+          <div className=" text-accent text-center py-5 font-semibold">
+            Thời gian còn lại
+          </div>
+          <div className="flex justify-center items-center">
+            <div className="text-3xl font-semibold text-accent">{timeLeft}</div>
+          </div>
         </div>
-        <div className="flex justify-center items-center">
-          <div className="text-3xl font-semibold text-accent">{timeLeft}</div>
-        </div>
-      </div>
+      )}
     </>
   );
 };
