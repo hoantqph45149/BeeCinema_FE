@@ -85,6 +85,8 @@ import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
 import NewsDetail from "../pages/Client/News/NewDetail";
 import Thanks from "../pages/Client/Thanks";
+import thongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
+import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -235,6 +237,7 @@ const authProtectedRoutes = [
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
   { path: "/admin/thongkePhim", component: <ThongkePhim /> },
+  { path: "/admin/thongkehoadon", component: <ThongkeHoaDon /> },
   // trang chủ
   {
     path: "/admin/overview",
