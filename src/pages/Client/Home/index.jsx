@@ -124,7 +124,7 @@ const Home = () => {
           tabs={movieTabs}
           defaultTab="PHIM ĐANG CHIẾU"
           onTabChange={(tab) => {
-            console.log("Tab changed!", tab);
+            // console.log("Tab changed!", tab);
           }}
         />
       </div>

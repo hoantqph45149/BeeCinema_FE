@@ -8,18 +8,13 @@ import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import dayjs from "dayjs";
 import { showAlert } from "../../../Components/Common/showAlert";
 
-const Discount = ({ handleCalculatePoint, selectedVoucher }) => {
-  const { authUser } = useAuthContext();
+const Discount = ({ handleCalculatePoint, selectedVoucher, membership }) => {
   const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
-  const { data: membership } = useFetch(["membership"], "/user/membership");
-
-  // console.log("vouchers", vouchers);
-  // console.log("membership", membership);
 
   const [selectVoucher, setSelectVoucher] = useState(null);
   const [points, setPoints] = useState("");
   const currentPoints = membership?.points ?? 0;
-  const conversionRate = 1 / 2;
+  const conversionRate = 1;
   const [isPointConverted, setIsPointConverted] = useState(false);
 
   const handleExchangePoints = () => {
