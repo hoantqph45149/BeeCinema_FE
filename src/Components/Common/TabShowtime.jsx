@@ -97,7 +97,7 @@ const TabShowtime = ({ idMovie }) => {
           </div>
         </>
       ) : (
-        <div className="flex-1 flex justify-center">
+        <div className="container py-24">
           {" "}
           <Loading />
         </div>
