@@ -11,6 +11,7 @@ import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
 import api from "../../../apis/axios";
 import Loading from "./../../../Components/Common/Loading";
+import isDayOff from "../../../utils/CheckDay";
 
 const Checkout = () => {
   const { authUser } = useAuthContext();
@@ -43,7 +44,7 @@ const Checkout = () => {
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
-        console.log("selectedSeatsRef.current", selectedSeatsRef.current);
+        // console.log("selectedSeatsRef.current", selectedSeatsRef.current);
         selectedSeatsRef.current.forEach((seat) => {
           chooseSeat.mutate({
             url: "/update-seat",
@@ -99,7 +100,7 @@ const Checkout = () => {
     const totalPriceSeat =
       seatRegular.totalPrice + seatVip.totalPrice + seatDouble.totalPrice;
     const totalPrice =
-      membership?.rank?.ticket_percentage > 0
+      membership?.rank?.ticket_percentage > 0 && isDayOff()
         ? Math.max(
             totalPriceSeat -
               totalPriceSeat * (membership.rank.ticket_percentage / 100),
@@ -107,7 +108,7 @@ const Checkout = () => {
           )
         : totalPriceSeat;
     setPriceDiscount((prev) =>
-      membership?.rank?.ticket_percentage > 0
+      membership?.rank?.ticket_percentage > 0 && isDayOff()
         ? totalPriceSeat * (membership.rank.ticket_percentage / 100)
         : 0
     );
@@ -133,36 +134,19 @@ const Checkout = () => {
     }
   };
 
-  const handleCalculatePriceVoucher = (price) => {
-    if (price === null) return;
-
-    setSelectVoucher(price);
-    let discount = 0;
-    if (price.id && price.id !== selectVoucher?.id) {
-      if (price.type === "percent") {
-        discount = totalAmount * (price.discount / 100);
-      } else if (price.type === "amount") {
-        discount = price.discount;
-      }
-      setPriceDiscountVoucher(discount);
-    } else {
-      setPriceDiscountVoucher(0);
-      setSelectVoucher(null);
-    }
-  };
-
   const handleCalculatePriceCombo = (price, isAdding) => {
-    const discountAmount = membership?.rank?.combo_percentage
-      ? price * (membership.rank.combo_percentage / 100)
-      : 0;
+    const discountAmount =
+      membership?.rank?.combo_percentage && isDayOff()
+        ? price * (membership.rank.combo_percentage / 100)
+        : 0;
 
     const newPriceDiscount = isAdding
       ? priceDiscount + discountAmount
       : Math.max(priceDiscount - discountAmount, 0);
 
     const newTotalAmount = isAdding
-      ? totalAmount + (price - discountAmount)
-      : Math.max(totalAmount - (price - discountAmount), 0);
+      ? totalAmount + price
+      : Math.max(totalAmount - price, 0);
 
     const newTotalPayment = Math.max(newTotalAmount - newPriceDiscount, 0);
 
@@ -247,8 +231,13 @@ const Checkout = () => {
           <div className="py-4">
             <Discount
               handleCalculatePoint={handleCalculatePoint}
-              selectedVoucher={handleCalculatePriceVoucher}
+              setSelectVoucher={setSelectVoucher}
+              setPriceDiscountVoucher={setPriceDiscountVoucher}
               membership={membership}
+              totalAmount={totalpayment}
+              setPriceDiscount={setPriceDiscount}
+              setTotalPayment={setTotalPayment}
+              slug={slug}
             />
           </div>
           <div className="py-4">
