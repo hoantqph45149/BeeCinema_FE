@@ -22,6 +22,8 @@ import { formatVND } from "../../../utils/Currency";
 const Voucher = () => {
   const { data } = useFetch(["vouchers"], "/vouchers");
   const { patch: patchVoucher, delete: deleteVoucher } = useCRUD(["vouchers"]);
+
+  console.log("vouchers", data);
   const nav = useNavigate();
 
   const handleUpdateActive = (voucher) => {
@@ -57,9 +59,12 @@ const Voucher = () => {
       enableColumnFilter: false,
     },
     {
-      header: "Tiêu đề",
-      accessorKey: "title",
+      header: "Số tiền tối thiểu",
+      accessorKey: "min_order_amount",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return <span>{formatVND(cell.row.original.min_order_amount)}</span>;
+      },
     },
     {
       header: "Thời gian sử dụng",
@@ -69,10 +74,10 @@ const Voucher = () => {
         return (
           <div className="d-flex flex-column">
             <span>
-              <strong>Bắt đầu:</strong> {cell.row.original.start_date_time}
+              <strong>Bắt đầu:</strong> {cell.row.original.start_date}
             </span>
             <span>
-              <strong>Kết thúc:</strong> {cell.row.original.end_date_time}
+              <strong>Kết thúc:</strong> {cell.row.original.end_date}
             </span>
           </div>
         );
@@ -80,14 +85,14 @@ const Voucher = () => {
     },
     {
       header: "Giảm giá",
-      accessorKey: "discount",
+      accessorKey: "discount_value",
       enableColumnFilter: false,
       cell: (cell) => {
         return (
           <span>
-            {cell.row.original.type === "percent"
-              ? `${cell.row.original.discount}%`
-              : formatVND(cell.row.original.discount)}
+            {cell.row.original.discount_type === "percent"
+              ? `${cell.row.original.discount_value}%`
+              : formatVND(cell.row.original.discount_value)}
           </span>
         );
       },
@@ -99,17 +104,17 @@ const Voucher = () => {
     },
     {
       header: "Đã dùng",
-      accessorKey: "total_usage",
+      accessorKey: "used_count",
       enableColumnFilter: false,
     },
     {
-      header: "Giới hạn",
-      accessorKey: "limit",
+      header: "Giới hạn lượt sử dụng",
+      accessorKey: "per_user_limit",
       enableColumnFilter: false,
     },
     {
       header: "Hoạt động",
-      accessorKey: "online1",
+      accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
         // console.log(cell);
@@ -118,8 +123,8 @@ const Voucher = () => {
             <div className="form-check form-switch form-check-right">
               <Input
                 disabled={
-                  cell.row.original.total_usage > 0 ||
-                  dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                  cell.row.original.used_count > 0 ||
+                  dayjs(cell.row.original.end_date).isBefore(dayjs())
                 }
                 className="form-check-input"
                 type="checkbox"
@@ -141,10 +146,7 @@ const Voucher = () => {
             <ul className="list-inline hstack gap-2 mb-0">
               <li className="list-inline-item">
                 <Button
-                  disabled={
-                    cell.row.original.total_usage > 0 ||
-                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
-                  }
+                  disabled={dayjs(cell.row.original.end_date).isBefore(dayjs())}
                   color="primary"
                   className="btn-sm "
                   onClick={() => {
@@ -157,8 +159,8 @@ const Voucher = () => {
               <li className="list-inline-item">
                 <Button
                   disabled={
-                    cell.row.original.total_usage > 0 ||
-                    dayjs(cell.row.original.end_date_time).isBefore(dayjs())
+                    cell.row.original.used_count > 0 ||
+                    dayjs(cell.row.original.end_date).isBefore(dayjs())
                   }
                   color="primary"
                   className="btn-sm "
