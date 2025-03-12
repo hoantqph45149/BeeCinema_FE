@@ -13,7 +13,10 @@ import { formatVND } from "../../../utils/Currency";
 const itemsPerPage = 6;
 
 const MyVoucher = () => {
-  const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
+  const { data: vouchers, isLoading } = useFetch(
+    ["voucherUser"],
+    "/user/vouchers"
+  );
   const [currentPage, setCurrentPage] = useState(1);
   const [copied, setCopied] = useState(null);
 
@@ -35,7 +38,7 @@ const MyVoucher = () => {
       <h2 className="text-xl flex items-center justify-center gap-2 font-semibold mb-4 text-gray-800 text-center">
         <Tags size={30} /> Danh sách Voucher
       </h2>
-      {vouchers?.length > 0 ? (
+      {!isLoading ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {currentVouchers?.map((voucher) => (
@@ -45,9 +48,11 @@ const MyVoucher = () => {
               >
                 <div className="text-center md:text-left">
                   <p className="text-lg font-bold text-accent">
-                    {formatVND(voucher.discount)}
+                    {voucher.title}
                   </p>
-                  <p className="text-sm text-secondary">{voucher.title}</p>
+                  <p className="text-sm text-secondary">
+                    {voucher.description}
+                  </p>
                 </div>
                 <div className="flex items-center space-x-2 mt-2 md:mt-0">
                   <span className="bg-gray-200 px-3 py-1 text-sm font-medium rounded-md">

@@ -14,13 +14,14 @@ import echo from "../../../pusher/echo";
 import CountDown from "./CountDown";
 import { handleSeatSelection } from "./SeatSelectionLogic";
 import MovieInfo from "./MovieInfo";
+import Loading from "../../../Components/Common/Loading";
 
 const ChooseSeat = () => {
   const nav = useNavigate();
   const { slug } = useParams();
   const { authUser } = useAuthContext();
-  const { data: showtimeData } = useFetch(
-    ["choose-seat"],
+  const { data: showtimeData, isLoading } = useFetch(
+    ["choose-seat", slug],
     `/choose-seat/${slug}`,
     {
       refetchOnMount: true,
@@ -34,7 +35,7 @@ const ChooseSeat = () => {
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [matrixSeat, setMatrixSeat] = useState({});
   const [holdExpiresAt, setHoldExpiresAt] = useState(null);
-  console.log(showtimeData);
+  // console.log(showtimeData);
   const selectedSeatsRef = useRef(selectedSeats);
   useEffect(() => {
     selectedSeatsRef.current = selectedSeats;
@@ -233,33 +234,44 @@ const ChooseSeat = () => {
   };
   return (
     <div className="container my-10">
-      <div className="flex flex-col md:flex-row gap-8 lg:gap-16 xl:gap-20 min-h-10">
-        <div className="flex-1">
-          <div className="flex flex-col gap-5">
-            <SeatLegend />
-            <SeatTable
-              seatsByRow={seatsByRow}
-              toggleSeatSelection={toggleSeatSelection}
-              matrix={matrixSeat}
-            />
-            <SeatInfo totalAmount={totalAmount} />
+      {isLoading ? (
+        <>
+          {" "}
+          <div className="container py-80">
+            <Loading />
           </div>
-        </div>
-        <div className="w-full md:w-[38%] lg:w-1/3 flex flex-col gap-5 ">
-          <MovieInfo
-            movie={movie}
-            showtimeData={showtimeData}
-            selectedSeats={selectedSeats}
-            handleCheckOut={handleCheckOut}
-          />
-          {holdExpiresAt !== null && selectedSeats.length > 0 && (
-            <CountDown
-              holdExpiresAt={holdExpiresAt}
-              selectedSeats={selectedSeats}
-            />
-          )}
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col md:flex-row gap-8 lg:gap-16 xl:gap-20 min-h-10">
+            <div className="flex-1">
+              <div className="flex flex-col gap-5">
+                <SeatLegend />
+                <SeatTable
+                  seatsByRow={seatsByRow}
+                  toggleSeatSelection={toggleSeatSelection}
+                  matrix={matrixSeat}
+                />
+                <SeatInfo totalAmount={totalAmount} />
+              </div>
+            </div>
+            <div className="w-full md:w-[38%] lg:w-1/3 flex flex-col gap-5 ">
+              <MovieInfo
+                movie={movie}
+                showtimeData={showtimeData}
+                selectedSeats={selectedSeats}
+                handleCheckOut={handleCheckOut}
+              />
+              {holdExpiresAt !== null && selectedSeats.length > 0 && (
+                <CountDown
+                  holdExpiresAt={holdExpiresAt}
+                  selectedSeats={selectedSeats}
+                />
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

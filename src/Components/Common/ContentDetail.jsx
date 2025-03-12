@@ -13,10 +13,10 @@ const ContentDetail = ({ content }) => {
       )
       .slice(0, 4) || [];
   return (
-    <div className="container my-4 grid grid-cols-1 md:grid-cols-2 md:gap-10 xl:gap-16">
-      <div className="col-span-1">
+    <div className="container my-4 grid grid-cols-1 lg:grid-cols-2 md:gap-10 xl:gap-16">
+      <div className="col-span-1 space-y-10">
         <div className="w-full">
-          <h1 className="text-[24px] font-bold pb-4 text-[#1c2b33]">
+          <h1 className="text-[24px] font-bold text-[#1c2b33]">
             {content.name}
           </h1>
         </div>
@@ -37,22 +37,26 @@ const ContentDetail = ({ content }) => {
             className="text-secondary mb-4"
             dangerouslySetInnerHTML={{ __html: content.description }}
           />
-          <p className="text-secondary mb-5 font-bold">
-            Địa chỉ: {content.address}
-          </p>
-          <p className="font-bold mb-4">Hotline: {content.hotline}</p>
+          {content?.address && (
+            <p className="text-secondary mb-5 font-bold">
+              Địa chỉ: {content.address}
+            </p>
+          )}
+          {content?.phone && (
+            <p className="font-bold mb-4">Hotline: {content.hotline}</p>
+          )}
           <div
             className="text-secondary mb-4"
             dangerouslySetInnerHTML={{ __html: content.contactInfo }}
           />
         </div>
       </div>
-      <div className="col-span-1 text-center md:text-left">
-        <h1 className="text-[24px] text-center font-bold mb-2 text-secondary">
+      <div className="col-span-1 text-center md:text-left space-y-10">
+        <h1 className="text-[24px] text-center font-bold text-secondary">
           PHIM ĐANG HOT
         </h1>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 ">
           {hotMovies.map((movie) => (
             <MovieCard key={movie.id} movie={movie} showInfo={false} />
           ))}

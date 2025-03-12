@@ -10,7 +10,7 @@ const PaymentMethod = ({ paymentMethod }) => {
       img: "/images/payment/vnpay.png",
     },
     {
-      id: "momo",
+      id: "MOMO",
       label: "Ví MoMo",
       img: "/images/payment/momo.png",
     },

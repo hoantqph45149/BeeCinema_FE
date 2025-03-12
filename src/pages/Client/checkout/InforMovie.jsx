@@ -133,7 +133,7 @@ const InforMovie = ({ holdSeats, time, slug, showtime, onCheckout }) => {
             </div>
           </div>
         </div>
-        <CountDown seats={holdSeats} time={time} />
+        {time && <CountDown time={time} seats={holdSeats} />}
       </div>
     </>
   );

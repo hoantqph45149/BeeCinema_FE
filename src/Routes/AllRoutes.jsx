@@ -2,8 +2,12 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 /* Admin routes */
-import Overview from "../pages/Admin/overview/index";
+
+// account
 import Account from "../pages/Admin/account";
+import UpdateAccount from "../pages/Admin/account/UpdateAccount";
+
+import Overview from "../pages/Admin/overview/index";
 import Rank from "../pages/Admin/rank";
 // banner
 import SlideShow from "../pages/Admin/slide-show";
@@ -13,8 +17,8 @@ import AddSlideShow from "../pages/Admin/slide-show/AddSlideShow";
 import Branch from "../pages/Admin/branch/index";
 
 // cinema
-import Cinema from "../pages/Admin/cinema/index";
 import AddCinema from "../pages/Admin/cinema/AddCinema";
+import Cinema from "../pages/Admin/cinema/index";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
@@ -26,9 +30,9 @@ import EditCombo from "./../pages/Admin/combo/EditCombo";
 import Food from "../pages/Admin/food";
 
 // movie
-import Movie from "../pages/Admin/movie/index";
 import AddMovie from "../pages/Admin/movie/AddMovie";
 import EditMovie from "../pages/Admin/movie/EditMovie";
+import Movie from "../pages/Admin/movie/index";
 
 // post
 import Post from "../pages/Admin/post";
@@ -41,12 +45,13 @@ import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
 import Showtime from "../pages/Admin/showtime";
-import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
+import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
+import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 
 // ticket
 import Ticket from "../pages/Admin/ticket";
+import TicketDetail from "../pages/Admin/ticket/TicketDetail";
 
 // voucher
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
@@ -56,10 +61,12 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
+import thongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
+import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
 
 // quản lý giá
-import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 import AddAccount from "../pages/Admin/account/AddAccount";
+import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 
 // quản lý sơ đồ ghế
 import SeatTemplate from "../pages/Admin/seat-template";
@@ -67,26 +74,23 @@ import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
 // Đường dẫn dành cho phía client
-
+import Voucher from "../pages/Admin/voucher/Index";
+import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login";
 import Register from "../pages/Auth/register";
-import GoogleCallback from "../pages/Auth/google/GoogleCallback";
-import Home from "../pages/Client/Home";
-import ShowtimeClient from "../pages/Client/showtime";
-import MoviesClient from "../pages/Client/movie";
-import ChooseSeat from "../pages/Client/choose-seat";
-import Introduce from "../pages/Client/introduce";
-import Voucher from "../pages/Admin/voucher/Index";
-import News from "../pages/Client/News";
-import Contact from "../pages/Client/contact";
-import ProfileClient from "../pages/Client/Profile";
-import TheaterInformation from "../pages/Client/theater-information";
-import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
+import ChooseSeat from "../pages/Client/choose-seat";
+import Contact from "../pages/Client/contact";
+import Home from "../pages/Client/Home";
+import Introduce from "../pages/Client/introduce";
+import MoviesClient from "../pages/Client/movie";
+import MovieDetails from "../pages/Client/movie/MovieDetail";
+import News from "../pages/Client/News";
 import NewsDetail from "../pages/Client/News/NewDetail";
+import ProfileClient from "../pages/Client/Profile";
+import ShowtimeClient from "../pages/Client/showtime";
 import Thanks from "../pages/Client/Thanks";
-import thongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
-import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
+import TheaterInformation from "../pages/Client/theater-information";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -160,6 +164,10 @@ const authProtectedRoutes = [
     path: "/admin/ticket",
     component: <Ticket />,
   },
+  {
+    path: "/admin/ticket/detail/:code",
+    component: <TicketDetail />,
+  },
 
   // quản lý chi nhánh
   { path: "/admin/Branch", component: <Branch /> },
@@ -215,6 +223,7 @@ const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
   { path: "/admin/account/add", component: <AddAccount /> },
+  { path: "/admin/account/:id/edit", component: <UpdateAccount /> },
 
   // quản lý giảm giá
 
@@ -283,7 +292,7 @@ const clientRoutes = [
 export {
   authProtectedRoutes,
   clientRoutes,
+  emailVerifiedRoutes,
   publicRoutes,
   publicRoutesNonAuthLayout,
-  emailVerifiedRoutes,
 };

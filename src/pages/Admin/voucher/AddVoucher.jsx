@@ -43,41 +43,61 @@ const AddVoucher = () => {
       .positive("Số lượng phải lớn hơn 0")
       .integer("Số lượng phải là số nguyên")
       .required("Số lượng không được để trống"),
-    discount:
-      type === "percent"
-        ? Yup.number()
-            .typeError("Giảm giá phải là số")
+    discount_value: Yup.number()
+      .typeError("Giảm giá phải là số")
+      .when("discount_type", {
+        is: "percent",
+        then: (schema) =>
+          schema
             .min(1, "Giảm giá tối thiểu là 1%")
             .max(100, "Giảm giá tối đa là 100%")
-            .required("Giảm giá không được sé trống")
-        : Yup.number()
-            .typeError("Giảm giá phải là số")
+            .required("Giảm giá không được để trống"),
+        is: "fixed",
+        then: (schema) =>
+          schema
             .min(1000, "Giảm giá tối thiểu là 1,000 VNĐ")
             .required("Giảm giá không được để trống"),
-    start_date_time: Yup.date()
+      }),
+    start_date: Yup.date()
       .required("Bắt buộc nhập")
       .test("is-future", "Thời gian bắt đầu phải ở tương lai", (value) => {
         return dayjs(value).isAfter(dayjs(), "minute");
       }),
 
-    end_date_time: Yup.date()
+    end_date: Yup.date()
       .required("Bắt buộc nhập")
       .test(
         "is-after-start",
         "Thời gian kết thúc phải sau thời gian bắt đầu",
         function (value) {
-          const { start_date_time } = this.parent;
+          const { start_date } = this.parent;
 
-          return dayjs(value).isAfter(dayjs(start_date_time), "minute");
+          return dayjs(value).isAfter(dayjs(start_date), "minute");
         }
       ),
-    limit: Yup.number()
+    per_user_limit: Yup.number()
       .typeError("Giới hạn sử dụng phải là số")
       .positive("Giới hạn sử dụng phải lớn hơn 0")
       .integer("Giới hạn sử dụng phải là số nguyên")
       .required("Giới hạn sử dụng không được để trống"),
+    min_order_amount: Yup.number()
+      .typeError("Giá trị phải là số")
+      .min(1, "Giá trị tối thiểu phải lớn hơn 0")
+      .required("Vui lòng nhập số tiền tối thiểu"),
+
+    max_discount_amount: Yup.number()
+      .typeError("Giá trị phải là số")
+      .min(0, "Giá trị tối thiểu phải từ 0 trở lên")
+      .when("discount_type", {
+        is: "percent", // Chỉ kiểm tra nếu type === "percent"
+        then: (schema) =>
+          schema.required("Vui lòng nhập số tiền giảm giá tối đa"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     title: Yup.string().required("Tiêu đề không được để trống"),
-    type: Yup.string().required("Loại giảm giá không được để trống"),
+    discount_type: Yup.string()
+      .oneOf(["fixed", "percent"])
+      .required("Vui lòng chọn loại giảm giá"),
     description: Yup.string().max(255, "Mô tả không được vượt quá 255 ký tự"),
   });
 
@@ -86,27 +106,25 @@ const AddVoucher = () => {
     initialValues: {
       code: code || "",
       quantity: "",
-      discount: "",
-      start_date_time: null,
-      end_date_time: null,
-      limit: "",
+      discount_value: "",
+      start_date: null,
+      end_date: null,
+      per_user_limit: "",
+      min_order_amount: "",
+      max_discount_amount: "",
       title: "",
-      type: "",
+      discount_type: "",
       description: "",
       is_active: false,
     },
     validationSchema,
     onSubmit: (values) => {
-      const start_date_time = dayjs(values.start_date_time).format(
-        "YYYY-MM-DD HH:mm:ss"
-      );
-      const end_date_time = dayjs(values.end_date_time).format(
-        "YYYY-MM-DD HH:mm:ss"
-      );
+      const start_date = dayjs(values.start_date).format("YYYY-MM-DD HH:mm:ss");
+      const end_date = dayjs(values.end_date).format("YYYY-MM-DD HH:mm:ss");
       createVoucher.mutate(
         {
           url: "/vouchers",
-          data: { ...values, start_date_time, end_date_time },
+          data: { ...values, start_date, end_date },
         },
         {
           onSuccess: () => {
@@ -170,22 +188,24 @@ const AddVoucher = () => {
                         ) : null}
                       </div>
                     </Col>
+
                     <Col lg={4} md={12}>
                       <div className="mb-3">
-                        <Label className="form-label" htmlFor="discount">
-                          Giảm giá(VNĐ):
+                        <Label className="form-label" htmlFor="per_user_limit">
+                          Giới hạn sử dụng:
                         </Label>
                         <Input
                           type="number"
                           className="form-control"
-                          id="discount"
-                          placeholder="Nhập số tiền..."
-                          name="name"
-                          {...formik.getFieldProps("discount")}
+                          id="per_user_limit"
+                          name="per_user_limit"
+                          placeholder="Nhập số lượng..."
+                          {...formik.getFieldProps("per_user_limit")}
                         />
-                        {formik.touched.discount && formik.errors.discount ? (
+                        {formik.touched.per_user_limit &&
+                        formik.errors.per_user_limit ? (
                           <div className="text-danger">
-                            {formik.errors.discount}
+                            {formik.errors.per_user_limit}
                           </div>
                         ) : null}
                       </div>
@@ -194,45 +214,51 @@ const AddVoucher = () => {
                   <Row>
                     <Col lg={6} md={12}>
                       <div className="mb-3">
-                        <Label htmlFor="type" className="form-label">
+                        <Label htmlFor="discount_type" className="form-label">
                           Kiểu voucher
                         </Label>
                         <select
-                          id="type"
+                          id="discount_type"
                           className="form-select mb-3"
-                          name="type"
+                          name="discount_type"
                           onChange={(e) => {
-                            formik.setFieldValue("type", e.target.value);
+                            formik.setFieldValue(
+                              "discount_type",
+                              e.target.value
+                            );
                             setType(e.target.value);
                           }}
                         >
                           <option value="">--- Chọn kiểu voucher ---</option>
-                          <option value="amount">Giá tiền</option>
+                          <option value="fixed">Giá tiền</option>
                           <option value="percent">Phần trăm</option>
                         </select>
-                        {formik.touched.type && formik.errors.type && (
-                          <div className="text-danger">
-                            {formik.errors.type}
-                          </div>
-                        )}
+                        {formik.touched.discount_type &&
+                          formik.errors.discount_type && (
+                            <div className="text-danger">
+                              {formik.errors.discount_type}
+                            </div>
+                          )}
                       </div>
                     </Col>
+
                     <Col lg={6} md={12}>
                       <div className="mb-3">
-                        <Label className="form-label" htmlFor="limit">
-                          Giới hạn sử dụng:
+                        <Label className="form-label" htmlFor="discount_value">
+                          Giảm giá(VNĐ):
                         </Label>
                         <Input
                           type="number"
                           className="form-control"
-                          id="limit"
-                          name="limit"
-                          placeholder="Nhập số lượng..."
-                          {...formik.getFieldProps("limit")}
+                          id="discount_value"
+                          placeholder="Nhập số tiền..."
+                          name="name"
+                          {...formik.getFieldProps("discount_value")}
                         />
-                        {formik.touched.limit && formik.errors.limit ? (
+                        {formik.touched.discount_value &&
+                        formik.errors.discount_value ? (
                           <div className="text-danger">
-                            {formik.errors.limit}
+                            {formik.errors.discount_value}
                           </div>
                         ) : null}
                       </div>
@@ -242,21 +268,21 @@ const AddVoucher = () => {
                   <Row>
                     <Col lg={6} md={12}>
                       <div className="mb-3">
-                        <Label htmlFor="start_date_time" className="form-label">
+                        <Label htmlFor="start_date" className="form-label">
                           Thời gian bắt đầu:
                         </Label>
                         <Flatpickr
-                          id="start_date_time"
-                          name="start_date_time"
+                          id="start_date"
+                          name="start_date"
                           className="form-control"
-                          value={formik.values.start_date_time}
+                          value={formik.values.start_date}
                           placeholder="Thời gian bắt đầu"
                           onChange={(date) => {
                             formik.setTouched({
                               ...formik.touched,
-                              start_date_time: true,
+                              start_date: true,
                             });
-                            formik.setFieldValue("start_date_time", date[0]);
+                            formik.setFieldValue("start_date", date[0]);
                           }}
                           options={{
                             enableTime: true,
@@ -264,31 +290,31 @@ const AddVoucher = () => {
                             time_24hr: true,
                           }}
                         />
-                        {formik.touched.start_date_time &&
-                          formik.errors.start_date_time && (
+                        {formik.touched.start_date &&
+                          formik.errors.start_date && (
                             <div className="text-danger">
-                              {formik.errors.start_date_time}
+                              {formik.errors.start_date}
                             </div>
                           )}
                       </div>
                     </Col>
                     <Col lg={6} md={12}>
                       <div className="mb-3">
-                        <Label htmlFor="end_date_time" className="form-label">
+                        <Label htmlFor="end_date" className="form-label">
                           Thời gian kết thúc:
                         </Label>
                         <Flatpickr
-                          id="end_date_time"
-                          name="end_date_time"
+                          id="end_date"
+                          name="end_date"
                           className="form-control"
                           placeholder="Thời gian kết thúc"
-                          value={formik.values.end_date_time}
+                          value={formik.values.end_date}
                           onChange={(date) => {
                             formik.setTouched({
                               ...formik.touched,
-                              end_date_time: true,
+                              end_date: true,
                             });
-                            formik.setFieldValue("end_date_time", date[0]);
+                            formik.setFieldValue("end_date", date[0]);
                           }}
                           options={{
                             enableTime: true,
@@ -296,12 +322,11 @@ const AddVoucher = () => {
                             time_24hr: true,
                           }}
                         />
-                        {formik.touched.end_date_time &&
-                          formik.errors.end_date_time && (
-                            <div className="text-danger">
-                              {formik.errors.end_date_time}
-                            </div>
-                          )}
+                        {formik.touched.end_date && formik.errors.end_date && (
+                          <div className="text-danger">
+                            {formik.errors.end_date}
+                          </div>
+                        )}
                       </div>
                     </Col>
                   </Row>
@@ -343,6 +368,63 @@ const AddVoucher = () => {
             </Col>
 
             <Col lg={4}>
+              <Card>
+                <CardBody>
+                  <Row>
+                    <Col md={12}>
+                      {" "}
+                      <div className="mb-3">
+                        <Label
+                          className="form-label"
+                          htmlFor="min_order_amount"
+                        >
+                          Đơn hàng tối thiểu:
+                        </Label>
+                        <Input
+                          type="number"
+                          className="form-control"
+                          id="min_order_amount"
+                          placeholder="Nhập số tiền..."
+                          name="name"
+                          {...formik.getFieldProps("min_order_amount")}
+                        />
+                        {formik.touched.min_order_amount &&
+                        formik.errors.min_order_amount ? (
+                          <div className="text-danger">
+                            {formik.errors.min_order_amount}
+                          </div>
+                        ) : null}
+                      </div>
+                    </Col>
+                    {type === "percent" && (
+                      <Col md={12}>
+                        <div className="mb-3">
+                          <Label
+                            className="form-label"
+                            htmlFor="max_discount_amount"
+                          >
+                            Số tiền giảm giá tối đa:
+                          </Label>
+                          <Input
+                            type="number"
+                            className="form-control"
+                            id="max_discount_amount"
+                            placeholder="Nhập số tiền..."
+                            name="name"
+                            {...formik.getFieldProps("max_discount_amount")}
+                          />
+                          {formik.touched.max_discount_amount &&
+                          formik.errors.max_discount_amount ? (
+                            <div className="text-danger">
+                              {formik.errors.max_discount_amount}
+                            </div>
+                          ) : null}
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
+                </CardBody>
+              </Card>
               <Card>
                 <CardBody>
                   <Row>
