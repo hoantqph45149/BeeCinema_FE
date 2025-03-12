@@ -61,6 +61,8 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
+import thongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
+import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
 
 // quản lý giá
 import AddAccount from "../pages/Admin/account/AddAccount";
@@ -72,7 +74,6 @@ import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
 // Đường dẫn dành cho phía client
-
 import Voucher from "../pages/Admin/voucher/Index";
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login";
@@ -245,6 +246,7 @@ const authProtectedRoutes = [
   { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
   { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
   { path: "/admin/thongkePhim", component: <ThongkePhim /> },
+  { path: "/admin/thongkehoadon", component: <ThongkeHoaDon /> },
   // trang chủ
   {
     path: "/admin/overview",
