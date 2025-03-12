@@ -10,6 +10,7 @@ import ProfileDropdown from "../../Components/Common/ProfileDropdown";
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
 import { changeSidebarVisibility } from "../../slices/thunks";
+import ScanQRCode from "../../Components/Common/ScanQRCode";
 
 const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
   const dispatch = useDispatch();
@@ -142,6 +143,9 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
                   <i className="bx bx-search fs-22"></i>
                 </DropdownToggle>
               </Dropdown>
+
+              {/* Scan QR Code */}
+              <ScanQRCode />
 
               {/* FullScreenDropdown */}
               <FullScreenDropdown />
