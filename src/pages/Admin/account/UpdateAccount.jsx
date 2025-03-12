@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardBody,
@@ -15,13 +15,46 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { useFormik } from "formik";
 import useUploadImage from "../../../Hooks/useUploadImage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { use } from "react";
 
-const AddAdminAccount = () => {
-  const { data: users } = useFetch(["users"], "/users");
+const UpdateAccount = () => {
+  const { id } = useParams();
   const nav = useNavigate();
-  const { create: createUsers } = useCRUD(["users"]);
+  const { data: user } = useFetch(["user", id], `/users/${id}`);
+  const { patch: patchUser } = useCRUD(["user", id]);
   const { uploadImage } = useUploadImage();
+
+  const validationSchema = Yup.object({
+    avatar: Yup.mixed()
+      .required("Vui lòng chọn ảnh")
+      .test(
+        "fileFormat",
+        "Chỉ chấp nhận file JPG, JPEG, PNG",
+        (value) =>
+          value && ["image/jpg", "image/jpeg", "image/png"].includes(value.type)
+      )
+      .test(
+        "fileSize",
+        "Dung lượng ảnh không được quá 2MB",
+        (value) => value && value.size <= 2 * 1024 * 1024
+      ),
+    name: Yup.string().required("Tên không được để trống"),
+    email: Yup.string().required("Email không được để trống"),
+    phone: Yup.number()
+      .required("Số điện thoại không được để trống")
+      .typeError("Số điện thoại phải là số")
+
+      .min(10, "Số điện thoại phải có ít nhất 10 ký tự"),
+    password: Yup.string().required("Mật khâu không được để trống"),
+    password_confirmation: Yup.string()
+      .required("Xác nhận mật khẩu không được để trống")
+      .oneOf([Yup.ref("password"), null], "Mật khẩu xác nhận không khớp"),
+    birthday: Yup.date().required("Ngày sinh không được để trống"),
+    role: Yup.string().required("Vai trò không được để trống"),
+    address: Yup.string().required("Địa chỉ không được để trống"),
+  });
+
   const formik = useFormik({
     initialValues: {
       avatar: "",
@@ -31,68 +64,48 @@ const AddAdminAccount = () => {
       password: "",
       password_confirmation: "",
       birthday: "",
-      gender: "",
 
       role: "",
       content: "",
       address: "",
     },
-    validationSchema: Yup.object({
-      avatar: Yup.mixed()
-        .required("Vui lòng chọn ảnh")
-        .test(
-          "fileFormat",
-          "Chỉ chấp nhận file JPG, JPEG, PNG",
-          (value) =>
-            value &&
-            ["image/jpg", "image/jpeg", "image/png"].includes(value.type)
-        )
-        .test(
-          "fileSize",
-          "Dung lượng ảnh không được quá 2MB",
-          (value) => value && value.size <= 2 * 1024 * 1024
-        ),
-      name: Yup.string().required("Tên không được để trống"),
-      email: Yup.string().required("Email không được để trống"),
-      phone: Yup.number()
-        .required("Số điện thoại không được để trống")
-        .typeError("Số điện thoại phải là số")
+    validationSchema,
 
-        .min(10, "Số điện thoại phải có ít nhất 10 ký tự"),
-      password: Yup.string().required("Mật khẩu không được để trống"),
-      password_confirmation: Yup.string()
-        .required("Xác nhận mật khẩu không được để trống")
-        .oneOf([Yup.ref("password"), null], "Mật khẩu xác nhận không khớp"),
-
-      birthday: Yup.date().required("Ngày sinh không được để trống"),
-      gender: Yup.string().required("Giới tính không được để trống"),
-
-      role: Yup.string().required("Vai trò không được để trống"),
-      address: Yup.string().required("Địa chỉ không được để trống"),
-    }),
     onSubmit: async (values) => {
       if (values.password != values.password_confirmation) {
         alert("Mật khẩu xác nhận không khớp!");
         return;
       }
+      let image = user?.avatar || ""; // Kiểm tra user có tồn tại không
 
-      try {
-        const imageUrl = await uploadImage(values.avatar);
-        createUsers.mutate(
-          { url: "/users", data: { ...values, avatar: imageUrl } },
-          {
-            onSuccess: () => {
-              nav("/admin/account");
-            },
-          }
-        );
-      } catch (error) {
-        console.error("Lỗi khi upload ảnh:", error);
+      if (values.avatar && values.avatar !== user?.avatar) {
+        image = await uploadImage(values.avatar);
       }
+
+      patchUser.mutate({
+        url: `/users/${id}`,
+        data: { ...values, avatar: image },
+      });
+
+      nav("/admin/account");
     },
   });
+  useEffect(() => {
+    if (user) {
+      formik.setValues({
+        avatar: user.avatar || "",
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        password: user.password || "",
+        birthday: user.birthday || "",
+        role: user.role || "",
+        address: user.address || "",
+      });
+    }
+  }, [user]);
 
-  document.title = "Thêm mới tài khoản quản trị viên";
+  document.title = "Cập nhật tài khoản quản trị viên";
 
   return (
     <div className="page-content">
@@ -113,9 +126,10 @@ const AddAdminAccount = () => {
                         <div className="avatar-preview">
                           <img
                             src={
-                              formik.values.avatar
+                              formik.values.avatar instanceof File
                                 ? URL.createObjectURL(formik.values.avatar)
-                                : "https://via.placeholder.com/100"
+                                : user?.avatar ||
+                                  "https://via.placeholder.com/100"
                             }
                             alt="Avatar"
                             className="rounded-circle"
@@ -215,7 +229,7 @@ const AddAdminAccount = () => {
                           <span className="text-danger">*</span> Số điện thoại:
                         </Label>
                         <Input
-                          type="text"
+                          type="number"
                           id="phone"
                           name="phone"
                           className={`form-control ${
@@ -316,28 +330,10 @@ const AddAdminAccount = () => {
                     <Col lg={3}>
                       <div className="mb-3">
                         <Label className="form-label">Giới tính:</Label>
-                        <Input
-                          type="select"
-                          id="gender"
-                          name="gender"
-                          className={`form-control ${
-                            formik.touched.gender && formik.errors.gender
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          value={formik.values.gender}
-                          onChange={formik.handleChange}
-                        >
-                          <option value="">Chọn giới tính</option>
-                          <option value="nam">Nam</option>
-                          <option value="nữ">Nữ</option>
-                          <option value="Giới tính khác">Giới tính khác</option>
+                        <Input type="select">
+                          <option>Nam</option>
+                          <option>Nữ</option>
                         </Input>
-                        {formik.touched.gender && formik.errors.gender && (
-                          <div className="text-danger">
-                            {formik.errors.gender}
-                          </div>
-                        )}
                       </div>
                     </Col>
                     <Col lg={3}>
@@ -399,7 +395,7 @@ const AddAdminAccount = () => {
                   <div className="d-flex justify-content-between">
                     <Button color="secondary">Trở về</Button>
                     <Button color="primary" type="submit">
-                      Thêm mới
+                      Cập nhật
                     </Button>
                   </div>
                 </CardBody>
@@ -412,4 +408,4 @@ const AddAdminAccount = () => {
   );
 };
 
-export default AddAdminAccount;
+export default UpdateAccount;

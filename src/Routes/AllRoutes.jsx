@@ -85,6 +85,7 @@ import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
 import NewsDetail from "../pages/Client/News/NewDetail";
 import Thanks from "../pages/Client/Thanks";
+import UpdateAccount from "../pages/Admin/account/UpdateAccount";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -213,6 +214,7 @@ const authProtectedRoutes = [
   // quản lý tài khoản
   { path: "/admin/account", component: <Account /> },
   { path: "/admin/account/add", component: <AddAccount /> },
+  { path: "/admin/account/:id/edit", component: <UpdateAccount /> },
 
   // quản lý giảm giá
 

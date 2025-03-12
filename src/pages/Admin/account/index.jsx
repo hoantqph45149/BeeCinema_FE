@@ -1,6 +1,7 @@
 import classnames from "classnames";
 import React, { useMemo, useState } from "react";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -17,9 +18,15 @@ import TableContainer from "../../../Components/Common/TableContainer";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import { showConfirm } from "./../../../Components/Common/showAlert";
+import { useNavigate } from "react-router-dom";
 
 const Account = () => {
   const [isEdit, setIsEdit] = useState(false);
+  const { data } = useFetch(["users"], "/users");
+  const nav = useNavigate();
+  const { delete: deleteUser } = useCRUD();
   const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
 
@@ -31,8 +38,25 @@ const Account = () => {
     }
   };
 
+  const handleDeleteUsers = (user) => {
+    showConfirm(
+      "Xóa Tài Khoản",
+      `Bạn có chắc muốn xóa tài khoản ${user.name} không?`,
+      () => {
+        deleteUser.mutate(`/users/${user.id}`);
+      }
+    );
+  };
   const toggle = () => setModal(!modal);
   // Column
+  const filteredData = useMemo(() => {
+    if (activeTab === "1") {
+      return data?.filter((user) => user.role === "admin") || [];
+    } else if (activeTab === "2") {
+      return data?.filter((user) => user.role === "member") || [];
+    }
+    return data || [];
+  }, [data, activeTab]);
   const columns = useMemo(() => [
     {
       header: "#",
@@ -42,22 +66,34 @@ const Account = () => {
     },
     {
       header: "Họ và tên",
-      accessorKey: "orderId",
+      accessorKey: "name",
       enableColumnFilter: false,
     },
     {
       header: "Hình ảnh",
-      accessorKey: "customer",
+      accessorKey: "avatar",
+
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <img
+            style={{
+              maxWidth: "150px",
+            }}
+            src={cell.row.original.avatar}
+            alt={cell.row.original.title}
+          />
+        );
+      },
     },
     {
       header: "Email",
-      accessorKey: "product",
+      accessorKey: "email",
       enableColumnFilter: false,
     },
     {
       header: "Vai trò",
-      accessorKey: "orderDate",
+      accessorKey: "role",
       enableColumnFilter: false,
     },
     {
@@ -67,8 +103,34 @@ const Account = () => {
     },
     {
       header: "Action",
-      accessorKey: "payment",
-      enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <ul className="list-inline hstack gap-2 mb-0">
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                className="btn-sm "
+                onClick={() => {
+                  nav(`/admin/account/${cell.row.original.id}/edit`);
+                }}
+              >
+                <i className="ri-pencil-fill"></i>
+              </Button>
+            </li>
+            <li className="list-inline-item">
+              <Button
+                color="primary"
+                className="btn-sm "
+                onClick={() => {
+                  handleDeleteUsers(cell.row.original);
+                }}
+              >
+                <i className="ri-delete-bin-5-fill"></i>
+              </Button>
+            </li>
+          </ul>
+        );
+      },
     },
   ]);
 
@@ -92,8 +154,7 @@ const Account = () => {
                         className="btn btn-success add-btn"
                         id="create-btn"
                         onClick={() => {
-                          setIsEdit(false);
-                          toggle();
+                          nav("/admin/account/add");
                         }}
                       >
                         <i className="ri-add-line align-bottom me-1"></i>
@@ -140,14 +201,14 @@ const Account = () => {
                   </Nav>
                   <TableContainer
                     columns={columns}
-                    data={[]}
+                    data={filteredData} // Sử dụng danh sách đã lọc
                     isGlobalFilter={true}
                     isAddUserList={false}
                     customPageSize={8}
                     divClass="table-responsive table-card mb-1"
                     tableClass="align-middle table-nowrap"
                     theadClass="table-light text-muted"
-                    SearchPlaceholder="Search for order ID, customer, order status or something..."
+                    SearchPlaceholder="Tìm kiếm tài khoản..."
                   />
                 </div>
                 <Modal
