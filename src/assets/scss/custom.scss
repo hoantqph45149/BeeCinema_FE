@@ -25,3 +25,31 @@ File: Custom Css File
 .seat-inactive::after {
   transform: translateX(-50%) rotate(-45deg);
 }
+
+.border-dashed {
+  border-style: dashed !important;
+}
+
+/* For extra small text (equivalent to Tailwind's text-xs) */
+.fs-7 {
+  font-size: 0.75rem !important;
+}
+
+/* For semi-bold text (equivalent to Tailwind's font-semibold) */
+.fw-semibold {
+  font-weight: 600 !important;
+}
+
+// @media print {
+//   @page {
+//     size: A4;
+//     margin: 0;
+//   }
+//   body {
+//     margin: 0;
+//     padding: 0;
+//   }
+//   .ticket-container {
+//     break-before: page;
+//   }
+// }

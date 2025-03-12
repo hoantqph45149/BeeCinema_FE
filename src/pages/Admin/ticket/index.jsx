@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
 import {
   Button,
   Card,
@@ -9,23 +10,12 @@ import {
   Form,
   Input,
   Label,
-  Modal,
-  ModalHeader,
   Row,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { Link } from "react-router-dom";
 import TableContainer from "../../../Components/Common/TableContainer";
 
 const Ticket = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
-
   // Column
   const columns = useMemo(() => [
     {
@@ -77,7 +67,7 @@ const Ticket = () => {
     },
   ]);
 
-  document.title = "";
+  document.title = "Quản lý vé";
   return (
     <div className="page-content">
       <Container fluid>
@@ -89,7 +79,7 @@ const Ticket = () => {
                 <Row className="align-items-center gy-3">
                   <Form>
                     <Row className="g-3">
-                      <Col lg={2} md={6} sm={12}>
+                      <Col lg={4} xl={2} md={6} sm={12}>
                         <div>
                           <Label className="form-label " for="address">
                             Chi nhánh
@@ -104,7 +94,7 @@ const Ticket = () => {
                           </select>
                         </div>
                       </Col>
-                      <Col lg={2} md={6} sm={12}>
+                      <Col lg={4} xl={2} md={6} sm={12}>
                         <div>
                           <Label className="form-label " for="rap">
                             Rạp
@@ -119,7 +109,7 @@ const Ticket = () => {
                           </select>
                         </div>
                       </Col>
-                      <Col lg={2} md={6} sm={12}>
+                      <Col lg={4} xl={2} md={6} sm={12}>
                         <div>
                           <Label className="form-label " for="phim">
                             Phim
@@ -134,7 +124,7 @@ const Ticket = () => {
                           </select>
                         </div>
                       </Col>
-                      <Col xxl={2} md={6}>
+                      <Col lg={4} xl={2} md={6}>
                         <div>
                           <Label
                             htmlFor="exampleInputdate"
@@ -149,7 +139,7 @@ const Ticket = () => {
                           />
                         </div>
                       </Col>
-                      <Col lg={2} md={6} sm={12}>
+                      <Col lg={4} xl={2} md={6} sm={12}>
                         <div>
                           <Label className="form-label" for="trangthai">
                             Trạng thái
@@ -194,13 +184,6 @@ const Ticket = () => {
                   theadClass="table-light text-muted"
                   SearchPlaceholder="Search for order ID, customer, order status or something..."
                 />
-                <Modal id="showModal" isOpen={modal} toggle={true} centered>
-                  <ModalHeader
-                    className="bg-light p-3"
-                    toggle={toggle}
-                  ></ModalHeader>
-                </Modal>
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>

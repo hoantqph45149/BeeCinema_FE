@@ -1,22 +1,23 @@
-function isWeekend(date) {
-  const day = date.getDay();
-  return day === 0 || day === 6;
-}
+import dayjs from "dayjs";
 
-const HOLIDAYS = [
-  "04-30", // 30/4
-  "05-01", // 1/5
-  "09-02", // Quốc Khánh
-  "01-01", // Tết Dương Lịch
-];
+const isDayOff = (dateString) => {
+  const holidays = [
+    "01-01", // Tết Dương Lịch
+    "30-04", // Giải phóng miền Nam
+    "01-05", // Quốc tế Lao động
+    "02-09", // Quốc khánh Việt Nam
+    "20-11", // Ngày Nhà giáo Việt Nam
+    "25-12", // Giáng Sinh
+  ];
 
-function isHoliday(date) {
-  const monthDay = date.toISOString().slice(5, 10); // Lấy MM-DD
-  return HOLIDAYS.includes(monthDay);
-}
+  const date = dayjs(dateString, "YYYY-MM-DD HH:mm:ss");
+  const dayOfWeek = date.day(); // 0 = Chủ Nhật, 6 = Thứ Bảy
 
-function isDayOff() {
-  const date = new Date();
-  return isWeekend(date) || isHoliday(date);
-}
+  return (
+    dayOfWeek === 0 ||
+    dayOfWeek === 6 ||
+    holidays.includes(date.format("DD-MM"))
+  );
+};
+
 export default isDayOff;
