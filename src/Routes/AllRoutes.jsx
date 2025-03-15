@@ -23,8 +23,8 @@ import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
 import Combo from "../pages/Admin/combo/index";
-import AddCombo from "./../pages/Admin/combo/AddCombo";
-import EditCombo from "./../pages/Admin/combo/EditCombo";
+import AddCombo from "../pages/Admin/combo/AddCombo";
+import EditCombo from "../pages/Admin/combo/EditCombo";
 
 // food
 import Food from "../pages/Admin/food/index";
@@ -46,8 +46,8 @@ import RoomEdit from "../pages/Admin/room/RoomEdit";
 // showtime
 import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
-import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
-import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
+import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
+import Addshowtime from "../pages/Admin/showtime/AddShowtime";
 
 // ticket
 import Ticket from "../pages/Admin/ticket/index";
@@ -61,12 +61,12 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 // thống kê
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
-import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
-import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
+import ThongkeCombo from "../pages/Admin/thongke/thongkeCombo";
+import ThongkeHoaDon from "../pages/Admin/thongke/thongkeHoaDon";
 
 // quản lý giá
 import AddAccount from "../pages/Admin/account/AddAccount";
-import PriceManage from "./../pages/Admin/pricemanage/price-manage";
+import PriceManage from "../pages/Admin/pricemanage/price-manage";
 
 // quản lý sơ đồ ghế
 import SeatTemplate from "../pages/Admin/seat-template/index";
