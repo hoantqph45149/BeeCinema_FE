@@ -4,13 +4,13 @@ import { Navigate } from "react-router-dom";
 /* Admin routes */
 
 // account
-import Account from "../pages/Admin/account";
+import Account from "../pages/Admin/account/index";
 import UpdateAccount from "../pages/Admin/account/UpdateAccount";
 
 import Overview from "../pages/Admin/overview/index";
 import Rank from "../pages/Admin/rank";
 // banner
-import SlideShow from "../pages/Admin/slide-show";
+import SlideShow from "../pages/Admin/slide-show/index";
 import AddSlideShow from "../pages/Admin/slide-show/AddSlideShow";
 
 // branch
@@ -22,12 +22,12 @@ import Cinema from "../pages/Admin/cinema/index";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
-import Combo from "../pages/Admin/combo";
+import Combo from "../pages/Admin/combo/index";
 import AddCombo from "./../pages/Admin/combo/AddCombo";
 import EditCombo from "./../pages/Admin/combo/EditCombo";
 
 // food
-import Food from "../pages/Admin/food";
+import Food from "../pages/Admin/food/index";
 
 // movie
 import AddMovie from "../pages/Admin/movie/AddMovie";
@@ -35,8 +35,8 @@ import EditMovie from "../pages/Admin/movie/EditMovie";
 import Movie from "../pages/Admin/movie/index";
 
 // post
-import Post from "../pages/Admin/post";
 import AddPost from "../pages/Admin/post/AddPost";
+import Post from "../pages/Admin/post/index";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
 
 // room
@@ -44,16 +44,17 @@ import Room from "../pages/Admin/room/index";
 import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
-import Showtime from "../pages/Admin/showtime";
+import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
 import Updateshowtime from "../pages/Admin/showtime/Updateshowtime";
 import Addshowtime from "./../pages/Admin/showtime/Addshowtime";
 
 // ticket
-import Ticket from "../pages/Admin/ticket";
+import Ticket from "../pages/Admin/ticket/index";
 import TicketDetail from "../pages/Admin/ticket/TicketDetail";
 
 // voucher
+import Voucher from "../pages/Admin/voucher/index";
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
 import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 
@@ -61,7 +62,6 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
 import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
 import ThongkeCombo from "./../pages/Admin/thongke/thongkeCombo";
-import thongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
 import ThongkeHoaDon from "./../pages/Admin/thongke/thongkeHoaDon";
 
 // quản lý giá
@@ -69,28 +69,27 @@ import AddAccount from "../pages/Admin/account/AddAccount";
 import PriceManage from "./../pages/Admin/pricemanage/price-manage";
 
 // quản lý sơ đồ ghế
-import SeatTemplate from "../pages/Admin/seat-template";
+import SeatTemplate from "../pages/Admin/seat-template/index";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
 // Đường dẫn dành cho phía client
-import Voucher from "../pages/Admin/voucher/Index";
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
-import Login from "../pages/Auth/login";
-import Register from "../pages/Auth/register";
-import Checkout from "../pages/Client/checkout";
-import ChooseSeat from "../pages/Client/choose-seat";
-import Contact from "../pages/Client/contact";
-import Home from "../pages/Client/Home";
-import Introduce from "../pages/Client/introduce";
-import MoviesClient from "../pages/Client/movie";
+import Login from "../pages/Auth/login/index";
+import Register from "../pages/Auth/register/index";
+import Checkout from "../pages/Client/checkout/index";
+import ChooseSeat from "../pages/Client/choose-seat/index";
+import Contact from "../pages/Client/contact/index";
+import Home from "../pages/Client/Home/index";
+import Introduce from "../pages/Client/introduce/index";
+import MoviesClient from "../pages/Client/movie/index";
 import MovieDetails from "../pages/Client/movie/MovieDetail";
-import News from "../pages/Client/News";
+import News from "../pages/Client/News/index";
 import NewsDetail from "../pages/Client/News/NewDetail";
-import ProfileClient from "../pages/Client/Profile";
-import ShowtimeClient from "../pages/Client/showtime";
-import Thanks from "../pages/Client/Thanks";
-import TheaterInformation from "../pages/Client/theater-information";
+import ProfileClient from "../pages/Client/Profile/index";
+import ShowtimeClient from "../pages/Client/showtime/index";
+import Thanks from "../pages/Client/Thanks/index";
+import TheaterInformation from "../pages/Client/theater-information/index";
 
 const publicRoutesNonAuthLayout = [
   {
