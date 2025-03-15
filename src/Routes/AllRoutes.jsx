@@ -86,7 +86,7 @@ import MoviesClient from "../pages/Client/movie/index";
 import MovieDetails from "../pages/Client/movie/MovieDetail";
 import News from "../pages/Client/News/index";
 import NewsDetail from "../pages/Client/News/NewDetail";
-import ProfileClient from "../pages/Client/Profile/index";
+import ProfileClient from "../pages/Client/profile/index";
 import ShowtimeClient from "../pages/Client/showtime/index";
 import Thanks from "../pages/Client/Thanks/index";
 import TheaterInformation from "../pages/Client/theater-information/index";
