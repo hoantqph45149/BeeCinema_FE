@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  base: "./",
+  base: "./", // Dùng đường dẫn tương đối khi deploy lên Vercel
   plugins: [react()],
   server: {
     proxy: {
@@ -14,24 +14,25 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: "dist", // Đảm bảo thư mục build đúng
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
-            if (id.includes("react")) return "react-vendor"; // Nhóm React thành 1 file riêng
-            if (id.includes("lodash")) return "lodash"; // Nhóm lodash riêng
-            return "vendor"; // Nhóm các thư viện khác
+            if (id.includes("react")) return "react-vendor";
+            if (id.includes("lodash")) return "lodash";
+            return "vendor";
           }
         },
       },
     },
-    minify: "terser", // Dùng terser để nén file
+    minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: true, // Xóa console.log khi build
+        drop_console: true,
         drop_debugger: true,
       },
     },
-    chunkSizeWarningLimit: 1000, // Tăng giới hạn cảnh báo chunk lên 1000kB
+    chunkSizeWarningLimit: 1000,
   },
 });
