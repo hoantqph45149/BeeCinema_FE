@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
 import { useFetch } from "../../../Hooks/useCRUD";
-import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import { useBrancheContext } from "../../../Contexts/branche/UseBrancheContext";
 import api from "../../../apis/axios";
 
 const MoviesClient = () => {

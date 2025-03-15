@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../../../Components/Common/Loading";
 import MovieShowtimes from "../../../Components/Common/MovieShowtime";
-import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
+import { useBrancheContext } from "../../../Contexts/branche/UseBrancheContext";
 import { useFetch } from "../../../Hooks/useCRUD";
 
 const ShowtimeClient = () => {
