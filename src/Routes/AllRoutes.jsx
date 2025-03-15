@@ -17,8 +17,8 @@ import AddSlideShow from "../pages/Admin/slide-show/AddSlideShow";
 import Branch from "../pages/Admin/branch/index";
 
 // cinema
-import AddCinema from "../pages/Admin/cinema/AddCinema";
 import Cinema from "../pages/Admin/cinema/index";
+import AddCinema from "../pages/Admin/cinema/AddCinema";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
@@ -30,13 +30,13 @@ import EditCombo from "../pages/Admin/combo/EditCombo";
 import Food from "../pages/Admin/food/index";
 
 // movie
+import Movie from "../pages/Admin/movie/index";
 import AddMovie from "../pages/Admin/movie/AddMovie";
 import EditMovie from "../pages/Admin/movie/EditMovie";
-import Movie from "../pages/Admin/movie/index";
 
 // post
-import AddPost from "../pages/Admin/post/AddPost";
 import Post from "../pages/Admin/post/index";
+import AddPost from "../pages/Admin/post/AddPost";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
 
 // room
@@ -46,8 +46,8 @@ import RoomEdit from "../pages/Admin/room/RoomEdit";
 // showtime
 import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
-import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
 import Addshowtime from "../pages/Admin/showtime/AddShowtime";
+import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
 
 // ticket
 import Ticket from "../pages/Admin/ticket/index";
