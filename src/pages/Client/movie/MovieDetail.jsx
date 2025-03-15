@@ -5,7 +5,7 @@ import MovieCard from "../../../Components/Common/MovieCard";
 import Button from "../../../Components/Common/Button";
 
 import TabShowtime from "../../../Components/Common/TabShowtime";
-import Modal from "../../../Components/Common/modal";
+import Modal from "../../../Components/Common/Modal";
 
 const MovieDetail = () => {
   const { id } = useParams();
