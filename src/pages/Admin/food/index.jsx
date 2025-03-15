@@ -24,7 +24,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import useUploadImage from "../../../Hooks/useUploadImage";
-import { formatVND } from "../../../utils/Currency.JS";
+import { formatVND } from "./../../../utils/Currency";
 
 const Food = () => {
   const { data } = useFetch(["foods"], "/foods");
