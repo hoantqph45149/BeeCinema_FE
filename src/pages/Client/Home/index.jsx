@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
-import Banner from "./Banner";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
+import Banner from "./Banner";
 
-import VerifiedEmail from "../../Auth/verified-email";
-import { useFetch } from "../../../Hooks/useCRUD";
-import { useBrancheContext } from "../../../Contexts/branche/useBrancheContext";
-import api from "../../../apis/axios";
 import { Modal } from "reactstrap";
+import { useBrancheContext } from "../../../Contexts/branche/UseBrancheContext";
+import api from "../../../apis/axios";
+import VerifiedEmail from "../../Auth/verified-email";
 
 const Home = () => {
   const { cinema } = useBrancheContext();
