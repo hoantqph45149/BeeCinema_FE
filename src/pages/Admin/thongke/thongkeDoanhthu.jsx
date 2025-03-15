@@ -12,6 +12,44 @@ import {
 import ReactEcharts from "echarts-for-react";
 
 const ThongkeDoanhthu = () => {
+  const data = {
+    data: [
+      { date: "2025-01-01", revenue: 350000 },
+      { date: "2025-01-02", revenue: 480000 },
+      { date: "2025-01-03", revenue: 520000 },
+      { date: "2025-01-04", revenue: 610000 },
+      { date: "2025-01-05", revenue: 430000 },
+      { date: "2025-01-06", revenue: 540000 },
+      { date: "2025-01-07", revenue: 720000 },
+      { date: "2025-01-08", revenue: 680000 },
+      { date: "2025-01-09", revenue: 490000 },
+      { date: "2025-01-10", revenue: 580000 },
+      { date: "2025-01-11", revenue: 630000 },
+      { date: "2025-01-12", revenue: 750000 },
+      { date: "2025-01-13", revenue: 670000 },
+      { date: "2025-01-14", revenue: 600000 },
+      { date: "2025-01-15", revenue: 730000 },
+      { date: "2025-01-16", revenue: 810000 },
+      { date: "2025-01-17", revenue: 720000 },
+      { date: "2025-01-18", revenue: 680000 },
+      { date: "2025-01-19", revenue: 590000 },
+      { date: "2025-01-20", revenue: 640000 },
+      { date: "2025-01-21", revenue: 780000 },
+      { date: "2025-01-22", revenue: 850000 },
+      { date: "2025-01-23", revenue: 920000 },
+      { date: "2025-01-24", revenue: 880000 },
+      { date: "2025-01-25", revenue: 760000 },
+      { date: "2025-01-26", revenue: 690000 },
+      { date: "2025-01-27", revenue: 710000 },
+      { date: "2025-01-28", revenue: 800000 },
+      { date: "2025-01-29", revenue: 870000 },
+      { date: "2025-01-30", revenue: 930000 },
+      { date: "2025-01-31", revenue: 990000 },
+    ],
+  };
+  const revenues = data.data.map((item) => item.revenue);
+  const maxRevenue = Math.ceil(Math.max(...revenues, 0) / 100000) * 100000;
+  const interval = maxRevenue / 5;
   const option = {
     tooltip: {
       trigger: "axis",
@@ -46,7 +84,7 @@ const ThongkeDoanhthu = () => {
       nameTextStyle: { fontSize: 10, padding: 10 },
       nameGap: 10,
 
-      data: ["22-01-2025"],
+      data: data.data.map((item) => item.date),
     },
     yAxis: {
       type: "value",
@@ -55,8 +93,8 @@ const ThongkeDoanhthu = () => {
       nameTextStyle: { fontSize: 10, padding: 10 },
       nameGap: 40,
       min: 0,
-      max: 500000,
-      interval: 50000,
+      max: maxRevenue,
+      interval: interval,
       axisLabel: { fontSize: 10 },
     },
     series: [
@@ -64,7 +102,7 @@ const ThongkeDoanhthu = () => {
         name: "Doanh thu",
         type: "bar",
         barWidth: "50%",
-        data: [480000],
+        data: data.data.map((item) => item.revenue),
         color: "  #2c5282",
         showBackground: true,
         backgroundStyle: { color: "rgba(17, 9, 37, 0.1)" },
