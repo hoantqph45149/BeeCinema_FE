@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import Modal from "./modal";
+import Modal from "./Modal";
 import Button from "./Button";
 import TabShowtime from "./TabShowtime";
 import AnimationPlay from "./AnimationPlay";
