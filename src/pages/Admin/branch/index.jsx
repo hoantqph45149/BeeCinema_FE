@@ -9,7 +9,6 @@ import {
   Col,
   Container,
   Input,
-  Label,
   Modal,
   ModalBody,
   ModalHeader,
@@ -20,6 +19,7 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import Loader from "../../../Components/Common/Loader";
 
 //  Định nghĩa Schema để validate dữ liệu nhập vào
 const branchSchema = Yup.object().shape({
@@ -29,8 +29,7 @@ const branchSchema = Yup.object().shape({
 });
 
 const Branch = () => {
-  const { data } = useFetch(["branches"], "/branches");
-  // console.log(data);
+  const { data, isLoading } = useFetch(["branches"], "/branches");
   const { create, patch, delete: deleteBranch } = useCRUD(["branches"]);
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
@@ -39,7 +38,6 @@ const Branch = () => {
 
   useEffect(() => {
     if (data?.data) {
-      // console.log(data);
       setBranches(data.data);
     }
   }, [data?.data]);
@@ -51,8 +49,7 @@ const Branch = () => {
       name: (branche && branche?.name) || "",
     },
     validationSchema: branchSchema,
-    onSubmit: (values, { resetForm }) => {
-      console.log(values);
+    onSubmit: (values) => {
       if (isEdit) {
         // update chi nhánh
         try {
@@ -240,17 +237,23 @@ const Branch = () => {
                 </Row>
               </CardHeader>
               <div className="card-body pt-0">
-                <TableContainer
-                  columns={columns}
-                  data={branches}
-                  isGlobalFilter={true}
-                  isAddUserList={false}
-                  customPageSize={10}
-                  divClass="table-responsive mb-1"
-                  tableClass="mb-0 align-middle table-borderless"
-                  theadClass="table-light text-muted"
-                  SearchPlaceholder="Search Products..."
-                />
+                {isLoading ? (
+                  <>
+                    <Loader />
+                  </>
+                ) : (
+                  <TableContainer
+                    columns={columns}
+                    data={branches}
+                    isGlobalFilter={true}
+                    isAddUserList={false}
+                    customPageSize={10}
+                    divClass="table-responsive mb-1"
+                    tableClass="mb-0 align-middle table-borderless"
+                    theadClass="table-light text-muted"
+                    SearchPlaceholder="Search Products..."
+                  />
+                )}
               </div>
             </Card>
           </Col>

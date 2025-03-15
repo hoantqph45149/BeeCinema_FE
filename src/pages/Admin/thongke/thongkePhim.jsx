@@ -12,8 +12,35 @@ import {
 import ReactEcharts from "echarts-for-react";
 
 const ThongkePhim = () => {
-  const totalMovies = 1;
-  const totalRevenue = 500000;
+  const revenuaFim = {
+    totalMovies: 5,
+    totalRevenue: 12500000,
+    data: [
+      {
+        name: "Linh Miêu",
+        revenue: 5000000,
+      },
+      {
+        name: "Hồn Ma",
+        revenue: 3000000,
+      },
+      {
+        name: "Bố Già",
+        revenue: 2500000,
+      },
+      {
+        name: "Avengers",
+        revenue: 1500000,
+      },
+      {
+        name: "Titanic",
+        revenue: 500000,
+      },
+    ],
+  };
+
+  const maxRevenue = Math.ceil(revenuaFim.totalRevenue / 100000) * 100000; // Làm tròn lên mức gần nhất
+  const interval = maxRevenue / 10;
 
   const option = {
     tooltip: {
@@ -40,7 +67,7 @@ const ThongkePhim = () => {
     },
     xAxis: {
       type: "category",
-      data: ["Linh Miêu"],
+      data: revenuaFim.data.map((item) => item.name),
     },
     yAxis: {
       type: "value",
@@ -48,8 +75,8 @@ const ThongkePhim = () => {
       nameLocation: "center",
       nameGap: 60,
       min: 0,
-      max: 500000,
-      interval: 50000,
+      max: maxRevenue,
+      interval: interval,
       axisLabel: {
         formatter: (value) => value.toLocaleString("vi-VN"),
       },
@@ -59,7 +86,7 @@ const ThongkePhim = () => {
         name: "Doanh thu (VNĐ)",
         type: "bar",
         barWidth: "50%",
-        data: [500000],
+        data: revenuaFim.data.map((item) => item.revenue),
         color: "#00b386",
         showBackground: true,
         backgroundStyle: { color: "rgba(17, 9, 37, 0.1)" },
@@ -120,12 +147,12 @@ const ThongkePhim = () => {
           <Row className="mb-3">
             <Col md={6} xs={12} className="text-center mb-2">
               <h6 className="text-muted">Tổng phim</h6>
-              <h4 className="text-dark">{totalMovies}</h4>
+              <h4 className="text-dark">{revenuaFim.totalMovies}</h4>
             </Col>
             <Col md={6} xs={12} className="text-center">
               <h6 className="text-muted">Tổng doanh thu</h6>
               <h4 className="text-dark">
-                {totalRevenue.toLocaleString("vi-VN")} VNĐ
+                {revenuaFim.totalRevenue.toLocaleString("vi-VN")} VNĐ
               </h4>
             </Col>
           </Row>

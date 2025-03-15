@@ -18,9 +18,10 @@ import TableContainer from "../../../Components/Common/TableContainer";
 import { useNavigate } from "react-router-dom";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
+import Loader from "../../../Components/Common/Loader";
 
 const Movie = () => {
-  const { data } = useFetch(["movies"], "/movies");
+  const { data, isLoading } = useFetch(["movies"], "/movies");
   const { patch: patchMovie, delete: deleteMovie } = useCRUD(["movies"]);
   const nav = useNavigate();
   const [moviesPublish, setMoviesPublish] = useState([]);
@@ -391,18 +392,23 @@ const Movie = () => {
                       </NavLink>
                     </NavItem>
                   </Nav>
-
-                  <TableContainer
-                    columns={columns}
-                    data={movies || []}
-                    isGlobalFilter={true}
-                    isAddUserList={false}
-                    customPageSize={8}
-                    divClass="table-responsive table-card mb-1"
-                    tableClass="align-middle table-nowrap dt-responsive"
-                    theadClass="table-light text-muted"
-                    SearchPlaceholder="Search for order ID, customer, order status or something..."
-                  />
+                  {isLoading ? (
+                    <>
+                      <Loader />
+                    </>
+                  ) : (
+                    <TableContainer
+                      columns={columns}
+                      data={movies || []}
+                      isGlobalFilter={true}
+                      isAddUserList={false}
+                      customPageSize={8}
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap dt-responsive"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Search for order ID, customer, order status or something..."
+                    />
+                  )}
                 </div>
               </CardBody>
             </Card>

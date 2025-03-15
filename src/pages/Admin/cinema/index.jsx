@@ -2,28 +2,27 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Card,
+  CardBody,
   CardHeader,
   Col,
   Container,
   Input,
-  Label,
   Row,
 } from "reactstrap";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
 import "react-toastify/dist/ReactToastify.css";
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import Loader from "../../../Components/Common/Loader";
 
 const Cinema = () => {
-  const { data } = useFetch(["cinemas"], "/cinemas");
-  console.log(data);
+  const { data, isLoading } = useFetch(["cinemas"], "/cinemas");
   const { delete: deleteCinema } = useCRUD(["cinemas"]);
-  const { patch: patchCinema } = useCRUD();
   const nav = useNavigate();
   const [cinemas, setCinemas] = useState([]);
   const [cinema, setCinema] = useState({});
@@ -173,8 +172,12 @@ const Cinema = () => {
                     </div>
                   </Row>
                 </CardHeader>
-                <div className="card-body pt-0">
-                  <div>
+                <CardBody>
+                  {isLoading ? (
+                    <>
+                      <Loader />
+                    </>
+                  ) : (
                     <TableContainer
                       columns={columns}
                       data={cinemas}
@@ -184,8 +187,8 @@ const Cinema = () => {
                       className="custom-header-css"
                       SearchPlaceholder="Search for customer, email, phone, status or something..."
                     />
-                  </div>
-                </div>
+                  )}
+                </CardBody>
               </Card>
             </Col>
           </Row>

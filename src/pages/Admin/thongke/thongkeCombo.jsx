@@ -12,6 +12,25 @@ import {
 import ReactEcharts from "echarts-for-react";
 
 const ThongkeCombo = () => {
+  const data = [
+    {
+      name: "Combo Drink",
+      count: 39,
+    },
+    {
+      name: "Combo Mixed",
+      count: 25,
+    },
+    {
+      name: "Combo Premium",
+      count: 35,
+    },
+    {
+      name: "Combo Snack",
+      count: 12,
+    },
+  ];
+
   const option = {
     tooltip: {
       trigger: "axis",
@@ -33,7 +52,7 @@ const ThongkeCombo = () => {
     xAxis: {
       type: "category",
 
-      data: ["Combo Drink", "Combo Mixed", "Combo Premium", "Combo Snack"],
+      data: data.map((item) => item.name),
     },
     yAxis: {
       type: "value",
@@ -46,7 +65,7 @@ const ThongkeCombo = () => {
     color: ["#2c5282"],
     series: [
       {
-        data: [39, 25, 35, 12],
+        data: data.map((item) => item.count),
         type: "bar",
         barWidth: "60%",
 
