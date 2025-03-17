@@ -85,6 +85,8 @@ import MovieDetails from "../pages/Client/movie/MovieDetail";
 import Checkout from "../pages/Client/checkout";
 import NewsDetail from "../pages/Client/News/NewDetail";
 import Thanks from "../pages/Client/Thanks";
+import ContactAdmin from "../pages/Admin/contact";
+
 
 const publicRoutesNonAuthLayout = [
   {
@@ -214,8 +216,9 @@ const authProtectedRoutes = [
   { path: "/admin/account", component: <Account /> },
   { path: "/admin/account/add", component: <AddAccount /> },
 
+  // quản lý liên hệ 
+  {path: "/admin/contact", component: <ContactAdmin />},
   // quản lý giảm giá
-
   { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/:id/edit", component: <EditVoucher /> },
