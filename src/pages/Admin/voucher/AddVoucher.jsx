@@ -45,18 +45,19 @@ const AddVoucher = () => {
       .required("Số lượng không được để trống"),
     discount_value: Yup.number()
       .typeError("Giảm giá phải là số")
-      .when("discount_type", {
-        is: "percent",
-        then: (schema) =>
-          schema
+      .when("discount_type", ([discount_type], schema) => {
+        if (discount_type === "percent") {
+          return schema
             .min(1, "Giảm giá tối thiểu là 1%")
             .max(100, "Giảm giá tối đa là 100%")
-            .required("Giảm giá không được để trống"),
-        is: "fixed",
-        then: (schema) =>
-          schema
+            .required("Giảm giá không được để trống");
+        }
+        if (discount_type === "fixed") {
+          return schema
             .min(1000, "Giảm giá tối thiểu là 1,000 VNĐ")
-            .required("Giảm giá không được để trống"),
+            .required("Giảm giá không được để trống");
+        }
+        return schema; // Trả về schema mặc định nếu không khớp điều kiện nào
       }),
     start_date: Yup.date()
       .required("Bắt buộc nhập")

@@ -1,6 +1,7 @@
 import React, { useLayoutEffect } from "react";
 
-import Route from "./Routes";
+import RoutesComponent from "./Routes"; // Đổi tên để tránh trùng với `Route` của react-router-dom
+
 function App() {
   useLayoutEffect(() => {
     if (location.pathname.startsWith("/admin")) {
@@ -12,8 +13,8 @@ function App() {
 
   return (
     <>
-      <Route />
-    </> 
+      <RoutesComponent />
+    </>
   );
 }
 

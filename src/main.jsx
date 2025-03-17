@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
-import rootReducer from "./slices";
-import BranchesProvider from "./Contexts/branche/BranchesProvider";
-import { AuthContextProvider } from "./Contexts/auth/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import { AuthContextProvider } from "./Contexts/auth/AuthProvider";
+import BranchesProvider from "./Contexts/branche/BranchesProvider";
+import rootReducer from "./slices";
 
 const store = configureStore({ reducer: rootReducer, devTools: true });
 

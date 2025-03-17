@@ -19,7 +19,7 @@ import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showAlert } from "../../../Components/Common/showAlert";
 import useUploadImage from "../../../Hooks/useUploadImage";
 
-document.title = "";
+document.title = "Tạo combo";
 const AddCombo = () => {
   const { data: foodsData } = useFetch(["foods"], "/foods");
   const { create: createCombo } = useCRUD(["combos"]);

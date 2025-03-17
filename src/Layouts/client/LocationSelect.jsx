@@ -1,6 +1,6 @@
 import { ChevronDown, ChevronRight, CloudHail } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useBrancheContext } from "../../Contexts/branche/useBrancheContext";
+import { useBrancheContext } from "../../Contexts/branche/UseBrancheContext";
 
 export default function LocationSelect() {
   const { branches, cinema, setCinema } = useBrancheContext();

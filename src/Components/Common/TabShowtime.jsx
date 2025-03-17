@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 
 import Loading from "./Loading";
 import api from "../../apis/axios";
-import { useBrancheContext } from "../../Contexts/branche/useBrancheContext";
+import { useBrancheContext } from "../../Contexts/branche/UseBrancheContext";
 
 const TabShowtime = ({ idMovie }) => {
   const { cinema } = useBrancheContext();

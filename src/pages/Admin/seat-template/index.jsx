@@ -24,10 +24,11 @@ import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
 import { Link, useNavigate } from "react-router-dom";
+import Loader from "../../../Components/Common/Loader";
 
 const SeatTemplate = () => {
   const { data: matrixs } = useFetch(["matrixs"], "/getAll-matrix");
-  const { data: dataSeatTemplates } = useFetch(
+  const { data: dataSeatTemplates, isLoading } = useFetch(
     ["seat-templates"],
     "/seat-templates"
   );
@@ -37,6 +38,7 @@ const SeatTemplate = () => {
     patch: patchSeatTemplate,
     delete: deleteSeatTemplate,
   } = useCRUD(["seat-templates"]);
+
   const nav = useNavigate();
   const [seatTemplates, setSeatTemplates] = useState([]);
   const [seatTemplate, setSeatTemplate] = useState({});
@@ -427,17 +429,23 @@ const SeatTemplate = () => {
                       </NavLink>
                     </NavItem>
                   </Nav>
-                  <TableContainer
-                    columns={columns}
-                    data={seatTemplates}
-                    isGlobalFilter={true}
-                    isAddUserList={false}
-                    customPageSize={8}
-                    divClass="table-responsive table-card mb-1"
-                    tableClass="align-middle table-nowrap"
-                    theadClass="table-light text-muted"
-                    SearchPlaceholder="Search for order ID, customer, order status or something..."
-                  />
+                  {isLoading ? (
+                    <>
+                      <Loader />
+                    </>
+                  ) : (
+                    <TableContainer
+                      columns={columns}
+                      data={seatTemplates}
+                      isGlobalFilter={true}
+                      isAddUserList={false}
+                      customPageSize={8}
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Search for order ID, customer, order status or something..."
+                    />
+                  )}
                 </div>
                 <Modal id="showModal" isOpen={modal} toggle={toggle} centered>
                   <ModalHeader toggle={toggle} className="bg-light">

@@ -1,32 +1,25 @@
-import classnames from "classnames";
 import dayjs from "dayjs";
-import React, { useMemo, useState } from "react";
-import * as Yup from "yup";
+import { useFormik } from "formik";
+import React, { useEffect, useMemo, useState } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
   Col,
   Container,
   Modal,
-  Nav,
-  NavItem,
-  NavLink,
-  Row,
-  Label,
-  Input,
-  Button,
   ModalBody,
   ModalHeader,
+  Row,
 } from "reactstrap";
+import * as Yup from "yup";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import TableContainer from "../../../Components/Common/TableContainer";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useFormik } from "formik";
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
-import { useEffect } from "react";
+import TableContainer from "../../../Components/Common/TableContainer";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 
 const Rank = () => {
   const [isEdit, setIsEdit] = useState(false);
@@ -272,7 +265,7 @@ const Rank = () => {
                         <label className="form-label">Tổng chi tiêu</label>
                         <input
                           type="number"
-                          disabled={rank.is_default } 
+                          disabled={rank.is_default}
                           className={`form-control ${
                             formik.touched.total_spent &&
                             formik.errors.total_spent

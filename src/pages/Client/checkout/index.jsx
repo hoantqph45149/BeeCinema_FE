@@ -24,7 +24,6 @@ const Checkout = () => {
     ["membership"],
     "/user/membership"
   );
-
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const location = useLocation();
   const [showtime, setShowtime] = useState({});
@@ -35,8 +34,11 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [priceDiscountVoucher, setPriceDiscountVoucher] = useState(0);
   const [priceDiscountPoint, setPriceDiscountPoint] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [priceDiscountCombo, setPriceDiscountCombo] = useState(0);
   const [priceDiscount, setPriceDiscount] = useState(0);
+  const [priceSeats, setPriceSeats] = useState(0);
+  const [priceCombos, setPriceCombos] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
@@ -112,6 +114,7 @@ const Checkout = () => {
         ? totalPriceSeat * (membership.rank.ticket_percentage / 100)
         : 0
     );
+    setPriceSeats(totalPriceSeat);
     setTotalAmount(totalPriceSeat);
     setTotalPayment(totalPrice);
   };
@@ -150,9 +153,20 @@ const Checkout = () => {
 
     const newTotalPayment = Math.max(newTotalAmount - newPriceDiscount, 0);
 
+    // Tổng tiền giảm giá từ combo (cộng dồn)
+    const newPriceDiscountCombo = isAdding
+      ? priceDiscountCombo + discountAmount
+      : Math.max(priceDiscountCombo - discountAmount, 0);
+
+    // Tổng tiền của combo
+    const newTotalComboAmount = isAdding
+      ? priceCombos + price
+      : Math.max(priceCombos - price, 0);
     setPriceDiscount(newPriceDiscount);
     setTotalAmount(newTotalAmount);
     setTotalPayment(newTotalPayment);
+    setPriceDiscountCombo(newPriceDiscountCombo);
+    setPriceCombos(newTotalComboAmount);
   };
 
   const handleCheckout = async () => {
@@ -164,11 +178,19 @@ const Checkout = () => {
       showtime_id: showtime.id,
       seat_id: selectedSeatsRef.current.map((seat) => seat.seat_id),
       combo,
-      voucher_code: selectVoucher?.code,
-      use_points: point,
+      combo_discount: priceDiscountCombo,
       payment_name: paymentMethod,
-      total_amount: totalAmount,
+      voucher_id: selectVoucher?.id,
+      voucher_code: selectVoucher?.code,
+      voucher_discount: priceDiscountVoucher,
+      points: point,
+      point_discount: priceDiscountPoint,
+      price_combo: priceCombos,
+      price_seat: priceSeats,
+      total_price_before_discount: totalAmount,
+      total_discount: priceDiscount,
       total_price: totalpayment,
+      rank_at_booking: membership.rank.name,
     };
 
     console.log(dataPost);

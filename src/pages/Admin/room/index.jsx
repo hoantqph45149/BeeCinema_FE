@@ -25,9 +25,10 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { Link, useNavigate } from "react-router-dom";
+import Loader from "../../../Components/Common/Loader";
 
 const Room = () => {
-  const { data } = useFetch(["rooms"], "/rooms");
+  const { data, isLoading } = useFetch(["rooms"], "/rooms");
   const { data: cinemas } = useFetch(["cinemas"], "/cinemas");
   const { data: branches } = useFetch(["branches"], "/branches");
   const { data: typeRooms } = useFetch(["typeRooms"], "/type-rooms");
@@ -36,7 +37,6 @@ const Room = () => {
     "/seat-templates"
   );
 
-  console.log(typeRooms);
   const { create: createRoom, patch: patchRoom } = useCRUD(["rooms"]);
 
   const nav = useNavigate();
@@ -297,72 +297,76 @@ const Room = () => {
                 </Row>
               </CardHeader>
               <CardBody className="pt-0">
-                <div>
-                  <Nav
-                    className="nav-tabs nav-tabs-custom nav-success"
-                    role="tablist"
-                  >
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "1" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("1", "all");
-                        }}
-                        href="#"
-                      >
-                        <i className="ri-store-2-fill me-1 align-bottom"></i>{" "}
-                        Tất cả
-                        {data?.data.length > 0 && (
-                          <span className="badge bg-success align-middle ms-1">
-                            {data?.data.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "2" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("2", "publish");
-                        }}
-                        href="#"
-                      >
-                        {" "}
-                        <i className="ri-checkbox-circle-line me-1 align-bottom"></i>{" "}
-                        Đã xuất bản
-                        {roomsPublish.length > 0 && (
-                          <span className="badge bg-success align-middle ms-1">
-                            {roomsPublish.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "3" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("3", "unPublish");
-                        }}
-                        href="#"
-                      >
-                        Bản nháp
-                        {roomsUnPublish.length > 0 && (
-                          <span className="badge bg-danger align-middle ms-1">
-                            {roomsUnPublish.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
+                <Nav
+                  className="nav-tabs nav-tabs-custom nav-success"
+                  role="tablist"
+                >
+                  <NavItem>
+                    <NavLink
+                      className={classnames(
+                        { active: activeTab === "1" },
+                        "fw-semibold"
+                      )}
+                      onClick={() => {
+                        toggleTab("1", "all");
+                      }}
+                      href="#"
+                    >
+                      <i className="ri-store-2-fill me-1 align-bottom"></i> Tất
+                      cả
+                      {data?.data.length > 0 && (
+                        <span className="badge bg-success align-middle ms-1">
+                          {data?.data.length}
+                        </span>
+                      )}
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames(
+                        { active: activeTab === "2" },
+                        "fw-semibold"
+                      )}
+                      onClick={() => {
+                        toggleTab("2", "publish");
+                      }}
+                      href="#"
+                    >
+                      {" "}
+                      <i className="ri-checkbox-circle-line me-1 align-bottom"></i>{" "}
+                      Đã xuất bản
+                      {roomsPublish.length > 0 && (
+                        <span className="badge bg-success align-middle ms-1">
+                          {roomsPublish.length}
+                        </span>
+                      )}
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames(
+                        { active: activeTab === "3" },
+                        "fw-semibold"
+                      )}
+                      onClick={() => {
+                        toggleTab("3", "unPublish");
+                      }}
+                      href="#"
+                    >
+                      Bản nháp
+                      {roomsUnPublish.length > 0 && (
+                        <span className="badge bg-danger align-middle ms-1">
+                          {roomsUnPublish.length}
+                        </span>
+                      )}
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                {isLoading ? (
+                  <>
+                    <Loader />
+                  </>
+                ) : (
                   <TableContainer
                     columns={columns}
                     data={rooms}
@@ -374,7 +378,8 @@ const Room = () => {
                     theadClass="table-light text-muted"
                     SearchPlaceholder="Search for order ID, customer, order status or something..."
                   />
-                </div>
+                )}
+
                 <Modal id="showModal" isOpen={modal} toggle={toggle} centered>
                   <ModalHeader toggle={toggle} className="bg-light">
                     {isEdit ? "Sửa phòng chiếu" : "Thêm phòng chiếu"}

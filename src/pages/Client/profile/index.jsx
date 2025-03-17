@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { FaCog, FaEdit } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
-import MyVoucher from "./MyVoucher";
-import TicketHistory from "./TicketHistory";
-import MemberShip from "./MemberShip";
 import Modal from "./../../../Components/Common/Modal";
 import FormUpdateProfile from "./FormUpdateProfile";
+import MemberShip from "./MemberShip";
+import MyVoucher from "./MyVoucher";
 import ResetPassword from "./ResetPassword";
-import { useLocation } from "react-router-dom";
+import TicketHistory from "./TicketHistory";
 
 function ProfileClient() {
   const location = useLocation();

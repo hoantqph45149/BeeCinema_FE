@@ -125,7 +125,7 @@ const Navdata = () => {
         {
           id: 3,
           label: "Thống kê hóa đơn",
-          link: "/#",
+          link: "/admin/thongkeHoadon",
           parentId: "thongke",
         },
       ],
