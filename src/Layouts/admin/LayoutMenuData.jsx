@@ -293,7 +293,7 @@ const Navdata = () => {
         {
           id: 2,
           label: "Liên hệ",
-          link: "/#",
+          link: "/admin/contact",
           parentId: "taikhoan",
         },
         {

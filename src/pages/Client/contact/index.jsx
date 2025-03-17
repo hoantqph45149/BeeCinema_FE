@@ -1,7 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../../Components/Common/Button";
+import { useFormik } from "formik";
+import { useCRUD } from "../../../Hooks/useCRUD";
+import * as Yup from "yup";
 
 const Contact = () => {
+  const [contact, setContact] = useState();
+  const { create, patch, delete: deleteRanks } = useCRUD(["contacts"]);
+
+  const contactSchema = Yup.object().shape({
+    name: Yup.string().required("Vui lòng nhập họ và tên"),
+    email: Yup.string()
+      .required("Vui lòng nhập email")
+      .email("Email không hợp lệ"),
+    address: Yup.string().required("Vui lòng nhập địa chỉ"),
+    phone: Yup.string().required("Vui lòng nhập số điện thoại"),
+    message: Yup.string().required("Vui lòng nhập nội dung tin nhắn"),
+  });
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      name: (contact && contact?.name) || "",
+      email: (contact && contact?.email) || "",
+      address: (contact && contact?.address) || "",
+      phone: (contact && contact?.phone) || "",
+      message: (contact && contact?.message) || "",
+    },
+    validationSchema: contactSchema,
+      onSubmit: (values, { resetForm }) => {
+      try {
+        create.mutate({
+          url: "/contact",
+          data: { ...values },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      resetForm();
+      setModal(false);
+    },
+  });
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="absolute top-0 left-0 w-full h-2/3 ">
@@ -17,7 +55,7 @@ const Contact = () => {
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
             Gửi tin nhắn cho chúng tôi
           </h2>
-          <form>
+          <form onSubmit={formik.handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-gray-700 font-semibold mb-1">
@@ -25,12 +63,18 @@ const Contact = () => {
                 </label>
                 <input
                   type="text"
+                  name="name"
                   placeholder="Nhập họ và tên"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
-                <p className="text-red-500 text-sm mt-1">
-                  Vui lòng nhập họ và tên
-                </p>
+                {formik.touched.name && formik.errors.name && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formik.errors.name}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-1">
@@ -38,50 +82,83 @@ const Contact = () => {
                 </label>
                 <input
                   type="email"
+                  name="email"
                   placeholder="Nhập email"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
-                <p className="text-red-500 text-sm mt-1">
-                  Vui lòng nhập địa chỉ email hợp lệ
-                </p>
+                {formik.touched.email && formik.errors.email && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formik.errors.email}
+                  </p>
+                )}
               </div>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-gray-700 font-semibold mb-1">
-                  Số điện thoại
+                  Số điện thoại *
                 </label>
                 <input
                   type="text"
+                  name="phone"
                   placeholder="Nhập số điện thoại"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={formik.values.phone}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formik.errors.phone}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-1">
-                  Công ty
+                  Địa chỉ *
                 </label>
                 <input
                   type="text"
-                  placeholder="Tên công ty"
+                  name="address"
+                  placeholder="Nhập địa chỉ"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  value={formik.values.address}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
+                {formik.touched.address && formik.errors.address && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {formik.errors.address}
+                  </p>
+                )}
               </div>
             </div>
+
             <div className="mb-4">
               <label className="block text-gray-700 font-semibold mb-1">
                 Tin nhắn *
               </label>
               <textarea
                 rows="4"
+                name="message"
                 placeholder="Nhập nội dung tin nhắn"
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={formik.values.message}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               ></textarea>
-              <p className="text-red-500 text-sm mt-1">
-                Vui lòng nhập nội dung tin nhắn
-              </p>
+              {formik.touched.message && formik.errors.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formik.errors.message}
+                </p>
+              )}
             </div>
-            <Button>GỬI TIN NHẮN</Button>
+
+            <Button type="submit">GỬI TIN NHẮN</Button>
           </form>
         </div>
 

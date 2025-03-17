@@ -73,6 +73,9 @@ import SeatTemplate from "../pages/Admin/seat-template/index";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
+// contact
+import ContactAdmin from "../pages/Admin/contact";
+
 // Đường dẫn dành cho phía client
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login/index";
@@ -224,8 +227,9 @@ const authProtectedRoutes = [
   { path: "/admin/account/add", component: <AddAccount /> },
   { path: "/admin/account/:id/edit", component: <UpdateAccount /> },
 
+  // quản lý liên hệ 
+  {path: "/admin/contact", component: <ContactAdmin />},
   // quản lý giảm giá
-
   { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
   { path: "/admin/voucher/:id/edit", component: <EditVoucher /> },
