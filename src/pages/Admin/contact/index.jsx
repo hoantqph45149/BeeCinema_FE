@@ -131,6 +131,7 @@ const ContactAdmin = () => {
             value={contact.status}
             onChange={(e) => handleStatusChange(e, contact.id)}
             className="form-select"
+            disabled={contact.status === "Đã xử lý"}
           >
             <option value="Chưa xử lý">Chưa xử lý</option>
             <option value="Đã xử lý">Đã xử lý</option>
