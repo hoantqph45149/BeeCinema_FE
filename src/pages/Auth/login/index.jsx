@@ -1,18 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useCRUD } from "../../../Hooks/useCRUD";
-import { useAuthContext } from "../../../Contexts/auth/UseAuth";
-import AuthSlideshow from "../common/AuthSlideshow";
-import { showAlert } from "../../../Components/Common/showAlert";
-import Modal from "../../../Components/Common/Modal";
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import api, { getCsrfToken } from "../../../apis/axios";
+import Modal from "../../../Components/Common/Modal";
+import { showAlert } from "../../../Components/Common/showAlert";
+import { useCRUD } from "../../../Hooks/useCRUD";
+import AuthSlideshow from "../common/AuthSlideshow";
 import ForgotPassword from "../forgot-password";
-import api from "../../../apis/axios";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 export function Login() {
-  const { setAuthUser } = useAuthContext();
   const { create: login } = useCRUD(["login"]);
+  const { setAuthUser } = useAuthContext();
   const [openModalforgot, setOpenModalforgot] = useState(false);
   const nav = useNavigate();
   const formik = useFormik({
@@ -28,7 +28,8 @@ export function Login() {
         .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
         .required("Vui lòng nhập mật khẩu"),
     }),
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
+      await getCsrfToken();
       login.mutate(
         {
           url: "/login",
@@ -37,10 +38,10 @@ export function Login() {
         },
         {
           onSuccess: (data) => {
-            localStorage.setItem("user", JSON.stringify(data));
-            setAuthUser(data);
+            setAuthUser(data?.user);
             nav("/");
           },
+          // eslint-disable-next-line no-unused-vars
           onError: (error) => {
             showAlert(
               "Đăng nhập thất bại",

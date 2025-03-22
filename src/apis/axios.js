@@ -1,27 +1,15 @@
 import axios from "axios";
+
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: "http://localhost:8000/api",
+  withCredentials: true, // Để gửi cookie
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 5000,
+  timeout: 10000,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    // console.log(user);
-    const token = user?.token;
-    // console.log(`bearer ${token}`);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+export const getCsrfToken = () => api.get("/sanctum/csrf-cookie");
 
 export const apiService = {
   get: (url, params) => api.get(url, { params }).then((res) => res.data),

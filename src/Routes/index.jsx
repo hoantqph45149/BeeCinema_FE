@@ -18,6 +18,7 @@ import {
   AuthProtected,
   CheckRouteAuth,
   CheckRouteAdmin,
+  CheckRouteVerifiedEmail,
 } from "./AuthProtected";
 
 const Index = () => {
@@ -87,9 +88,11 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <AuthProtected>
-                  <LayoutClient>{route.component}</LayoutClient>
-                </AuthProtected>
+                <CheckRouteVerifiedEmail>
+                  <AuthProtected>
+                    <LayoutClient>{route.component}</LayoutClient>
+                  </AuthProtected>
+                </CheckRouteVerifiedEmail>
               }
               key={idx}
               exact={true}

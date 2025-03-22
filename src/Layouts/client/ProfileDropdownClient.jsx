@@ -8,16 +8,14 @@ import {
   Tags,
   UserPen,
 } from "lucide-react";
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useCRUD } from "../../Hooks/useCRUD";
 import { useAuthContext } from "../../Contexts/auth/UseAuth";
+import { useCRUD } from "../../Hooks/useCRUD";
 
 function ProfileDropdownClient() {
   const { create: logout } = useCRUD(["logout"]);
   const { authUser, setAuthUser } = useAuthContext();
   const nav = useNavigate();
-  const user = authUser.user;
 
   const handleLogout = () => {
     logout.mutate(
@@ -28,13 +26,11 @@ function ProfileDropdownClient() {
       },
       {
         onSuccess: () => {
-          localStorage.removeItem("user");
           setAuthUser(null);
           nav("/login");
         },
         onError: (error) => {
           if (error?.response?.data?.message == "Unauthenticated.") {
-            localStorage.removeItem("user");
             setAuthUser(null);
             nav("/login");
           }
@@ -45,14 +41,14 @@ function ProfileDropdownClient() {
   return (
     <Menu>
       <MenuButton className="flex items-center space-x-2 text-primary font-semibold">
-        <span>Xin chào : {user.name}</span>{" "}
+        <span>Xin chào : {authUser?.name}</span>{" "}
         <ChevronDown size={20} strokeWidth={3} />
       </MenuButton>
       <MenuItems
         anchor="bottom"
         className="w-64 bg-white border rounded-lg shadow-lg"
       >
-        {user.role === "admin" && (
+        {authUser?.role === "admin" && (
           <MenuItem>
             <Link
               className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"

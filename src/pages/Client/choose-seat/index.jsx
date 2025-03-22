@@ -79,7 +79,7 @@ const ChooseSeat = () => {
         .flatMap((row) => row.seats)
         .filter(
           (seat) =>
-            seat.pivot?.user_id === authUser?.user.id &&
+            seat.pivot?.user_id === authUser?.id &&
             seat.pivot?.status === "hold"
         );
 
@@ -171,7 +171,7 @@ const ChooseSeat = () => {
               pivot: {
                 ...selectSeat.pivot,
                 status: "hold",
-                user_id: authUser?.user.id,
+                user_id: authUser?.id,
               },
             },
           ]
@@ -189,9 +189,7 @@ const ChooseSeat = () => {
                   status:
                     seat.pivot?.status === "available" ? "hold" : "available",
                   user_id:
-                    seat.pivot?.status === "available"
-                      ? authUser?.user.id
-                      : null,
+                    seat.pivot?.status === "available" ? authUser?.id : null,
                 },
               }
             : seat
@@ -226,7 +224,7 @@ const ChooseSeat = () => {
       showAlert("", "Vui lòng chọn ghế", "warning");
       return;
     }
-    const isValid = handleSeatSelection(seatsByRow, authUser?.user.id);
+    const isValid = handleSeatSelection(seatsByRow, authUser?.id);
 
     if (isValid) {
       nav(`/checkout/${slug}`);

@@ -4,7 +4,6 @@ import { useBrancheContext } from "./../../../Contexts/branche/UseBrancheContext
 
 const TheaterInformation = () => {
   const { cinema } = useBrancheContext();
-  console.log(cinema);
   return (
     <>
       <ContentDetail

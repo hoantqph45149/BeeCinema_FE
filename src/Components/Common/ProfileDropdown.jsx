@@ -26,13 +26,11 @@ const ProfileDropdown = () => {
       },
       {
         onSuccess: () => {
-          localStorage.removeItem("user");
           setAuthUser(null);
           window.location.href = "/login";
         },
         onError: (error) => {
           if (error?.response?.data?.message == "Unauthenticated.") {
-            localStorage.removeItem("user");
             setAuthUser(null);
             window.location.href = "/login";
           }
@@ -51,7 +49,7 @@ const ProfileDropdown = () => {
           <span className="d-flex align-items-center">
             <img
               className="rounded-circle header-profile-user"
-              src={authUser?.user?.avatar || "/images/defaultavatar.jpg"}
+              src={authUser?.avatar || "/images/defaultavatar.jpg"}
               alt="Header Avatar"
             />
             <span className="text-start ms-xl-2">
@@ -59,7 +57,7 @@ const ProfileDropdown = () => {
                 Admin
               </span>
               <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
-                {authUser?.user?.name}
+                {authUser?.name}
               </span>
             </span>
           </span>

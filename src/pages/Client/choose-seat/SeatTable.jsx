@@ -45,7 +45,7 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                           return;
                         } else if (
                           seat.pivot?.status === "hold" &&
-                          seat.pivot?.user_id !== authUser.user.id
+                          seat.pivot?.user_id !== authUser?.id
                         ) {
                           showAlert(
                             "Vui lòng chọn ghế khác",
@@ -73,10 +73,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                         <div
                           className={`${
                             seat.pivot?.status == "hold" &&
-                            seat.pivot?.user_id == authUser.user.id
+                            seat.pivot?.user_id == authUser?.id
                               ? "bg-accent"
                               : seat.pivot?.status == "hold" &&
-                                seat.pivot?.user_id !== authUser.user.id
+                                seat.pivot?.user_id !== authUser?.id
                               ? "bg-[#082f49]"
                               : seat.pivot?.status == "booked"
                               ? "bg-[#ef4444]"
@@ -97,10 +97,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                             }}
                             className={`w-auto select-none absolute top-[45%] sm:top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-bold ${
                               seat.pivot?.status == "hold" &&
-                              seat.pivot?.user_id == authUser.user.id
+                              seat.pivot?.user_id == authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "hold" &&
-                                  seat.pivot?.user_id !== authUser.user.id
+                                  seat.pivot?.user_id !== authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "booked"
                                 ? "text-primary"
@@ -114,10 +114,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                         <div
                           className={`${
                             seat.pivot?.status == "hold" &&
-                            seat.pivot?.user_id == authUser.user.id
+                            seat.pivot?.user_id == authUser?.id
                               ? "bg-accent"
                               : seat.pivot?.status == "hold" &&
-                                seat.pivot?.user_id !== authUser.user.id
+                                seat.pivot?.user_id !== authUser?.id
                               ? "bg-[#082f49]"
                               : seat.pivot?.status == "booked"
                               ? "bg-[#ef4444]"
@@ -134,10 +134,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                           <span
                             className={`w-auto h-auto absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-medium  ${
                               seat.pivot?.status == "hold" &&
-                              seat.pivot?.user_id == authUser.user.id
+                              seat.pivot?.user_id == authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "hold" &&
-                                  seat.pivot?.user_id !== authUser.user.id
+                                  seat.pivot?.user_id !== authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "booked"
                                 ? "text-primary"
@@ -151,10 +151,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                         <div
                           className={`${
                             seat.pivot?.status == "hold" &&
-                            seat.pivot?.user_id == authUser.user.id
+                            seat.pivot?.user_id == authUser?.id
                               ? "bg-accent"
                               : seat.pivot?.status == "hold" &&
-                                seat.pivot?.user_id !== authUser.user.id
+                                seat.pivot?.user_id !== authUser?.id
                               ? "bg-[#082f49]"
                               : seat.pivot?.status == "booked"
                               ? "bg-[#ef4444]"
@@ -172,10 +172,10 @@ const SeatTable = ({ seatsByRow, toggleSeatSelection, matrix }) => {
                           <span
                             className={`w-auto absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[6px] sm:text-[10px] md:text-[7px] lg:text-[10px] font-medium  ${
                               seat.pivot?.status == "hold" &&
-                              seat.pivot?.user_id == authUser.user.id
+                              seat.pivot?.user_id == authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "hold" &&
-                                  seat.pivot?.user_id !== authUser.user.id
+                                  seat.pivot?.user_id !== authUser?.id
                                 ? "text-primary"
                                 : seat.pivot?.status == "booked"
                                 ? "text-primary"
