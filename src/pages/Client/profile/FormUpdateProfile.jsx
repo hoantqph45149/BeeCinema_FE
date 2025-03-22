@@ -13,9 +13,10 @@ const FormUpdateProfile = () => {
   const { patch: updateUser } = useCRUD(["users"]);
   const { uploadImage } = useUploadImage();
   const { authUser, setAuthUser } = useAuthContext();
-  const [selectedGender, setSelectedGender] = useState(authUser?.user?.gender);
+  console.log(authUser);
+  const [selectedGender, setSelectedGender] = useState(authUser?.gender);
   const [image, setImage] = useState(
-    authUser?.user?.avatar || "/images/defaultavatar.jpg"
+    authUser?.avatar ?? "/images/defaultavatar.jpg"
   );
 
   const handleImageChange = (event) => {
@@ -32,12 +33,12 @@ const FormUpdateProfile = () => {
 
   const formik = useFormik({
     initialValues: {
-      name: (authUser && authUser.user.name) || "",
-      phone: (authUser && authUser.user.phone) || "",
-      birthday: (authUser && authUser.user.birthday) || "",
-      email: (authUser && authUser.user.email) || "",
-      address: (authUser && authUser.user.address) || "",
-      avatar: (authUser && authUser.user.avatar) || "",
+      name: (authUser && authUser?.name) || "",
+      phone: (authUser && authUser?.phone) || "",
+      birthday: (authUser && authUser?.birthday) || "",
+      email: (authUser && authUser?.email) || "",
+      address: (authUser && authUser?.address) || "",
+      avatar: (authUser && authUser?.avatar) || "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Họ tên là bắt buộc"),
@@ -50,14 +51,14 @@ const FormUpdateProfile = () => {
         .required("Email là bắt buộc"),
     }),
     onSubmit: async (values) => {
-      let imgAvatar = authUser.user.avatar;
-      if (values.avatar !== authUser.user.avatar) {
+      let imgAvatar = authUser?.avatar;
+      if (values.avatar !== authUser?.avatar) {
         imgAvatar = await uploadImage(values.avatar);
       }
 
       updateUser.mutate(
         {
-          url: `users/${authUser?.user?.id}`,
+          url: `users/${authUser?.id}`,
           data: {
             ...values,
             avatar: imgAvatar,
@@ -66,12 +67,7 @@ const FormUpdateProfile = () => {
         },
         {
           onSuccess: (data) => {
-            const user = {
-              user: data.user,
-              token: authUser.token,
-            };
-            localStorage.setItem("user", JSON.stringify(user));
-            setAuthUser(user);
+            setAuthUser(data?.user);
 
             showAlert(
               "Thành công",

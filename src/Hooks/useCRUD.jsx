@@ -7,7 +7,7 @@ export const useFetch = (key, url, options = {}, params) => {
   return useQuery({
     queryKey: key,
     queryFn: async () => await apiService.get(url, params),
-    ...options, // Gộp options tùy chỉnh
+    ...options,
   });
 };
 

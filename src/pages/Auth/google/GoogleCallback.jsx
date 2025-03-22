@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import api from "../../../apis/axios";
+import api, { getCsrfToken } from "../../../apis/axios";
 import Loading from "../../../Components/Common/Loading";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
@@ -14,9 +14,9 @@ const GoogleCallback = () => {
     const fetchData = async () => {
       if (code) {
         try {
+          await getCsrfToken();
           const { data } = await api.get(`/auth/google/callback?code=${code}`);
-          localStorage.setItem("user", JSON.stringify(data));
-          setAuthUser(data);
+          setAuthUser(data?.user);
           nav("/");
         } catch (error) {
           console.error("Error fetching data:", error);

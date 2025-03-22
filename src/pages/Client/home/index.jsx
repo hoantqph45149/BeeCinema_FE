@@ -4,10 +4,10 @@ import TabMovies from "../../../Components/Common/TabMovies";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import Banner from "./Banner";
 
-import { Modal } from "reactstrap";
 import { useBrancheContext } from "../../../Contexts/branche/UseBrancheContext";
 import api from "../../../apis/axios";
 import VerifiedEmail from "../../Auth/verified-email";
+import Modal from "../../../Components/Common/Modal";
 
 const Home = () => {
   const { cinema } = useBrancheContext();
@@ -59,10 +59,10 @@ const Home = () => {
   }, [cinema]);
 
   useEffect(() => {
-    if (authUser?.user && authUser?.user?.email_verified_at === null) {
+    if (authUser && authUser?.email_verified_at === null) {
       setOpenModalVeryfiedEmail(true);
     }
-  }, [authUser?.user]);
+  }, [authUser]);
 
   const movieTabs = [
     {

@@ -223,15 +223,15 @@ const Checkout = () => {
             <div className="flex flex-col gap-4 md:flex-row md:items-center lg:gap-10 xl:gap-28 justify-start">
               <p className="text-xs md:text-base">
                 <strong className="text-sm md:text-base">Họ Tên:</strong> <br />{" "}
-                {authUser.user.name}
+                {authUser?.name}
               </p>
               <p className="text-xs md:text-base">
                 <strong className="text-sm">Số điện thoại:</strong> <br />{" "}
-                {authUser.user.phone}
+                {authUser?.phone}
               </p>
               <p className="text-xs md:text-base">
                 <strong className="text-sm md:text-base">Email:</strong> <br />{" "}
-                {authUser.user.email}
+                {authUser?.email}
               </p>
             </div>
           </div>

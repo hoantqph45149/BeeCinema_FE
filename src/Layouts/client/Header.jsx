@@ -28,9 +28,9 @@ const Header = () => {
       <div className="text-primary bg-gray-900">
         <div className="container">
           <div className="flex justify-end">
-            {authUser?.user ? (
+            {authUser ? (
               <div className="py-2">
-                <ProfileDropdownClient user={authUser.user} />
+                <ProfileDropdownClient />
               </div>
             ) : (
               <div className="flex">

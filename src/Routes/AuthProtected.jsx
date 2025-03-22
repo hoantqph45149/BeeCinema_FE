@@ -1,10 +1,11 @@
 import React from "react";
 import { Navigate, Route } from "react-router-dom";
+import { useAuthContext } from "../Contexts/auth/UseAuth";
 
 const AuthProtected = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const { authUser } = useAuthContext();
 
-  if (!user || !user.token) {
+  if (!authUser) {
     return <Navigate to="/login" />;
   }
 
@@ -12,9 +13,8 @@ const AuthProtected = ({ children }) => {
 };
 
 const CheckRouteVerifiedEmail = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-
-  if (!user || !user.token || !user.user.email_verified_at) {
+  const { authUser } = useAuthContext();
+  if (!authUser || !authUser?.email_verified_at) {
     return <Navigate to="/" />;
   }
 
@@ -22,9 +22,9 @@ const CheckRouteVerifiedEmail = ({ children }) => {
 };
 
 const CheckRouteAuth = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const { authUser } = useAuthContext();
 
-  if (user?.user || user?.token) {
+  if (authUser) {
     return <Navigate to="/" />;
   }
 
@@ -32,13 +32,13 @@ const CheckRouteAuth = ({ children }) => {
 };
 
 const CheckRouteAdmin = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-
-  if (user?.user?.role !== "admin") {
+  const { authUser } = useAuthContext();
+  console.log(authUser?.role);
+  if (authUser?.role !== "admin") {
     return (window.location.href = "/");
   }
 
-  if (!user || !user.token) {
+  if (!authUser) {
     return <Navigate to="/login" />;
   }
 

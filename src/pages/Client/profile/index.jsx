@@ -49,14 +49,14 @@ function ProfileClient() {
           <div className="flex flex-col gap-2">
             <div className="flex gap-4 items-center">
               <img
-                src={authUser.user.avatar || "/images/defaultavatar.jpg"}
+                src={authUser?.avatar ?? "/images/defaultavatar.jpg"}
                 alt="Profile"
                 className="w-14 h-14  md:w-20 md:h-20 rounded-full border-4 border-white"
               />
               <div>
-                <h1 className="text-md font-semibold">{authUser.user.name}</h1>
-                <p className="text-sm">{authUser.user.email}</p>
-                <p className="text-xs">{authUser.user.birthday}</p>
+                <h1 className="text-md font-semibold">{authUser?.name}</h1>
+                <p className="text-sm">{authUser?.email}</p>
+                <p className="text-xs">{authUser?.birthday}</p>
               </div>
             </div>
             <div

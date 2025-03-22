@@ -31,11 +31,6 @@ const ResetPassword = ({ setModal }) => {
         .required("Vui lòng nhập lại mật khẩu mới"),
     }),
     onSubmit: (values) => {
-      console.log({
-        ...values,
-        token: authUser.token,
-      });
-
       resetPassword.mutate(
         {
           url: "/change-password",

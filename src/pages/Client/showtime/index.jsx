@@ -21,7 +21,6 @@ const ShowtimeClient = () => {
     const findShowtime = data.find((item) => item.date === dateId);
     setMovieShowtimes(findShowtime);
   };
-  console.log(showtimes);
   useEffect(() => {
     if (showtimes) {
       const res = showtimes.dates[0];
