@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate } from "react-router-dom";
 
 /* Admin routes */
@@ -10,33 +9,33 @@ import UpdateAccount from "../pages/Admin/account/UpdateAccount";
 import Overview from "../pages/Admin/overview/index";
 import Rank from "../pages/Admin/rank";
 // banner
-import SlideShow from "../pages/Admin/slide-show/index";
 import AddSlideShow from "../pages/Admin/slide-show/AddSlideShow";
+import SlideShow from "../pages/Admin/slide-show/index";
 
 // branch
 import Branch from "../pages/Admin/branch/index";
 
 // cinema
-import Cinema from "../pages/Admin/cinema/index";
 import AddCinema from "../pages/Admin/cinema/AddCinema";
+import Cinema from "../pages/Admin/cinema/index";
 import UpdateCinema from "../pages/Admin/cinema/UpdateCinema";
 
 // combo
-import Combo from "../pages/Admin/combo/index";
 import AddCombo from "../pages/Admin/combo/AddCombo";
 import EditCombo from "../pages/Admin/combo/EditCombo";
+import Combo from "../pages/Admin/combo/index";
 
 // food
 import Food from "../pages/Admin/food/index";
 
 // movie
-import Movie from "../pages/Admin/movie/index";
 import AddMovie from "../pages/Admin/movie/AddMovie";
 import EditMovie from "../pages/Admin/movie/EditMovie";
+import Movie from "../pages/Admin/movie/index";
 
 // post
-import Post from "../pages/Admin/post/index";
 import AddPost from "../pages/Admin/post/AddPost";
+import Post from "../pages/Admin/post/index";
 import UpdatePost from "../pages/Admin/post/UpdatePost";
 
 // room
@@ -44,9 +43,9 @@ import Room from "../pages/Admin/room/index";
 import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
+import Addshowtime from "../pages/Admin/showtime/AddShowtime";
 import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
-import Addshowtime from "../pages/Admin/showtime/AddShowtime";
 import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
 
 // ticket
@@ -54,29 +53,27 @@ import Ticket from "../pages/Admin/ticket/index";
 import TicketDetail from "../pages/Admin/ticket/TicketDetail";
 
 // voucher
-import Voucher from "../pages/Admin/voucher/index";
 import AddVoucher from "../pages/Admin/voucher/AddVoucher";
 import EditVoucher from "../pages/Admin/voucher/EditVoucher";
+import Voucher from "../pages/Admin/voucher/index";
 
 // thống kê
-import ThongkeDoanhthu from "../pages/Admin/thongke/thongkeDoanhthu";
-import ThongkePhim from "../pages/Admin/thongke/thongkePhim";
-import ThongkeCombo from "../pages/Admin/thongke/thongkeCombo";
-import ThongkeHoaDon from "../pages/Admin/thongke/thongkeHoaDon";
 
 // quản lý giá
 import AddAccount from "../pages/Admin/account/AddAccount";
 import PriceManage from "../pages/Admin/pricemanage/price-manage";
 
 // quản lý sơ đồ ghế
-import SeatTemplate from "../pages/Admin/seat-template/index";
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
+import SeatTemplate from "../pages/Admin/seat-template/index";
 import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 
 // contact
 import ContactAdmin from "../pages/Admin/contact";
 
 // Đường dẫn dành cho phía client
+import RevenueStatistics from "../pages/Admin/statistics/revenue-statistics";
+import TicketStatistics from "../pages/Admin/statistics/ticket-statistics";
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login/index";
 import Register from "../pages/Auth/register/index";
@@ -227,8 +224,8 @@ const authProtectedRoutes = [
   { path: "/admin/account/add", component: <AddAccount /> },
   { path: "/admin/account/:id/edit", component: <UpdateAccount /> },
 
-  // quản lý liên hệ 
-  {path: "/admin/contact", component: <ContactAdmin />},
+  // quản lý liên hệ
+  { path: "/admin/contact", component: <ContactAdmin /> },
   // quản lý giảm giá
   { path: "/admin/voucher", component: <Voucher /> },
   { path: "/admin/voucher/add", component: <AddVoucher /> },
@@ -246,10 +243,8 @@ const authProtectedRoutes = [
   // quản lý cấp bậc (rank)
   { path: "/admin/rank", component: <Rank /> },
   // thống kê
-  { path: "/admin/thongkeCombo", component: <ThongkeCombo /> },
-  { path: "/admin/thongkeDoanhthu", component: <ThongkeDoanhthu /> },
-  { path: "/admin/thongkePhim", component: <ThongkePhim /> },
-  { path: "/admin/thongkehoadon", component: <ThongkeHoaDon /> },
+  { path: "/admin/revenue-statistics", component: <RevenueStatistics /> },
+  { path: "/admin/Ticket-statistics", component: <TicketStatistics /> },
   // trang chủ
   {
     path: "/admin/overview",

@@ -60,7 +60,7 @@ export function Register() {
           shouldShowAlert: false,
         },
         {
-          onSuccess: (data) => {
+          onSuccess: () => {
             showAlert("Đăng ký thành công", "Vui lý đăng nhập", "success");
             formik.resetForm();
             setSelectedGender("");

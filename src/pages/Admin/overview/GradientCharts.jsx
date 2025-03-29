@@ -6,7 +6,6 @@ const GradientCharts = ({ dataColors, data }) => {
   var GradientChartsColors = getChartColorsArray(dataColors);
   const [dateTime, setDateTime] = useState([]);
   const [revenue, setRevenue] = useState([]);
-  console.log(dateTime);
   useEffect(() => {
     if (data) {
       setDateTime(data?.map((item) => item.date));

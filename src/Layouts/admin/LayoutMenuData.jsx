@@ -106,26 +106,14 @@ const Navdata = () => {
         {
           id: 1,
           label: "Thống kê doanh thu ",
-          link: "/admin/thongkeDoanhthu",
+          link: "/admin/revenue-statistics",
           parentId: "thongke",
         },
 
         {
           id: 2,
-          label: "Thống kê phim",
-          link: "/admin/thongkePhim",
-          parentId: "thongke",
-        },
-        {
-          id: 3,
-          label: "Thống kê combo",
-          link: "/admin/thongkeCombo",
-          parentId: "thongke",
-        },
-        {
-          id: 3,
-          label: "Thống kê hóa đơn",
-          link: "/admin/thongkeHoadon",
+          label: "Thống kê vé",
+          link: "/admin/Ticket-statistics",
           parentId: "thongke",
         },
       ],
