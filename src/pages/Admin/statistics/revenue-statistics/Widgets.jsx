@@ -2,74 +2,57 @@ import React from "react";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Col } from "reactstrap";
-import { formatLargeNumber } from "./../../../utils/Currency";
+import { formatLargeNumber, formatVND } from "../../../../utils/Currency";
+import dayjs from "dayjs";
+import PropTypes from "prop-types";
 
 const Widgets = ({ data, date }) => {
-  const { totalRevenue, ticketsSold, newCustomers, customerRetentionRate } =
-    data;
-  console.log("date", date);
   const ecomWidgets = [
     {
       id: 1,
       cardColor: "primary",
-      label: "Doanh thu",
-      badge:
-        totalRevenue?.change < 0
-          ? "ri-arrow-right-down-line"
-          : "ri-arrow-right-up-line",
-      badgeClass: totalRevenue?.change < 0 ? "danger" : "success",
-      percentage: totalRevenue?.change,
-      counter: formatLargeNumber(totalRevenue?.value).value,
-      suffix: formatLargeNumber(totalRevenue?.value).suffix,
+      label: "Tổng doanh thu",
+      badgeClass: "success",
+      counter: formatLargeNumber(data?.totalRevenue).value,
+      suffix: formatLargeNumber(data?.totalRevenue).suffix,
+      link: `Từ ${dayjs(date.startDate).format("DD-MM-YYYY")} đến ${dayjs(
+        date.endDate
+      ).format("DD-MM-YYYY")}`,
       bgcolor: "success",
       icon: "bx bx-dollar-circle",
-      link: "So với tháng trước",
       decimals: 2,
     },
     {
       id: 2,
       cardColor: "secondary",
-      label: "Tổng vé",
-      badge:
-        ticketsSold?.change < 0
-          ? "ri-arrow-right-down-line"
-          : "ri-arrow-right-up-line",
-      badgeClass: ticketsSold?.change < 0 ? "danger" : "success",
-      percentage: ticketsSold?.change,
-      counter: ticketsSold?.value,
+      label: "Rạp có doanh thu cao nhất",
+      badgeClass: "danger",
+      counter: data?.cinemaRevenue?.cinema,
+      link: `${formatVND(Number(data?.cinemaRevenue?.revenue))} chiếm ${
+        data?.cinemaRevenue?.percentage
+      } tổng doanh thu`,
       bgcolor: "info",
-      icon: "bx bx-shopping-bag",
-      decimals: 0,
-      link: "So với tháng trước",
-      separator: ".",
+      icon: "ri-store-2-fill",
     },
     {
       id: 3,
       cardColor: "success",
-      label: "Khách hàng mới",
-      badge:
-        newCustomers?.change < 0
-          ? "ri-arrow-right-down-line"
-          : "ri-arrow-right-up-line",
-      badgeClass: newCustomers?.change < 0 ? "danger" : "success",
-      percentage: newCustomers?.change,
-      counter: newCustomers?.value,
+      label: "Phim có doanh thu cao nhất",
+      badgeClass: "success",
+      counter: data?.movieRevenue?.movie,
+      link: `Doanh thu ${formatVND(Number(data?.movieRevenue?.revenue))}`,
       bgcolor: "warning",
-      icon: "bx bx-user-circle",
-      link: "So với tháng trước",
-      separator: ".",
+      icon: "ri-movie-2-line",
     },
     {
       id: 4,
       cardColor: "info",
-      label: "Tỷ lệ khách hàng quay lại",
+      label: "Phương thức thanh toán phổ biến",
       badgeClass: "muted",
-      counter: customerRetentionRate,
+      counter: data?.paymentMethod?.payment_name,
+      link: `Chiếm ${data?.paymentMethod?.percentage} lượt thanh toán`,
       bgcolor: "primary",
-      icon: "bx bx-user-circle",
-      prefix: "",
-      suffix: "%",
-      link: `Trong tháng ${date?.month}-${date?.year}`,
+      icon: "bx bx-wallet",
     },
   ];
   return (
@@ -98,15 +81,18 @@ const Widgets = ({ data, date }) => {
                 <div>
                   <h4 className="fs-22 fw-semibold ff-secondary mb-4">
                     <span className="counter-value" data-target="559.25">
-                      <CountUp
-                        start={0}
-                        prefix={item.prefix}
-                        suffix={item.suffix}
-                        separator={item.separator}
-                        end={item.counter}
-                        decimals={item.decimals}
-                        duration={4}
-                      />
+                      {typeof item.counter === "number" ? (
+                        <CountUp
+                          start={0}
+                          end={item.counter}
+                          decimals={item.decimals || 0}
+                          duration={4}
+                          separator=","
+                          suffix={item.suffix || ""}
+                        />
+                      ) : (
+                        item.counter // Hiển thị trực tiếp nếu là chuỗi
+                      )}
                     </span>
                   </h4>
                   <Link to="#">{item.link}</Link>
@@ -124,6 +110,13 @@ const Widgets = ({ data, date }) => {
       ))}
     </React.Fragment>
   );
+};
+Widgets.propTypes = {
+  data: PropTypes.object.isRequired,
+  date: PropTypes.shape({
+    startDate: PropTypes.string.isRequired,
+    endDate: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
 export default Widgets;

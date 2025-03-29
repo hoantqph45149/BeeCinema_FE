@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import { Card, CardBody, Col, Container, Row } from "reactstrap";
-import Revenue from "./Revenue";
-import Section from "./Section";
-import StoreVisits from "./StoreVisits";
-import Widgets from "./Widgets";
-import GradientCharts from "./GradientCharts";
 import { useFetch } from "../../../Hooks/useCRUD";
 import BookingHeatmap from "./BookingHeatmap";
+import GradientCharts from "./GradientCharts";
+import Section from "./Section";
+import TopMoviesCards from "./TopMoviesCards";
+import Widgets from "./Widgets";
 
 const Overview = () => {
   document.title = "Tổng quan";
   const { data } = useFetch(["dashboard"], "/dashboard");
-  console.log(data);
+  console.log("data", data);
 
   const [rightColumn, setRightColumn] = useState(true);
   const toggleRightColumn = () => {
@@ -27,7 +26,15 @@ const Overview = () => {
               <div className="h-100">
                 <Section rightClickBtn={toggleRightColumn} />
                 <Row>
-                  <Widgets />
+                  <Widgets
+                    data={{
+                      totalRevenue: data?.totalRevenue,
+                      ticketsSold: data?.ticketsSold,
+                      newCustomers: data?.newCustomers,
+                      customerRetentionRate: data?.customerRetentionRate,
+                    }}
+                    date={{ month: data?.month, year: data?.year }}
+                  />
                 </Row>
                 <Card>
                   <CardBody>
@@ -41,13 +48,13 @@ const Overview = () => {
                     </Row>
                   </CardBody>
                 </Card>
+                <Card>
+                  <CardBody>
+                    <BookingHeatmap data={data?.bookingHeatmap} />
+                  </CardBody>
+                </Card>
 
-                <Row>
-                  <Col xl={12}>
-                    <BookingHeatmap date={data?.bookingHeatmap} />
-                  </Col>
-                </Row>
-                <StoreVisits />
+                <TopMoviesCards data={data?.movies} />
               </div>
             </Col>
           </Row>
