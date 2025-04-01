@@ -291,7 +291,7 @@ const TicketDetail = () => {
                     </p>
                     <div className="mt-3 d-flex gap-1 justify-content-center flex-column align-items-center">
                       <img
-                        src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${ticket?.code}&scale=3&height=8`}
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${ticket?.code}`}
                         alt=""
                         style={{
                           maxWidth: "200px",

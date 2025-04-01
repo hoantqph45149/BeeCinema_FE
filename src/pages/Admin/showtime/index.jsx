@@ -20,10 +20,14 @@ import api from "../../../apis/axios";
 import { useCRUD, useFetch } from "./../../../Hooks/useCRUD";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { showConfirm } from "../../../Components/Common/showAlert";
+import Loader from "../../../Components/Common/Loader";
 
 dayjs.extend(isSameOrBefore);
 const Showtime = () => {
-  const { data: branchesData } = useFetch(["branches"], "/branches/active");
+  const { data: branchesData, isLoading: isLoadingBranch } = useFetch(
+    ["branches"],
+    "/branches/active"
+  );
   const { patch: patchShowtime, delete: deleteShowtime } = useCRUD([
     "showtimes",
   ]);
@@ -54,56 +58,44 @@ const Showtime = () => {
       }
     }
   }, [branchesData]);
+
+  const { data, isLoading: isLoadingShowtime } = useFetch(
+    ["showtimes", dataFilterShowtime],
+    `/showtimes?branch_id=${dataFilterShowtime.branch_id}&cinema_id=${
+      dataFilterShowtime.cinema_id
+    }${
+      dataFilterShowtime.is_active !== ""
+        ? `&is_active=${dataFilterShowtime.is_active}`
+        : ""
+    }&date=${dataFilterShowtime.date}`
+  );
+
   useEffect(() => {
-    if (
-      dataFilterShowtime &&
-      dataFilterShowtime.branch_id !== "" &&
-      dataFilterShowtime.cinema_id !== "" &&
-      dataFilterShowtime.date !== ""
-    ) {
-      const fetchData = async () => {
-        try {
-          const { data } = await api.get(
-            `/showtimes?branch_id=${dataFilterShowtime.branch_id}&cinema_id=${
-              dataFilterShowtime.cinema_id
-            }${
-              dataFilterShowtime.is_active !== ""
-                ? `&is_active=${dataFilterShowtime.is_active}`
-                : ""
-            }&date=${dataFilterShowtime.date}`
+    if (data) {
+      const showtimes = data.showtimes.reduce((acc, item) => {
+        const { movie, ...showtime } = item;
+        const existingMovie = acc.find((m) => m.id === movie.id);
+
+        if (existingMovie) {
+          existingMovie.showtimes.push(showtime);
+
+          // Sắp xếp showtimes theo start_time tăng dần
+          existingMovie.showtimes.sort(
+            (a, b) => new Date(a.start_time) - new Date(b.start_time)
           );
-          const showtimes = data.showtimes.reduce((acc, item) => {
-            const { movie, ...showtime } = item;
-            const existingMovie = acc.find((m) => m.id === movie.id);
-
-            if (existingMovie) {
-              existingMovie.showtimes.push(showtime);
-
-              // Sắp xếp showtimes theo start_time tăng dần
-              existingMovie.showtimes.sort(
-                (a, b) => new Date(a.start_time) - new Date(b.start_time)
-              );
-            } else {
-              acc.push({
-                ...movie,
-                showtimes: [showtime],
-              });
-            }
-
-            return acc;
-          }, []);
-
-          setShowtimes(showtimes);
-        } catch (error) {
-          console.error("Fetch error:", error);
+        } else {
+          acc.push({
+            ...movie,
+            showtimes: [showtime],
+          });
         }
-      };
 
-      fetchData();
+        return acc;
+      }, []);
+
+      setShowtimes(showtimes);
     }
-  }, [dataFilterShowtime, showtime]);
-
-  // console.log(showtimes);
+  }, [data]);
 
   const handleSetCinema = (id) => {
     if (id === "") {
@@ -120,33 +112,36 @@ const Showtime = () => {
   };
 
   // Column
-  const columns = useMemo(() => [
-    {
-      movie: {
-        name: "Thợ Săn Thủ Lĩnh",
-        special: true,
-        duration: "118 phút",
-        genre: "Kinh dị",
-        image: "path/to/image.jpg", // Thay bằng đường dẫn thật
+  const columns = useMemo(
+    () => [
+      {
+        movie: {
+          name: "Thợ Săn Thủ Lĩnh",
+          special: true,
+          duration: "118 phút",
+          genre: "Kinh dị",
+          image: "path/to/image.jpg", // Thay bằng đường dẫn thật
+        },
+        schedules: [
+          {
+            time: "10:15 - 12:28",
+            room: "P201",
+            seats: "112/112 ghế",
+            format: "2D Lồng Tiếng",
+            active: true,
+          },
+          {
+            time: "08:00 - 10:13",
+            room: "P201",
+            seats: "112/112 ghế",
+            format: "2D Lồng Tiếng",
+            active: true,
+          },
+        ],
       },
-      schedules: [
-        {
-          time: "10:15 - 12:28",
-          room: "P201",
-          seats: "112/112 ghế",
-          format: "2D Lồng Tiếng",
-          active: true,
-        },
-        {
-          time: "08:00 - 10:13",
-          room: "P201",
-          seats: "112/112 ghế",
-          format: "2D Lồng Tiếng",
-          active: true,
-        },
-      ],
-    },
-  ]);
+    ],
+    []
+  );
   const [visibleRows, setVisibleRows] = useState(
     columns.map(() => false) // Ban đầu, tất cả các dòng đều ẩn scheduler
   );
@@ -330,206 +325,219 @@ const Showtime = () => {
                 </Row>
               </CardHeader>
               <CardBody className="pt-0">
-                <div className="table-responsive">
-                  <Table className="table fw-medium  align-middle table-nowrap table-bordered">
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th>Phim</th>
-                        <th>Thời lượng</th>
-                        <th>Thể loại</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showtimes.map((item, index) => (
-                        <React.Fragment key={index}>
+                {isLoadingShowtime || isLoadingBranch ? (
+                  <>
+                    <Loader />
+                  </>
+                ) : (
+                  <>
+                    <div className="table-responsive">
+                      <Table className="table fw-medium  align-middle table-nowrap table-bordered">
+                        <thead>
                           <tr>
-                            <td>
-                              <div
-                                style={{ width: "100%", height: "100%" }}
-                                className="d-flex justify-content-center align-items-center"
-                              >
-                                <button
-                                  type="button"
-                                  className="btn-soft-primary btn btn-sm"
-                                  onClick={() => toggleScheduler(index)}
-                                >
-                                  <i className="ri-add-circle-fill"></i>
-                                </button>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="d-flex gap-2 align-items-center">
-                                <img
-                                  src={item.img_thumbnail}
-                                  alt={item.name}
-                                  className="img-fluid"
-                                  style={{
-                                    width: "100px",
-                                    marginBottom: "10px",
-                                  }}
-                                />
-                                <div className="flex-grow-1 d-flex flex-column">
-                                  <span className="fw-medium fs-5 text">
-                                    {" "}
-                                    {item.name}{" "}
-                                  </span>
-                                  {item.is_special && (
-                                    <span
-                                      style={{ width: "70px" }}
-                                      className=" badge bg-danger"
-                                    >
-                                      ĐẶC BIỆT
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            </td>
-                            <td>{item.duration} Phút</td>
-                            <td>{item.category}</td>
+                            <th></th>
+                            <th>Phim</th>
+                            <th>Thời lượng</th>
+                            <th>Thể loại</th>
                           </tr>
-                          {visibleRows[index] && (
-                            <tr>
-                              <td colSpan={6}>
-                                <div className="table-responsive">
-                                  <Table bordered>
-                                    <thead className="table-light">
-                                      <tr>
-                                        <th>Thời gian</th>
-                                        <th>Phòng</th>
-                                        <th>Ghế</th>
-                                        <th>Định dạng</th>
-                                        <th>Hoạt động</th>
-                                        <th>Action</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {item.showtimes.map(
-                                        (showtime, scheduleIndex) => (
-                                          <tr key={scheduleIndex}>
-                                            <td>{`${dayjs(
-                                              showtime.start_time
-                                            ).format("HH:mm")}-${dayjs(
-                                              showtime.end_time
-                                            ).format("HH:mm")}`}</td>
-                                            <td>{showtime.room.name}</td>
-                                            <td>
-                                              {`${showtime.remainingSeats} / ${showtime.totalSeats}`}{" "}
-                                              Ghế
-                                            </td>
-                                            <td>{showtime.format}</td>
-                                            <td>
-                                              <div className="form-check form-switch form-check-right">
-                                                <Input
-                                                  disabled={
-                                                    dayjs(
-                                                      showtime.start_time
-                                                    ).isSameOrBefore(
-                                                      dayjs().add(30, "minute")
-                                                    ) ||
-                                                    showtime.remainingSeats <
-                                                      showtime.totalSeats
-                                                  }
-                                                  className="form-check-input"
-                                                  type="checkbox"
-                                                  role="switch"
-                                                  id="is_active"
-                                                  defaultChecked={
-                                                    showtime.is_active
-                                                  }
-                                                  checked={showtime.is_active}
-                                                  name="is_active"
-                                                  onChange={() => {
-                                                    handleUpdateActive(
-                                                      showtime
-                                                    );
-                                                    setShowtime(showtime);
-                                                  }}
-                                                />
-                                              </div>
-                                            </td>
-                                            <td>
-                                              <ul className="list-inline hstack gap-2 mb-0">
-                                                <li className="list-inline-item">
-                                                  <Button
-                                                    disabled={
-                                                      dayjs(
-                                                        showtime.start_time
-                                                      ).isSameOrBefore(
-                                                        dayjs().add(
-                                                          30,
-                                                          "minute"
-                                                        )
-                                                      ) ||
-                                                      showtime.remainingSeats <
-                                                        showtime.totalSeats
-                                                    }
-                                                    color="primary"
-                                                    className="btn-sm"
-                                                    onClick={() => {
-                                                      nav(
-                                                        `/admin/showtime/${showtime.id}/edit`
-                                                      );
-                                                    }}
-                                                  >
-                                                    <i className="ri-pencil-fill"></i>
-                                                  </Button>
-                                                </li>
-                                                <li className="list-inline-item">
-                                                  <Button
-                                                    disabled={
-                                                      dayjs(
-                                                        showtime.start_time
-                                                      ).isSameOrBefore(
-                                                        dayjs().add(
-                                                          30,
-                                                          "minute"
-                                                        )
-                                                      ) ||
-                                                      showtime.remainingSeats <
-                                                        showtime.totalSeats
-                                                    }
-                                                    color="primary"
-                                                    className="btn-sm "
-                                                    onClick={() => {
-                                                      handleDeleteShowtime(
-                                                        showtime
-                                                      );
-                                                      setShowtime(showtime);
-                                                    }}
-                                                  >
-                                                    <i className="ri-delete-bin-5-fill"></i>
-                                                  </Button>
-                                                </li>
-                                                <li className="list-inline-item">
-                                                  <Button
-                                                    color="primary"
-                                                    className="btn-sm "
-                                                    onClick={() => {
-                                                      nav(
-                                                        `/admin/showtime/${showtime.id}/detail`
-                                                      );
-                                                    }}
-                                                  >
-                                                    <i className="ri-eye-fill"></i>
-                                                  </Button>
-                                                </li>
-                                              </ul>
-                                            </td>
-                                          </tr>
-                                        )
+                        </thead>
+                        <tbody>
+                          {showtimes.map((item, index) => (
+                            <React.Fragment key={index}>
+                              <tr>
+                                <td>
+                                  <div
+                                    style={{ width: "100%", height: "100%" }}
+                                    className="d-flex justify-content-center align-items-center"
+                                  >
+                                    <button
+                                      type="button"
+                                      className="btn-soft-primary btn btn-sm"
+                                      onClick={() => toggleScheduler(index)}
+                                    >
+                                      <i className="ri-add-circle-fill"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div className="d-flex gap-2 align-items-center">
+                                    <img
+                                      src={item.img_thumbnail}
+                                      alt={item.name}
+                                      className="img-fluid"
+                                      style={{
+                                        width: "100px",
+                                        marginBottom: "10px",
+                                      }}
+                                    />
+                                    <div className="flex-grow-1 d-flex flex-column">
+                                      <span className="fw-medium fs-5 text">
+                                        {" "}
+                                        {item.name}{" "}
+                                      </span>
+                                      {item.is_special && (
+                                        <span
+                                          style={{ width: "70px" }}
+                                          className=" badge bg-danger"
+                                        >
+                                          ĐẶC BIỆT
+                                        </span>
                                       )}
-                                    </tbody>
-                                  </Table>
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>{item.duration} Phút</td>
+                                <td>{item.category}</td>
+                              </tr>
+                              {visibleRows[index] && (
+                                <tr>
+                                  <td colSpan={6}>
+                                    <div className="table-responsive">
+                                      <Table bordered>
+                                        <thead className="table-light">
+                                          <tr>
+                                            <th>Thời gian</th>
+                                            <th>Phòng</th>
+                                            <th>Ghế</th>
+                                            <th>Định dạng</th>
+                                            <th>Hoạt động</th>
+                                            <th>Action</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {item.showtimes.map(
+                                            (showtime, scheduleIndex) => (
+                                              <tr key={scheduleIndex}>
+                                                <td>{`${dayjs(
+                                                  showtime.start_time
+                                                ).format("HH:mm")}-${dayjs(
+                                                  showtime.end_time
+                                                ).format("HH:mm")}`}</td>
+                                                <td>{showtime.room.name}</td>
+                                                <td>
+                                                  {`${showtime.remainingSeats} / ${showtime.totalSeats}`}{" "}
+                                                  Ghế
+                                                </td>
+                                                <td>{showtime.format}</td>
+                                                <td>
+                                                  <div className="form-check form-switch form-check-right">
+                                                    <Input
+                                                      disabled={
+                                                        dayjs(
+                                                          showtime.start_time
+                                                        ).isSameOrBefore(
+                                                          dayjs().add(
+                                                            30,
+                                                            "minute"
+                                                          )
+                                                        ) ||
+                                                        showtime.remainingSeats <
+                                                          showtime.totalSeats
+                                                      }
+                                                      className="form-check-input"
+                                                      type="checkbox"
+                                                      role="switch"
+                                                      id="is_active"
+                                                      defaultChecked={
+                                                        showtime.is_active
+                                                      }
+                                                      checked={
+                                                        showtime.is_active
+                                                      }
+                                                      name="is_active"
+                                                      onChange={() => {
+                                                        handleUpdateActive(
+                                                          showtime
+                                                        );
+                                                        setShowtime(showtime);
+                                                      }}
+                                                    />
+                                                  </div>
+                                                </td>
+                                                <td>
+                                                  <ul className="list-inline hstack gap-2 mb-0">
+                                                    <li className="list-inline-item">
+                                                      <Button
+                                                        disabled={
+                                                          dayjs(
+                                                            showtime.start_time
+                                                          ).isSameOrBefore(
+                                                            dayjs().add(
+                                                              30,
+                                                              "minute"
+                                                            )
+                                                          ) ||
+                                                          showtime.remainingSeats <
+                                                            showtime.totalSeats
+                                                        }
+                                                        color="primary"
+                                                        className="btn-sm"
+                                                        onClick={() => {
+                                                          nav(
+                                                            `/admin/showtime/${showtime.id}/edit`
+                                                          );
+                                                        }}
+                                                      >
+                                                        <i className="ri-pencil-fill"></i>
+                                                      </Button>
+                                                    </li>
+                                                    <li className="list-inline-item">
+                                                      <Button
+                                                        disabled={
+                                                          dayjs(
+                                                            showtime.start_time
+                                                          ).isSameOrBefore(
+                                                            dayjs().add(
+                                                              30,
+                                                              "minute"
+                                                            )
+                                                          ) ||
+                                                          showtime.remainingSeats <
+                                                            showtime.totalSeats
+                                                        }
+                                                        color="primary"
+                                                        className="btn-sm "
+                                                        onClick={() => {
+                                                          handleDeleteShowtime(
+                                                            showtime
+                                                          );
+                                                          setShowtime(showtime);
+                                                        }}
+                                                      >
+                                                        <i className="ri-delete-bin-5-fill"></i>
+                                                      </Button>
+                                                    </li>
+                                                    <li className="list-inline-item">
+                                                      <Button
+                                                        color="primary"
+                                                        className="btn-sm "
+                                                        onClick={() => {
+                                                          nav(
+                                                            `/admin/showtime/${showtime.id}/detail`
+                                                          );
+                                                        }}
+                                                      >
+                                                        <i className="ri-eye-fill"></i>
+                                                      </Button>
+                                                    </li>
+                                                  </ul>
+                                                </td>
+                                              </tr>
+                                            )
+                                          )}
+                                        </tbody>
+                                      </Table>
+                                    </div>
+                                  </td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  </>
+                )}
               </CardBody>
             </Card>
           </Col>

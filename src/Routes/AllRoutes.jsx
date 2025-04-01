@@ -43,7 +43,7 @@ import Room from "../pages/Admin/room/index";
 import RoomEdit from "../pages/Admin/room/RoomEdit";
 
 // showtime
-import Addshowtime from "../pages/Admin/showtime/AddShowtime";
+import AddShowtime from "../pages/Admin/showtime/add-showtime/index";
 import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
 import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
@@ -200,7 +200,7 @@ const authProtectedRoutes = [
   },
   {
     path: "/admin/showtime/add",
-    component: <Addshowtime />,
+    component: <AddShowtime />,
   },
   {
     path: "/admin/showtime/:id/edit",
@@ -270,6 +270,10 @@ const clientRoutes = [
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
+  },
+  {
+    path: "/choose-seat/:slug",
+    component: <ChooseSeat />,
   },
   {
     path: "/profile",

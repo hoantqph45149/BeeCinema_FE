@@ -20,4 +20,17 @@ const isDayOff = (dateString) => {
   );
 };
 
+export const generateDateRange = (start, end) => {
+  if (!start || !end) return [];
+  const dates = [];
+  let currentDate = new Date(start);
+  const lastDate = new Date(end);
+
+  while (currentDate <= lastDate) {
+    dates.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  return dates;
+};
+
 export default isDayOff;

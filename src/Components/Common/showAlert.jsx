@@ -6,7 +6,7 @@ const MySwal = withReactContent(Swal);
 export const showAlert = (title, text, icon = "success") => {
   return MySwal.fire({
     title,
-    text,
+    html: text,
     icon,
     confirmButtonText: "OK",
   });
