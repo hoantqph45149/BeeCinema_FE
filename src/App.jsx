@@ -1,16 +1,12 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import RoutesComponent from "./Routes"; // Đổi tên để tránh trùng với `Route` của react-router-dom
+import { useEffect, useLayoutEffect, useState } from "react";
+import RoutesComponent from "./Routes";
 import { useAuthContext } from "./Contexts/auth/UseAuth";
 import { useFetch } from "./Hooks/useCRUD";
 import Loading from "./Components/Common/Loading";
 
 function App() {
-  const { setAuthUser } = useAuthContext();
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useFetch(["user"], "/user", {
+  const { setAuthUser, setRole, setPermissions } = useAuthContext();
+  const { data, isLoading, error } = useFetch(["user"], "/user", {
     staleTime: Infinity,
     cacheTime: Infinity,
     refetchOnMount: false,
@@ -24,11 +20,13 @@ function App() {
     } else {
       import("./index.css");
     }
-  }, [location, isUserSet]);
+  });
 
   useEffect(() => {
-    if (user) {
-      setAuthUser(user);
+    if (data) {
+      setAuthUser(data?.user);
+      setRole(data?.user?.roles[0]);
+      setPermissions(data?.user?.permissions);
       setIsUserSet(true);
     }
 
@@ -37,7 +35,7 @@ function App() {
         setIsUserSet(true);
       }
     }
-  }, [user, error]);
+  }, [data, error, setAuthUser]);
 
   if (isLoading || !isUserSet) {
     return (

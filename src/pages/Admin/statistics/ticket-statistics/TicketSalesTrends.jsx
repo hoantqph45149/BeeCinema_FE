@@ -2,6 +2,7 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../Components/Common/ChartsDynamicColor";
 import dayjs from "dayjs";
+import PropTypes from "prop-types";
 
 const TicketSalesTrends = ({ dataColors, data }) => {
   let linechartBasicColors = getChartColorsArray(dataColors);
@@ -49,6 +50,15 @@ const TicketSalesTrends = ({ dataColors, data }) => {
       />
     </React.Fragment>
   );
+};
+TicketSalesTrends.propTypes = {
+  dataColors: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      total_tickets: PropTypes.number.isRequired,
+      time_group: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default TicketSalesTrends;

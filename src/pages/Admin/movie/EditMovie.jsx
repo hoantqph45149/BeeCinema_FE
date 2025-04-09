@@ -78,7 +78,9 @@ const EditMovie = () => {
       trailer_url: (movie && movie?.trailer_url) || "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Tên phim không được để trống"),
+      name: Yup.string()
+        .required("Tên phim không được để trống")
+        .max(255, "Tên phim không được vượt quá 255 ký tự"),
       director: Yup.string().required("Đạo diễn không được để trống"),
       cast: Yup.string().required("Diễn viên không được để trống"),
       release_date: Yup.date().required("Ngày khởi chiếu không được để trống"),

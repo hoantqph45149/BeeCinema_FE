@@ -24,11 +24,6 @@ const RoomEdit = () => {
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [isActive, setIsActive] = useState(null);
   const [seatSelected, setSeatSelected] = useState([]);
-  console.log(seatSelected);
-  //   console.log("matrix", matrix);
-  //   console.log("seatsByRow", seatsByRow);
-
-  console.log(isActive);
 
   useEffect(() => {
     if (room) {
@@ -50,7 +45,6 @@ const RoomEdit = () => {
   };
 
   const handlePublish = () => {
-    // console.log({ ...room, is_active: 1, is_publish: 1, action: "publish" });
     patchRoom.mutate({
       url: `/rooms/${id}`,
       data: { ...room?.room, is_active: 1, is_publish: 1, action: "publish" },
@@ -86,7 +80,7 @@ const RoomEdit = () => {
         <Container fluid>
           <BreadCrumb title="Quản lý rạp chiếu" pageTitle="Quản lý" />
           <Row>
-            <Col md={9}>
+            <Col lg={9}>
               <Card>
                 <CardBody>
                   <div className="container py-4">
@@ -179,8 +173,9 @@ const RoomEdit = () => {
                                             </div>
                                           ) : seat &&
                                             seat?.type_seat_id === 2 ? (
-                                            <div
-                                              className={`position-relative bg-secondary-subtle d-flex justify-content-center align-items-center w-100"`}
+                                            <di
+                                              style={{ width: "45px" }}
+                                              className={`position-relative bg-secondary-subtle d-flex justify-content-center align-items-center"`}
                                               onClick={() =>
                                                 room?.room.is_publish
                                                   ? handleSeatSelect(seat)
@@ -207,7 +202,7 @@ const RoomEdit = () => {
                                               >
                                                 {seat.name}
                                               </span>
-                                            </div>
+                                            </di>
                                           ) : seat &&
                                             seat?.type_seat_id === 1 ? (
                                             <div
@@ -255,7 +250,7 @@ const RoomEdit = () => {
                 </CardBody>
               </Card>
             </Col>
-            <Col md={4} lg={3}>
+            <Col lg={3}>
               <Card>
                 <CardHeader>
                   <div className="col-sm">

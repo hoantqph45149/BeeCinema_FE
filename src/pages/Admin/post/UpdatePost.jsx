@@ -1,4 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import { useFormik } from "formik";
+import "quill/dist/quill.snow.css";
+import { useEffect } from "react";
+import { useQuill } from "react-quilljs";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -10,13 +14,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
-import { useParams, useNavigate } from "react-router-dom";
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { useFormik } from "formik";
 import * as Yup from "yup";
+import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import useUploadImage from "../../../Hooks/useUploadImage";
 
 const UpdatePost = () => {
@@ -25,7 +25,7 @@ const UpdatePost = () => {
 
   const { id } = useParams();
   const nav = useNavigate();
-  const { data: post } = useFetch(["post", id], `/posts/${id}`);
+  const { data: post } = useFetch(["posts", id], `/posts/${id}`);
   const { patch: patchPost } = useCRUD(["post", id]);
   const { uploadImage } = useUploadImage();
 
@@ -46,7 +46,10 @@ const UpdatePost = () => {
 
   // Validation schema cho Formik
   const validationSchema = Yup.object({
-    title: Yup.string().required("Tiêu đề không được để trống"),
+    title: Yup.string()
+      .required("Tiêu đề không được để trống")
+      .min(5, "Tiêu đề tối thiểu 5 ký tự")
+      .max(255, "Tiêu đề tối đa 255 ký tự"),
     description: Yup.string().required("Mô tả là bắt buộc"),
     content: Yup.string()
       .required("Nội dung không được để trống")

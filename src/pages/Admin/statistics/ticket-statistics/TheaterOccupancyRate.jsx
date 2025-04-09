@@ -1,4 +1,5 @@
 import ReactApexChart from "react-apexcharts";
+import PropTypes from "prop-types";
 import getChartColorsArray from "../../../../Components/Common/ChartsDynamicColor";
 
 const TheaterOccupancyRate = ({ dataColors, data }) => {
@@ -58,6 +59,16 @@ const TheaterOccupancyRate = ({ dataColors, data }) => {
       height={350}
     />
   );
+};
+TheaterOccupancyRate.propTypes = {
+  dataColors: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      booked_seats: PropTypes.number.isRequired,
+      empty_seats: PropTypes.number.isRequired,
+      cinema: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default TheaterOccupancyRate;

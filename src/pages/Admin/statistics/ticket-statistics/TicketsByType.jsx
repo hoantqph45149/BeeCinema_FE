@@ -1,4 +1,5 @@
 import ReactApexChart from "react-apexcharts";
+import PropTypes from "prop-types";
 import getChartColorsArray from "../../../../Components/Common/ChartsDynamicColor";
 
 const TicketsByType = ({ dataColors, data }) => {
@@ -44,6 +45,16 @@ const TicketsByType = ({ dataColors, data }) => {
       height={300}
     />
   );
+};
+TicketsByType.propTypes = {
+  dataColors: PropTypes.array.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      total_tickets: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      seat_type: PropTypes.number.isRequired,
+    })
+  ).isRequired,
 };
 
 export default TicketsByType;

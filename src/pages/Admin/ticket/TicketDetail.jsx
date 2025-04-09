@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -14,18 +15,14 @@ import {
   Table,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import Loading from "../../../Components/Common/Loading";
+import { useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "./../../../utils/Currency";
 import PrintTicket from "./../print-ticket/index";
-import { useFetch } from "../../../Hooks/useCRUD";
-import Loading from "../../../Components/Common/Loading";
-import dayjs from "dayjs";
-import isDayOff from "../../../utils/CheckDay";
-import MemberShip from "./../../Client/profile/MemberShip";
 
 const TicketDetail = () => {
   const { code } = useParams();
   const { data, isLoading } = useFetch(["tickets", code], `/tickets/${code}`);
-  const nav = useNavigate();
   const [modal, setModal] = useState(false);
   const [ticket, setTicket] = useState({});
   const toggle = useCallback(() => {
@@ -41,6 +38,7 @@ const TicketDetail = () => {
       setTicket(data.ticket);
     }
   }, [data]);
+
   return (
     <div className="page-content">
       <Container fluid>

@@ -9,11 +9,11 @@ const PaymentMethod = ({ paymentMethod }) => {
       label: "Ví VNPay",
       img: "/images/payment/vnpay.png",
     },
-    {
-      id: "MOMO",
-      label: "Ví MoMo",
-      img: "/images/payment/momo.png",
-    },
+    // {
+    //   id: "MOMO",
+    //   label: "Ví MoMo",
+    //   img: "/images/payment/momo.png",
+    // },
     {
       id: "ZALOPAY",
       label: "Ví ZaloPay",

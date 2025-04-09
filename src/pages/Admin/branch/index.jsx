@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ToastContainer } from "react-toastify";
 import {
   Button,
   Card,
@@ -206,7 +205,6 @@ const Branch = () => {
 
   return (
     <div className="page-content">
-      <ToastContainer closeButton={false} limit={1} />
       <Container fluid>
         <BreadCrumb title="Quản lý chi nhánh" pageTitle="Quản lý chi nhánh" />
 

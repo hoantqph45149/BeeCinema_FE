@@ -21,11 +21,9 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import isBetween from "dayjs/plugin/isBetween";
 
+import { showAlert } from "../../../../Components/Common/showAlert";
 import { useCRUD, useFetch } from "../../../../Hooks/useCRUD";
 import { generateDateRange } from "../../../../utils/CheckDay";
-import ListShowtime from "./ListShowtime";
-import Loader from "../../../../Components/Common/Loader";
-import { showAlert } from "../../../../Components/Common/showAlert";
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
@@ -259,10 +257,18 @@ const AddMultipleShowtimes = () => {
       };
 
       createShowtime.mutate(
-        { url: "/showtimes", data: data },
+        { url: "/showtimes/preview", data: data },
         {
-          onSuccess: () => {
-            nav("/admin/showtime");
+          onSuccess: (data) => {
+            nav("/admin/showtime/preview", {
+              state: {
+                showtimes: data.showtimes,
+                movie_id: data.movie_id,
+                movie_name: data.movie_name,
+                movie_image: data.movie_image,
+                movie_version_id: data.movie_version_id,
+              },
+            });
             formik.resetForm();
           },
           onError: (error) => {
@@ -326,7 +332,7 @@ const AddMultipleShowtimes = () => {
   return (
     <Form onSubmit={formik.handleSubmit}>
       <Row>
-        <Col lg={7}>
+        <Col>
           <div>
             <Card>
               <div className="card-header border-0">
@@ -846,25 +852,6 @@ const AddMultipleShowtimes = () => {
                 </Button>
               </div>
             </CardHeader>
-          </Card>
-        </Col>
-
-        <Col lg={5}>
-          <Card>
-            <CardHeader>
-              <div className="d-flex mb-3">
-                <div className="flex-grow-1">
-                  <h5 className="fs-16">Suất chiếu đang có </h5>
-                </div>
-              </div>
-            </CardHeader>
-            <CardBody>
-              {isLoadingShowtimeDate ? (
-                <Loader />
-              ) : (
-                <ListShowtime data={showtimeDate} />
-              )}
-            </CardBody>
           </Card>
         </Col>
       </Row>

@@ -8,11 +8,9 @@ import { showAlert } from "../../../Components/Common/showAlert";
 import { useCRUD } from "../../../Hooks/useCRUD";
 import AuthSlideshow from "../common/AuthSlideshow";
 import ForgotPassword from "../forgot-password";
-import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 export function Login() {
   const { create: login } = useCRUD(["login"]);
-  const { setAuthUser } = useAuthContext();
   const [openModalforgot, setOpenModalforgot] = useState(false);
   const nav = useNavigate();
   const formik = useFormik({
@@ -37,12 +35,10 @@ export function Login() {
           shouldShowAlert: false,
         },
         {
-          onSuccess: (data) => {
-            setAuthUser(data?.user);
+          onSuccess: () => {
             nav("/");
           },
-          // eslint-disable-next-line no-unused-vars
-          onError: (error) => {
+          onError: () => {
             showAlert(
               "Đăng nhập thất bại",
               "Sai tài khoản hoặc mật khẩu vui lòng đăng nhập lại",

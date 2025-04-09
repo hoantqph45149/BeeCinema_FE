@@ -16,8 +16,6 @@ import {
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "./../../../Components/Common/showAlert";
 import { useNavigate } from "react-router-dom";
@@ -106,17 +104,19 @@ const Account = () => {
       cell: (cell) => {
         return (
           <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item">
-              <Button
-                color="primary"
-                className="btn-sm "
-                onClick={() => {
-                  nav(`/admin/account/${cell.row.original.id}/edit`);
-                }}
-              >
-                <i className="ri-pencil-fill"></i>
-              </Button>
-            </li>
+            {cell.row.original.role !== "admin" && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm "
+                  onClick={() => {
+                    nav(`/admin/account/${cell.row.original.id}/edit`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+            )}
             <li className="list-inline-item">
               <Button
                 color="primary"
@@ -217,7 +217,6 @@ const Account = () => {
                   toggle={toggle}
                   centered
                 ></Modal>
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>

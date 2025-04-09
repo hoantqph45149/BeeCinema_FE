@@ -113,7 +113,7 @@ const TicketStatistics = () => {
                       <Widgets data={WidgetsData} date={filterDates} />
                     </Row>
                     <Row className="mt-3">
-                      <Col lg={6}>
+                      <Col xl={6}>
                         <Card>
                           <CardHeader>
                             <h4 className="card-title fs-4 fw-bold mb-0">
@@ -159,7 +159,7 @@ const TicketStatistics = () => {
                       </Col>
                     </Row>
                     <Row className="mt-3">
-                      <Col lg={6}>
+                      <Col xl={6}>
                         <Card>
                           <CardHeader>
                             <h4 className="card-title fs-4 fw-bold mb-0">

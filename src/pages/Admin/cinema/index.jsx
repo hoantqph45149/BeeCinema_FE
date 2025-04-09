@@ -15,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
-import "react-toastify/dist/ReactToastify.css";
 import { showConfirm } from "../../../Components/Common/showAlert";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import Loader from "../../../Components/Common/Loader";

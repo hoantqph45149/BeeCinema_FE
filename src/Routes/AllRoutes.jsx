@@ -47,6 +47,7 @@ import AddShowtime from "../pages/Admin/showtime/add-showtime/index";
 import Showtime from "../pages/Admin/showtime/index";
 import ShowtimeDetail from "../pages/Admin/showtime/ShowtimeDetail";
 import Updateshowtime from "../pages/Admin/showtime/UpdateShowtime";
+import ShowtimePreview from "../pages/Admin/showtime-preview";
 
 // ticket
 import Ticket from "../pages/Admin/ticket/index";
@@ -58,7 +59,9 @@ import EditVoucher from "../pages/Admin/voucher/EditVoucher";
 import Voucher from "../pages/Admin/voucher/index";
 
 // thống kê
-
+import ComboStatistics from "../pages/Admin/statistics/cfstatistics";
+import RevenueStatistics from "../pages/Admin/statistics/revenue-statistics";
+import TicketStatistics from "../pages/Admin/statistics/ticket-statistics";
 // quản lý giá
 import AddAccount from "../pages/Admin/account/AddAccount";
 import PriceManage from "../pages/Admin/pricemanage/price-manage";
@@ -72,8 +75,6 @@ import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 import ContactAdmin from "../pages/Admin/contact";
 
 // Đường dẫn dành cho phía client
-import RevenueStatistics from "../pages/Admin/statistics/revenue-statistics";
-import TicketStatistics from "../pages/Admin/statistics/ticket-statistics";
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login/index";
 import Register from "../pages/Auth/register/index";
@@ -203,6 +204,10 @@ const authProtectedRoutes = [
     component: <AddShowtime />,
   },
   {
+    path: "/admin/showtime/preview",
+    component: <ShowtimePreview />,
+  },
+  {
     path: "/admin/showtime/:id/edit",
     component: <Updateshowtime />,
   },
@@ -245,6 +250,7 @@ const authProtectedRoutes = [
   // thống kê
   { path: "/admin/revenue-statistics", component: <RevenueStatistics /> },
   { path: "/admin/Ticket-statistics", component: <TicketStatistics /> },
+  { path: "/admin/combo-statistics", component: <ComboStatistics /> },
   // trang chủ
   {
     path: "/admin/overview",

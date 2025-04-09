@@ -1,5 +1,6 @@
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../Components/Common/ChartsDynamicColor";
+import PropTypes from "prop-types";
 
 const TopBestSellingMovies = ({ dataColors, data }) => {
   let chartPieBasicColors = getChartColorsArray(dataColors);
@@ -38,6 +39,16 @@ const TopBestSellingMovies = ({ dataColors, data }) => {
       height={300}
     />
   );
+};
+TopBestSellingMovies.propTypes = {
+  dataColors: PropTypes.string.isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      total_tickets: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
+      movie: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default TopBestSellingMovies;
