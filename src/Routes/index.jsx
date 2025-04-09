@@ -15,11 +15,12 @@ import {
   emailVerifiedRoutes,
 } from "./AllRoutes";
 import {
-  AuthProtected,
-  CheckRouteAuth,
-  CheckRouteAdmin,
-  CheckRouteVerifiedEmail,
+  RequireAuth,
+  RejectIfAuthenticated,
+  RequireAdmin,
+  RequireVerifiedEmail,
 } from "./AuthProtected";
+import { ProtectedRoute } from "./AuthProtected";
 
 const Index = () => {
   return (
@@ -30,9 +31,9 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <CheckRouteAuth>
+                <RejectIfAuthenticated>
                   <NonAuthLayout>{route.component}</NonAuthLayout>
-                </CheckRouteAuth>
+                </RejectIfAuthenticated>
               }
               key={idx}
               exact={true}
@@ -44,7 +45,11 @@ const Index = () => {
           {publicRoutes.map((route, idx) => (
             <Route
               path={route.path}
-              element={<LayoutClient>{route.component}</LayoutClient>}
+              element={
+                <ProtectedRoute>
+                  <LayoutClient>{route.component}</LayoutClient>
+                </ProtectedRoute>
+              }
               key={idx}
               exact={true}
             />
@@ -57,9 +62,11 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <CheckRouteAdmin>
-                  <VerticalLayout>{route.component}</VerticalLayout>
-                </CheckRouteAdmin>
+                <ProtectedRoute>
+                  <VerticalLayout>
+                    <RequireAdmin>{route.component}</RequireAdmin>
+                  </VerticalLayout>
+                </ProtectedRoute>
               }
               key={idx}
               exact={true}
@@ -73,9 +80,11 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <AuthProtected>
-                  <LayoutClient>{route.component}</LayoutClient>
-                </AuthProtected>
+                <RequireAuth>
+                  <ProtectedRoute>
+                    <LayoutClient>{route.component}</LayoutClient>
+                  </ProtectedRoute>
+                </RequireAuth>
               }
               key={idx}
               exact={true}
@@ -88,11 +97,13 @@ const Index = () => {
             <Route
               path={route.path}
               element={
-                <CheckRouteVerifiedEmail>
-                  <AuthProtected>
-                    <LayoutClient>{route.component}</LayoutClient>
-                  </AuthProtected>
-                </CheckRouteVerifiedEmail>
+                <RequireVerifiedEmail>
+                  <RequireAuth>
+                    <ProtectedRoute>
+                      <LayoutClient>{route.component}</LayoutClient>
+                    </ProtectedRoute>
+                  </RequireAuth>
+                </RequireVerifiedEmail>
               }
               key={idx}
               exact={true}

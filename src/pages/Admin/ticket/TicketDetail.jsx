@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -14,18 +15,14 @@ import {
   Table,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import Loading from "../../../Components/Common/Loading";
+import { useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "./../../../utils/Currency";
 import PrintTicket from "./../print-ticket/index";
-import { useFetch } from "../../../Hooks/useCRUD";
-import Loading from "../../../Components/Common/Loading";
-import dayjs from "dayjs";
-import isDayOff from "../../../utils/CheckDay";
-import MemberShip from "./../../Client/profile/MemberShip";
 
 const TicketDetail = () => {
   const { code } = useParams();
   const { data, isLoading } = useFetch(["tickets", code], `/tickets/${code}`);
-  const nav = useNavigate();
   const [modal, setModal] = useState(false);
   const [ticket, setTicket] = useState({});
   const toggle = useCallback(() => {
@@ -41,6 +38,7 @@ const TicketDetail = () => {
       setTicket(data.ticket);
     }
   }, [data]);
+
   return (
     <div className="page-content">
       <Container fluid>
@@ -291,7 +289,7 @@ const TicketDetail = () => {
                     </p>
                     <div className="mt-3 d-flex gap-1 justify-content-center flex-column align-items-center">
                       <img
-                        src={`https://bwipjs-api.metafloor.com/?bcid=code128&text=${ticket?.code}&scale=3&height=8`}
+                        src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${ticket?.code}`}
                         alt=""
                         style={{
                           maxWidth: "200px",

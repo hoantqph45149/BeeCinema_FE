@@ -34,12 +34,18 @@ export function Register() {
       gender: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Họ và tên là bắt buộc"),
+      name: Yup.string()
+        .required("Họ và tên là bắt buộc")
+        .min(6, "Tên tối thiểu 6 ký tự")
+        .max(50, "Tên tối đa 50 ký tự"),
       email: Yup.string()
         .email("Email không hợp lệ")
         .required("Email là bắt buộc"),
       phone: Yup.string()
-        .matches(/^[0-9]{10,11}$/, "Số điện thoại không hợp lệ")
+        .matches(
+          /(84|0[3|5|7|8|9])+([0-9]{8})\b/g,
+          "Số điện thoại không hợp lệ"
+        )
         .required("Số điện thoại là bắt buộc"),
       birthday: Yup.date()
         .required("Ngày sinh là bắt buộc")
@@ -61,10 +67,13 @@ export function Register() {
         },
         {
           onSuccess: () => {
-            showAlert("Đăng ký thành công", "Vui lý đăng nhập", "success");
+            showAlert("Đăng ký thành công", "Vui lòng đăng nhập", "success");
             formik.resetForm();
             setSelectedGender("");
             nav("/login");
+          },
+          onError: (error) => {
+            showAlert("Đăng ký thất bại", error.response.data.message, "error");
           },
         }
       );

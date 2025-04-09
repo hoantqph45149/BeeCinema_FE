@@ -10,14 +10,12 @@ import {
   Row,
 } from "reactstrap";
 
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 import TableContainer from "../../../Components/Common/TableContainer";
 
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 
 import dayjs from "dayjs";
@@ -63,7 +61,6 @@ const Post = () => {
         });
       }
     );
-    // setPosts([]);
   };
   const columns = useMemo(() => [
     {
@@ -75,6 +72,21 @@ const Post = () => {
       header: "Tiêu đề",
       accessorKey: "title",
       enableColumnFilter: false,
+      cell: (cell) => {
+        return (
+          <span
+            style={{
+              maxWidth: "250px",
+              display: "inline-block",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+            }}
+            className="fw-medium"
+          >
+            {cell.row.original.title}
+          </span>
+        );
+      },
     },
     {
       header: "Hình ảnh",
@@ -211,8 +223,10 @@ const Post = () => {
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap dt-responsive"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Search for order ID, customer, order status or something..."
                     />
                   </div>
                   <Modal
@@ -221,7 +235,6 @@ const Post = () => {
                     toggle={toggle}
                     centered
                   ></Modal>
-                  <ToastContainer closeButton={false} limit={1} />
                 </div>
               </Card>
             </Col>

@@ -109,11 +109,16 @@ const Navdata = () => {
           link: "/admin/revenue-statistics",
           parentId: "thongke",
         },
-
         {
           id: 2,
           label: "Thống kê vé",
           link: "/admin/Ticket-statistics",
+          parentId: "thongke",
+        },
+        {
+          id: 2,
+          label: "Thống kê combo",
+          link: "/admin/combo-statistics",
           parentId: "thongke",
         },
       ],
@@ -224,12 +229,12 @@ const Navdata = () => {
           link: "/admin/voucher",
           parentId: "dichvuvauudai",
         },
-        {
-          id: 3,
-          label: "Quản lý giá vé",
-          link: "/admin/price",
-          parentId: "dichvuvauudai",
-        },
+        // {
+        //   id: 3,
+        //   label: "Quản lý giá vé",
+        //   link: "/admin/price",
+        //   parentId: "dichvuvauudai",
+        // },
       ],
     },
     {

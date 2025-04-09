@@ -14,9 +14,8 @@ import { useCRUD } from "../../Hooks/useCRUD";
 
 function ProfileDropdownClient() {
   const { create: logout } = useCRUD(["logout"]);
-  const { authUser, setAuthUser } = useAuthContext();
+  const { authUser, setAuthUser, role } = useAuthContext();
   const nav = useNavigate();
-
   const handleLogout = () => {
     logout.mutate(
       {
@@ -48,7 +47,7 @@ function ProfileDropdownClient() {
         anchor="bottom"
         className="w-64 bg-white border rounded-lg shadow-lg"
       >
-        {authUser?.role === "admin" && (
+        {role === "admin" && (
           <MenuItem>
             <Link
               className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"

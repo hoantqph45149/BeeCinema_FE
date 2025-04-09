@@ -1,8 +1,37 @@
-import React from "react";
-import { Navigate, Route } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuthContext } from "../Contexts/auth/UseAuth";
+import { useFetch } from "../Hooks/useCRUD";
+import { useEffect } from "react";
+import Loading from "../Components/Common/Loading";
 
-const AuthProtected = ({ children }) => {
+const ProtectedRoute = ({ children }) => {
+  const { setAuthUser, setRole, setPermissions } = useAuthContext();
+  const { data, isLoading } = useFetch(["user"], "/user", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setAuthUser(data?.user);
+      setRole(data?.user?.roles[0]);
+      setPermissions(data?.user?.permissions);
+    }
+  }, [data, setAuthUser, setRole, setPermissions]);
+
+  if (!data || isLoading)
+    return (
+      <div className="container h-screen">
+        <Loading />
+      </div>
+    );
+
+  console.log(!data);
+  return <>{children}</>;
+};
+
+const RequireAuth = ({ children }) => {
   const { authUser } = useAuthContext();
 
   if (!authUser) {
@@ -12,7 +41,7 @@ const AuthProtected = ({ children }) => {
   return <>{children}</>;
 };
 
-const CheckRouteVerifiedEmail = ({ children }) => {
+const RequireVerifiedEmail = ({ children }) => {
   const { authUser } = useAuthContext();
   if (!authUser || !authUser?.email_verified_at) {
     return <Navigate to="/" />;
@@ -21,7 +50,7 @@ const CheckRouteVerifiedEmail = ({ children }) => {
   return <>{children}</>;
 };
 
-const CheckRouteAuth = ({ children }) => {
+const RejectIfAuthenticated = ({ children }) => {
   const { authUser } = useAuthContext();
 
   if (authUser) {
@@ -31,10 +60,10 @@ const CheckRouteAuth = ({ children }) => {
   return <>{children}</>;
 };
 
-const CheckRouteAdmin = ({ children }) => {
-  const { authUser } = useAuthContext();
-  console.log(authUser?.role);
-  if (authUser?.role !== "admin") {
+const RequireAdmin = ({ children }) => {
+  const { authUser, role } = useAuthContext();
+  console.log("role admin", role);
+  if (role !== "admin") {
     return (window.location.href = "/");
   }
 
@@ -45,26 +74,10 @@ const CheckRouteAdmin = ({ children }) => {
   return <>{children}</>;
 };
 
-const AccessRoute = ({ component: Component, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={(props) => {
-        return (
-          <>
-            {" "}
-            <Component {...props} />{" "}
-          </>
-        );
-      }}
-    />
-  );
-};
-
 export {
-  AccessRoute,
-  AuthProtected,
-  CheckRouteAuth,
-  CheckRouteAdmin,
-  CheckRouteVerifiedEmail,
+  ProtectedRoute,
+  RequireAuth,
+  RequireAdmin,
+  RejectIfAuthenticated,
+  RequireVerifiedEmail,
 };

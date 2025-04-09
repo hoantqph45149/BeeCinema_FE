@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import "quill/dist/quill.snow.css";
+import { useEffect } from "react";
+import { useQuill } from "react-quilljs";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -10,13 +14,9 @@ import {
   Label,
   Row,
 } from "reactstrap";
-import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { useQuill } from "react-quilljs";
-import "quill/dist/quill.snow.css";
-import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
-import { useFormik } from "formik";
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import { useCRUD } from "../../../Hooks/useCRUD";
 import useUploadImage from "../../../Hooks/useUploadImage";
 
 document.title =
@@ -25,10 +25,7 @@ document.title =
 const AddPost = () => {
   const nav = useNavigate();
 
-  const { data: posts } = useFetch(["posts"], "/posts");
   const { create: createPost } = useCRUD(["posts"]);
-  const [selectedMulti, setselectedMulti] = useState(null);
-  const [action, setAction] = useState(null);
   const { uploadImage } = useUploadImage();
 
   const { quill, quillRef } = useQuill({
@@ -69,7 +66,10 @@ const AddPost = () => {
       is_active: true,
     },
     validationSchema: Yup.object({
-      title: Yup.string().required("Tiêu đề không được để trống"),
+      title: Yup.string()
+        .required("Tiêu đề không được để trống")
+        .min(5, "Tiêu đề tối thiểu 5 ký tự")
+        .max(255, "Tiêu đề tối đa 255 ký tự"),
       description: Yup.string().required("Mô tả là bắt buộc"),
       content: Yup.string()
         .trim()

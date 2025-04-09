@@ -40,16 +40,131 @@ File: Custom Css File
   font-weight: 600 !important;
 }
 
-// @media print {
-//   @page {
-//     size: A4;
-//     margin: 0;
-//   }
-//   body {
-//     margin: 0;
-//     padding: 0;
-//   }
-//   .ticket-container {
-//     break-before: page;
-//   }
-// }
+#html5-qrcode-button-camera-permission {
+  background-color: #405189;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#html5-qrcode-button-camera-permission:hover {
+  background-color: #405189;
+  transform: scale(1.05);
+}
+
+#html5-qrcode-button-camera-permission:active {
+  background-color: #405189;
+  transform: scale(0.95);
+}
+
+#html5-qrcode-button-camera-permission:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+#html5-qrcode-anchor-scan-type-change {
+  color: #405189;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+#html5-qrcode-anchor-scan-type-change:hover {
+  color: #405189;
+  text-decoration: none;
+}
+
+#html5-qrcode-anchor-scan-type-change:active {
+  color: #405189;
+}
+
+#html5-qrcode-button-file-selection {
+  background-color: #405189;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+#html5-qrcode-button-file-selection:hover {
+  background-color: #405189;
+  transform: scale(1.05);
+}
+
+#html5-qrcode-button-file-selection:active {
+  background-color: #405189;
+  transform: scale(0.95);
+}
+
+#html5-qrcode-button-camera-start {
+  background-color: #28a745; /* Màu xanh lá */
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 16px; /* Vừa phải, không quá to */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-block;
+  opacity: 1;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#html5-qrcode-button-camera-start:hover {
+  background-color: #218838; /* Xanh đậm hơn khi hover */
+  transform: scale(1.05);
+}
+
+#html5-qrcode-button-camera-start:active {
+  background-color: #1e7e34;
+  transform: scale(0.95);
+}
+
+#html5-qrcode-button-camera-start:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+#html5-qrcode-button-camera-stop {
+  background-color: #dc3545; /* Màu đỏ cảnh báo */
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 16px; /* Vừa phải, không quá to */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#html5-qrcode-button-camera-stop:hover {
+  background-color: #c82333;
+  transform: scale(1.05);
+}
+
+#html5-qrcode-button-camera-stop:active {
+  background-color: #a71d2a;
+  transform: scale(0.95);
+}
+
+#html5-qrcode-button-camera-stop:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.rbc-toolbar {
+  display: none !important;
+}

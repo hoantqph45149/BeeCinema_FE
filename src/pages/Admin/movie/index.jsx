@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Card,
@@ -151,7 +151,15 @@ const Movie = () => {
         const movie = cell.row.original;
         return (
           <>
-            <div className="container mt-4">
+            <div
+              className="container mt-4"
+              style={{
+                maxWidth: "400px",
+                display: "inline-block",
+                whiteSpace: "normal",
+                wordBreak: "break-word",
+              }}
+            >
               <h4 className="text-primary fw-bold">{movie.name}</h4>
               <p>
                 <strong>Đạo diễn:</strong> {movie.director}

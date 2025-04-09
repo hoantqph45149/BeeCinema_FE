@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -37,7 +37,7 @@ const AddCombo = () => {
     setFoods(newFoods);
   };
   const handleAddFood = () => {
-    setFoods([...foods, { id: "", quantity: "" }]);
+    setFoods([...foods, { id: "", quantity: 1 }]);
   };
 
   const countDown = (index) => {
@@ -53,7 +53,7 @@ const AddCombo = () => {
   const countUP = (index) => {
     setFoods((prevFoods) =>
       prevFoods.map((food, i) =>
-        i === index ? { ...food, quantity: food.quantity + 1 } : food
+        i === index ? { ...food, quantity: Number(food.quantity) + 1 } : food
       )
     );
   };
@@ -84,7 +84,6 @@ const AddCombo = () => {
         .min(0, "Giá bán phải lớn hơn hoặc bằng 0")
         .max(Yup.ref("price"), "Giá bán phải nhỏ hơn giá gốc")
         .required("Giá bán không được để trống"),
-      description: Yup.string().required("Mô tả không được để trống"),
       img_thumbnail: Yup.mixed().required("Vui lòng chọn hình ảnh"),
     }),
     onSubmit: async (values) => {
@@ -113,6 +112,22 @@ const AddCombo = () => {
       );
     },
   });
+
+  console.log("foods", foodsData);
+
+  useEffect(() => {
+    if (foodsData && foods) {
+      const totalPrice = foods.reduce((sum, selectedFood) => {
+        const foodItem = foodsData.data.find(
+          (food) => food.id === Number(selectedFood.id)
+        );
+        const foodPrice = foodItem ? foodItem.price : 0;
+        return sum + foodPrice * selectedFood.quantity;
+      }, 0);
+
+      formik.setFieldValue("price", totalPrice);
+    }
+  }, [foods, foodsData]);
 
   return (
     <div className="page-content">
@@ -192,7 +207,7 @@ const AddCombo = () => {
                                       type="number"
                                       className="text-center product-quantity"
                                       value={food.quantity}
-                                      min="0"
+                                      min="1"
                                       max="100"
                                       readOnly
                                     />
@@ -309,22 +324,11 @@ const AddCombo = () => {
                             Mô tả ngắn
                           </Label>
                           <textarea
-                            className={`form-control ${
-                              formik.errors.description &&
-                              formik.touched.description
-                                ? "is-invalid"
-                                : ""
-                            }`}
+                            className="form-control"
                             id="description"
                             rows="5"
                             {...formik.getFieldProps("description")}
                           ></textarea>
-                          {formik.touched.description &&
-                            formik.errors.description && (
-                              <div className="text-danger">
-                                {formik.errors.description}
-                              </div>
-                            )}
                         </div>
                       </Col>
                     </Row>

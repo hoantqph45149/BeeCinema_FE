@@ -1,8 +1,6 @@
 import dayjs from "dayjs";
 import { useFormik } from "formik";
 import React, { useEffect, useMemo, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   Button,
   Card,
@@ -338,8 +336,6 @@ const Rank = () => {
                     </div>
                   </form>
                 </Modal>
-
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>

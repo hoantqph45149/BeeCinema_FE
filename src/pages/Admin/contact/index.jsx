@@ -14,8 +14,6 @@ import {
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { useEffect } from "react";
 
@@ -302,7 +300,6 @@ const ContactAdmin = () => {
                     </div>
                   </Modal>
                 </div>
-                <ToastContainer closeButton={false} limit={1} />
               </CardBody>
             </Card>
           </Col>

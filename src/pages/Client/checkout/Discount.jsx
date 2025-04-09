@@ -1,7 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { ArrowBigRight, Check, Clipboard } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Button from "../../../Components/Common/Button";
 import Disclosure from "../../../Components/Common/Disclosure";
@@ -49,7 +50,7 @@ const Discount = ({
             total_amount: 0,
           })
           .then(() => {
-            sessionStorage.removeItem("clickVoucher"); // Xóa sau khi xử lý
+            sessionStorage.removeItem("clickVoucher");
             queryClient.invalidateQueries(["voucherUser"]);
           });
       }
@@ -70,7 +71,6 @@ const Discount = ({
       }
     };
 
-    // Gọi hàm khi location thay đổi (tức là khi chuyển trang)
     return () => {
       const newPath = window.location.pathname;
       if (newPath !== `/checkout/${slug}`) {
@@ -127,7 +127,6 @@ const Discount = ({
         });
 
         if (!resRemove.data.success) {
-          console.error("Lỗi khi gỡ voucher cũ:", resRemove.data.message);
           return;
         }
         setPriceDiscount((prev) => prev - resRemove.data.discount_applied);
@@ -273,6 +272,16 @@ const Discount = ({
       </div>
     </>
   );
+};
+Discount.propTypes = {
+  handleCalculatePoint: PropTypes.func.isRequired,
+  setSelectVoucher: PropTypes.func.isRequired,
+  setPriceDiscountVoucher: PropTypes.func.isRequired,
+  membership: PropTypes.object.isRequired,
+  totalAmount: PropTypes.number.isRequired,
+  setTotalPayment: PropTypes.func.isRequired,
+  setPriceDiscount: PropTypes.func.isRequired,
+  slug: PropTypes.string.isRequired,
 };
 
 export default Discount;
