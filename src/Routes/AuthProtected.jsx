@@ -27,6 +27,7 @@ const ProtectedRoute = ({ children }) => {
     }
   }
 
+
   if (isLoading)
     return (
       <div className="container h-screen">
