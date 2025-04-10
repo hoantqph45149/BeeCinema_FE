@@ -20,14 +20,13 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [data, setAuthUser, setRole, setPermissions]);
 
-  if (!data || isLoading)
+  if (isLoading)
     return (
       <div className="container h-screen">
         <Loading />
       </div>
     );
 
-  console.log(!data);
   return <>{children}</>;
 };
 

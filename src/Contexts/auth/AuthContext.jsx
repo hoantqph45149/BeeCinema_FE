@@ -7,6 +7,7 @@ const AuthContext = createContext({
   setPermissions: () => {},
   role: null,
   setRole: () => {},
+  hasPermission: () => {},
 });
 
 export default AuthContext;
