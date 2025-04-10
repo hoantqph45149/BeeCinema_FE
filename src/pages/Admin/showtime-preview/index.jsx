@@ -26,7 +26,7 @@ import {
   NavLink,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useCRUD } from "../../../Hooks/useCRUD";
 import { showAlert } from "../../../Components/Common/showAlert";
 
@@ -37,6 +37,7 @@ const ShowtimePreview = () => {
   const location = useLocation();
   const { showtimes, movie_id, movie_version_id, movie_name, movie_image } =
     location.state || {};
+  const nav = useNavigate();
   const { create } = useCRUD(["showtimes"]);
   const [eventsByRoom, setEventsByRoom] = useState({});
   const [generatedShowtimes, setGeneratedShowtimes] = useState({});
