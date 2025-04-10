@@ -3,9 +3,11 @@ import RoutesComponent from "./Routes";
 import { useAuthContext } from "./Contexts/auth/UseAuth";
 import { useFetch } from "./Hooks/useCRUD";
 import Loading from "./Components/Common/Loading";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const { setAuthUser, setRole, setPermissions } = useAuthContext();
+  const nav = useNavigate();
   const { data, isLoading, error } = useFetch(["user"], "/user", {
     staleTime: Infinity,
     cacheTime: Infinity,
@@ -32,6 +34,7 @@ function App() {
 
     if (error) {
       if (error?.response?.status === 401) {
+        nav("/login");
         setIsUserSet(true);
       }
     }

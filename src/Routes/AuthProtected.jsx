@@ -1,12 +1,13 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../Contexts/auth/UseAuth";
 import { useFetch } from "../Hooks/useCRUD";
 import { useEffect } from "react";
 import Loading from "../Components/Common/Loading";
 
 const ProtectedRoute = ({ children }) => {
+  const nav = useNavigate();
   const { setAuthUser, setRole, setPermissions } = useAuthContext();
-  const { data, isLoading } = useFetch(["user"], "/user", {
+  const { data, isLoading, error } = useFetch(["user"], "/user", {
     staleTime: Infinity,
     cacheTime: Infinity,
     refetchOnMount: false,
@@ -20,14 +21,19 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [data, setAuthUser, setRole, setPermissions]);
 
-  if (!data || isLoading)
+  if (error) {
+    if (error?.response?.status === 401) {
+      nav("/login");
+    }
+  }
+
+  if (isLoading)
     return (
       <div className="container h-screen">
         <Loading />
       </div>
     );
 
-  console.log(!data);
   return <>{children}</>;
 };
 
