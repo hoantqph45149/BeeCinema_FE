@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
-//import Components
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 
-//import actions
 import {
   changeLayout,
   changeSidebarTheme,
@@ -61,15 +59,11 @@ const Layout = (props) => {
     leftsidbarSizeType,
     leftSidebarViewType,
     leftSidebarImageType,
-    preloader,
     sidebarVisibilitytype,
     layoutThemeType,
     layoutThemeColorType,
   } = useSelector(selectLayoutProperties);
-  // console.log(leftsidbarSizeType);
-  /*
-    layout settings
-    */
+
   useEffect(() => {
     if (
       layoutType ||
@@ -114,16 +108,13 @@ const Layout = (props) => {
     sidebarVisibilitytype,
     dispatch,
   ]);
-  /*
-    call dark/light mode
-    */
+
   const onChangeLayoutMode = (value) => {
     if (changeLayoutMode) {
       dispatch(changeLayoutMode(value));
     }
   };
 
-  // class add remove in header
   useEffect(() => {
     window.addEventListener("scroll", scrollNavigation, true);
   });
