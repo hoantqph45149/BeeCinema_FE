@@ -1,11 +1,19 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import AuthContext from "./AuthContext";
 
 export const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [permissions, setPermissions] = useState(null);
   const [role, setRole] = useState(null);
+
+  const hasPermission = useCallback(
+    (permissionKey) => {
+      if (!permissions || permissions.length === 0) return false;
+      return permissions.includes(permissionKey);
+    },
+    [permissions]
+  );
   return (
     <AuthContext.Provider
       value={{
@@ -15,6 +23,7 @@ export const AuthContextProvider = ({ children }) => {
         setPermissions,
         role,
         setRole,
+        hasPermission,
       }}
     >
       {children}

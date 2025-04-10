@@ -43,7 +43,6 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
         : document.body.classList.add("menu");
     }
 
-    //For collapse vertical and semibox menu
     if (
       sidebarVisibilitytype === "show" &&
       (document.documentElement.getAttribute("data-layout") === "vertical" ||
