@@ -1,16 +1,32 @@
-import { Barcode, IdCard } from "lucide-react";
+import { Crown, Gem, IdCard, Medal, Star } from "lucide-react";
 import React from "react";
-import PointHistory from "./PointHistory";
+import Loading from "../../../Components/Common/Loading";
 import { useFetch } from "../../../Hooks/useCRUD";
 import { formatVND } from "../../../utils/Currency";
-import Loading from "../../../Components/Common/Loading";
+import PointHistory from "./PointHistory";
 
 const MemberShip = () => {
-  const { data: ranks } = useFetch(["ranks"], "/ranks");
+  const { data: ranks } = useFetch(["ranks"], "/ranks", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
   const { data: membership, isLoading } = useFetch(
     ["membership"],
-    "/user/membership"
+    "/user/membership",
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      refetchOnMount: false,
+    }
   );
+
+  const rankIcons = {
+    Member: <Medal className="text-[#cd7f32]" size={20} />,
+    Gold: <Star className="text-[#ffd700]" size={20} />,
+    Platinum: <Crown className="text-[#C0C0C0]" size={20} />,
+    Diamond: <Gem className="text-[#b0e0e6]" size={20} />,
+  };
 
   const totalSpent = membership?.total_spent ?? 0;
   const maxSpent = ranks?.data?.length
@@ -57,7 +73,7 @@ const MemberShip = () => {
                   <div
                     className="h-full bg-accent stripe-animation"
                     style={{
-                      width: `${Math.min(progressPercentage, 100)}%`, // Giới hạn max 100%
+                      width: `${Math.min(progressPercentage, 100)}%`,
                       maxWidth: "100%",
                     }}
                   ></div>
@@ -68,6 +84,7 @@ const MemberShip = () => {
                     2,
                     Math.min(positionPercentage, 98)
                   );
+
                   return (
                     <div
                       key={rank.name}
@@ -77,11 +94,28 @@ const MemberShip = () => {
                         transform: "translateX(-50%)",
                       }}
                     >
-                      <div className="w-1 h-1 bg-gray-700 rounded-full mt-1"></div>
-                      <p className="font-semibol px-1 rounded">{rank.name}</p>
-                      <p className="text-gray-500">
-                        {formatVND(rank.total_spent)}
-                      </p>
+                      <div className="relative flex flex-col items-center group">
+                        {membership?.rank?.name === rank.name && (
+                          <div className="absolute animate-ping w-6 h-6 rounded-full bg-accent opacity-20 top-0"></div>
+                        )}
+
+                        <div
+                          className={`z-10 bg-white rounded-full p-1 shadow-md ${
+                            membership?.rank?.name === rank.name
+                              ? "animate-bounce"
+                              : ""
+                          }`}
+                        >
+                          {rankIcons[rank.name] ?? <Medal size={20} />}
+                        </div>
+
+                        <p className="font-semibold text-sm px-1">
+                          {rank.name}
+                        </p>
+                        <p className="text-gray-500">
+                          {formatVND(rank.total_spent)}
+                        </p>
+                      </div>
                     </div>
                   );
                 })}
@@ -89,7 +123,7 @@ const MemberShip = () => {
             </div>
 
             {/* Điểm thành viên */}
-            <div className="mt-12 text-secondary">
+            <div className="mt-16 text-secondary">
               <p>
                 Điểm đã tích lũy:{" "}
                 <span className="font-bold">

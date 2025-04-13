@@ -1,5 +1,7 @@
+import dayjs from "dayjs";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -13,17 +15,17 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import dayjs from "dayjs";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
-import api from "../../../apis/axios";
-import { useCRUD, useFetch } from "./../../../Hooks/useCRUD";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { showConfirm } from "../../../Components/Common/showAlert";
 import Loader from "../../../Components/Common/Loader";
+import { showConfirm } from "../../../Components/Common/showAlert";
+import { useCRUD, useFetch } from "./../../../Hooks/useCRUD";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 dayjs.extend(isSameOrBefore);
+
 const Showtime = () => {
+  const { authUser } = useAuthContext();
   const { data: branchesData, isLoading: isLoadingBranch } = useFetch(
     ["branches"],
     "/branches/active"
@@ -31,8 +33,16 @@ const Showtime = () => {
   const { patch: patchShowtime, delete: deleteShowtime } = useCRUD([
     "showtimes",
   ]);
+
+  const { data: cinema, isLoading: isLoadingCinema } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas/${authUser?.cinema_id}`,
+    {
+      enabled: !!authUser?.cinema_id,
+    }
+  );
+  const nav = useNavigate();
   const [showtimes, setShowtimes] = useState([]);
-  const [showtime, setShowtime] = useState({});
   const [branches, setBranches] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [dataFilterShowtime, setDataFilterShowtime] = useState({
@@ -41,7 +51,30 @@ const Showtime = () => {
     date: "",
     is_active: "",
   });
-  const nav = useNavigate();
+  // State for search inputs
+  const [searchRoom, setSearchRoom] = useState("");
+  const [searchTime, setSearchTime] = useState("");
+  const [searchFormat, setSearchFormat] = useState("");
+
+  const finalFilter = {
+    ...dataFilterShowtime,
+    ...(authUser?.cinema_id && {
+      cinema_id: cinema?.id,
+      branch_id: cinema?.branch_id,
+    }),
+  };
+
+  const { data, isLoading: isLoadingShowtime } = useFetch(
+    ["showtimes", finalFilter, isLoadingCinema],
+    `/showtimes?branch_id=${finalFilter.branch_id}&cinema_id=${
+      finalFilter.cinema_id
+    }${
+      finalFilter.is_active !== "" ? `&is_active=${finalFilter.is_active}` : ""
+    }&date=${finalFilter.date}`,
+    {
+      enabled: !isLoadingCinema,
+    }
+  );
 
   useEffect(() => {
     if (branchesData?.branches?.length > 0) {
@@ -59,17 +92,6 @@ const Showtime = () => {
     }
   }, [branchesData]);
 
-  const { data, isLoading: isLoadingShowtime } = useFetch(
-    ["showtimes", dataFilterShowtime],
-    `/showtimes?branch_id=${dataFilterShowtime.branch_id}&cinema_id=${
-      dataFilterShowtime.cinema_id
-    }${
-      dataFilterShowtime.is_active !== ""
-        ? `&is_active=${dataFilterShowtime.is_active}`
-        : ""
-    }&date=${dataFilterShowtime.date}`
-  );
-
   useEffect(() => {
     if (data) {
       const showtimes = data.showtimes.reduce((acc, item) => {
@@ -78,8 +100,6 @@ const Showtime = () => {
 
         if (existingMovie) {
           existingMovie.showtimes.push(showtime);
-
-          // Sắp xếp showtimes theo start_time tăng dần
           existingMovie.showtimes.sort(
             (a, b) => new Date(a.start_time) - new Date(b.start_time)
           );
@@ -111,44 +131,17 @@ const Showtime = () => {
     }
   };
 
-  // Column
-  const columns = useMemo(
-    () => [
-      {
-        movie: {
-          name: "Thợ Săn Thủ Lĩnh",
-          special: true,
-          duration: "118 phút",
-          genre: "Kinh dị",
-          image: "path/to/image.jpg", // Thay bằng đường dẫn thật
-        },
-        schedules: [
-          {
-            time: "10:15 - 12:28",
-            room: "P201",
-            seats: "112/112 ghế",
-            format: "2D Lồng Tiếng",
-            active: true,
-          },
-          {
-            time: "08:00 - 10:13",
-            room: "P201",
-            seats: "112/112 ghế",
-            format: "2D Lồng Tiếng",
-            active: true,
-          },
-        ],
-      },
-    ],
-    []
-  );
-  const [visibleRows, setVisibleRows] = useState(
-    columns.map(() => false) // Ban đầu, tất cả các dòng đều ẩn scheduler
-  );
+  const [visibleRows, setVisibleRows] = useState([]);
+
+  // Initialize visibleRows when showtimes change
+  useEffect(() => {
+    setVisibleRows(showtimes.map(() => false));
+  }, [showtimes]);
+
   const toggleScheduler = (index) => {
     setVisibleRows((prevState) => {
       const newState = [...prevState];
-      newState[index] = !newState[index]; // Đảo trạng thái ẩn/hiện
+      newState[index] = !newState[index];
       return newState;
     });
   };
@@ -160,22 +153,15 @@ const Showtime = () => {
       () => {
         const start_time = dayjs(showtime.start_time).format("HH:mm");
         const end_time = dayjs(showtime.end_time).format("HH:mm");
-        patchShowtime.mutate(
-          {
-            url: `/showtimes/${showtime.id}`,
-            data: {
-              ...showtime,
-              is_active: showtime.is_active === true ? false : true,
-              start_time,
-              end_time,
-            },
+        patchShowtime.mutate({
+          url: `/showtimes/${showtime.id}`,
+          data: {
+            ...showtime,
+            is_active: showtime.is_active === true ? false : true,
+            start_time,
+            end_time,
           },
-          {
-            onSuccess: () => {
-              setShowtime({});
-            },
-          }
-        );
+        });
       }
     );
   };
@@ -189,11 +175,7 @@ const Showtime = () => {
         showtime.date
       } không ?`,
       () => {
-        deleteShowtime.mutate(`/showtimes/${showtime.id}`, {
-          onSuccess: () => {
-            setShowtime({});
-          },
-        });
+        deleteShowtime.mutate(`/showtimes/${showtime.id}`);
       }
     );
   };
@@ -211,55 +193,65 @@ const Showtime = () => {
                   <div className="col-sm">
                     <Form>
                       <Row className="g-3">
-                        <Col xl={3} lg={4} md={6} sm={12}>
-                          <div>
-                            <Label className="form-label " htmlFor="branches">
-                              Chi nhánh
-                            </Label>
-                            <select
-                              value={dataFilterShowtime.branch_id}
-                              onChange={(e) => {
-                                handleSetCinema(e.target.value);
-                              }}
-                              id="branches"
-                              className="form-select"
-                            >
-                              {branches.map((branch) => (
-                                <option
-                                  key={branch.id}
-                                  value={branch.id}
-                                  onClick={() => handleSetCinema(branch.id)}
+                        {!authUser.cinema_id && (
+                          <>
+                            <Col xl={3} lg={4} md={6} sm={12}>
+                              <div>
+                                <Label
+                                  className="form-label "
+                                  htmlFor="branches"
                                 >
-                                  {branch.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </Col>
-                        <Col xl={3} lg={4} md={6} sm={12}>
-                          <div>
-                            <Label className="form-label " htmlFor="cinemas">
-                              Rạp
-                            </Label>
-                            <select
-                              value={dataFilterShowtime.cinema_id}
-                              onChange={(e) => {
-                                setDataFilterShowtime({
-                                  ...dataFilterShowtime,
-                                  cinema_id: e.target.value,
-                                });
-                              }}
-                              id="cinemas"
-                              className="form-select"
-                            >
-                              {cinemas.map((cinema) => (
-                                <option key={cinema.id} value={cinema.id}>
-                                  {cinema.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </Col>
+                                  Chi nhánh
+                                </Label>
+                                <select
+                                  value={dataFilterShowtime.branch_id}
+                                  onChange={(e) => {
+                                    handleSetCinema(e.target.value);
+                                  }}
+                                  id="branches"
+                                  className="form-select"
+                                >
+                                  {branches.map((branch) => (
+                                    <option
+                                      key={branch.id}
+                                      value={branch.id}
+                                      onClick={() => handleSetCinema(branch.id)}
+                                    >
+                                      {branch.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </Col>
+                            <Col xl={3} lg={4} md={6} sm={12}>
+                              <div>
+                                <Label
+                                  className="form-label "
+                                  htmlFor="cinemas"
+                                >
+                                  Rạp
+                                </Label>
+                                <select
+                                  value={dataFilterShowtime.cinema_id}
+                                  onChange={(e) => {
+                                    setDataFilterShowtime({
+                                      ...dataFilterShowtime,
+                                      cinema_id: e.target.value,
+                                    });
+                                  }}
+                                  id="cinemas"
+                                  className="form-select"
+                                >
+                                  {cinemas.map((cinema) => (
+                                    <option key={cinema.id} value={cinema.id}>
+                                      {cinema.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </Col>
+                          </>
+                        )}
                         <Col xl={3} lg={4} md={6}>
                           <div>
                             <Label
@@ -319,30 +311,49 @@ const Showtime = () => {
                       >
                         <i className="ri-add-line align-bottom me-1"></i>
                         Thêm xuất chiếu
-                      </Button>{" "}
+                      </Button>
                     </div>
                   </div>
                 </Row>
               </CardHeader>
               <CardBody className="pt-0">
                 {isLoadingShowtime || isLoadingBranch ? (
-                  <>
-                    <Loader />
-                  </>
+                  <Loader />
                 ) : (
-                  <>
-                    <div className="table-responsive">
-                      <Table className="table fw-medium  align-middle table-nowrap table-bordered">
-                        <thead>
-                          <tr>
-                            <th></th>
-                            <th>Phim</th>
-                            <th>Thời lượng</th>
-                            <th>Thể loại</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {showtimes.map((item, index) => (
+                  <div className="table-responsive">
+                    <Table className="table fw-medium align-middle table-nowrap table-bordered">
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Phim</th>
+                          <th>Thời lượng</th>
+                          <th>Thể loại</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {showtimes.map((item, index) => {
+                          const filteredShowtimes = item.showtimes.filter(
+                            (showtime) => {
+                              const timeString = `${dayjs(
+                                showtime.start_time
+                              ).format("HH:mm")}-${dayjs(
+                                showtime.end_time
+                              ).format("HH:mm")}`;
+                              return (
+                                showtime.room.name
+                                  .toLowerCase()
+                                  .includes(searchRoom.toLowerCase()) &&
+                                timeString
+                                  .toLowerCase()
+                                  .includes(searchTime.toLowerCase()) &&
+                                showtime.format
+                                  .toLowerCase()
+                                  .includes(searchFormat.toLowerCase())
+                              );
+                            }
+                          );
+
+                          return (
                             <React.Fragment key={index}>
                               <tr>
                                 <td>
@@ -360,7 +371,15 @@ const Showtime = () => {
                                   </div>
                                 </td>
                                 <td>
-                                  <div className="d-flex gap-2 align-items-center">
+                                  <div
+                                    style={{
+                                      maxWidth: "400px",
+                                      display: "inline-block",
+                                      whiteSpace: "normal",
+                                      wordBreak: "break-word",
+                                    }}
+                                    className="d-flex gap-2 align-items-center"
+                                  >
                                     <img
                                       src={item.img_thumbnail}
                                       alt={item.name}
@@ -372,13 +391,12 @@ const Showtime = () => {
                                     />
                                     <div className="flex-grow-1 d-flex flex-column">
                                       <span className="fw-medium fs-5 text">
-                                        {" "}
-                                        {item.name}{" "}
+                                        {item.name}
                                       </span>
                                       {item.is_special && (
                                         <span
                                           style={{ width: "70px" }}
-                                          className=" badge bg-danger"
+                                          className="badge bg-danger"
                                         >
                                           ĐẶC BIỆT
                                         </span>
@@ -393,6 +411,41 @@ const Showtime = () => {
                                 <tr>
                                   <td colSpan={6}>
                                     <div className="table-responsive">
+                                      {/* Search Inputs */}
+                                      <div className="mb-3">
+                                        <Row className="g-3">
+                                          <Col md={4}>
+                                            <Input
+                                              type="text"
+                                              placeholder="Tìm kiếm Phòng..."
+                                              value={searchRoom}
+                                              onChange={(e) =>
+                                                setSearchRoom(e.target.value)
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={4}>
+                                            <Input
+                                              type="text"
+                                              placeholder="Tìm kiếm Thời gian (HH:mm-HH:mm)..."
+                                              value={searchTime}
+                                              onChange={(e) =>
+                                                setSearchTime(e.target.value)
+                                              }
+                                            />
+                                          </Col>
+                                          <Col md={4}>
+                                            <Input
+                                              type="text"
+                                              placeholder="Tìm kiếm Định dạng..."
+                                              value={searchFormat}
+                                              onChange={(e) =>
+                                                setSearchFormat(e.target.value)
+                                              }
+                                            />
+                                          </Col>
+                                        </Row>
+                                      </div>
                                       <Table bordered>
                                         <thead className="table-light">
                                           <tr>
@@ -405,7 +458,7 @@ const Showtime = () => {
                                           </tr>
                                         </thead>
                                         <tbody>
-                                          {item.showtimes.map(
+                                          {filteredShowtimes.map(
                                             (showtime, scheduleIndex) => (
                                               <tr key={scheduleIndex}>
                                                 <td>{`${dayjs(
@@ -449,7 +502,6 @@ const Showtime = () => {
                                                         handleUpdateActive(
                                                           showtime
                                                         );
-                                                        setShowtime(showtime);
                                                       }}
                                                     />
                                                   </div>
@@ -496,12 +548,11 @@ const Showtime = () => {
                                                             showtime.totalSeats
                                                         }
                                                         color="primary"
-                                                        className="btn-sm "
+                                                        className="btn-sm"
                                                         onClick={() => {
                                                           handleDeleteShowtime(
                                                             showtime
                                                           );
-                                                          setShowtime(showtime);
                                                         }}
                                                       >
                                                         <i className="ri-delete-bin-5-fill"></i>
@@ -510,7 +561,7 @@ const Showtime = () => {
                                                     <li className="list-inline-item">
                                                       <Button
                                                         color="primary"
-                                                        className="btn-sm "
+                                                        className="btn-sm"
                                                         onClick={() => {
                                                           nav(
                                                             `/admin/showtime/${showtime.id}/detail`
@@ -532,11 +583,11 @@ const Showtime = () => {
                                 </tr>
                               )}
                             </React.Fragment>
-                          ))}
-                        </tbody>
-                      </Table>
-                    </div>
-                  </>
+                          );
+                        })}
+                      </tbody>
+                    </Table>
+                  </div>
                 )}
               </CardBody>
             </Card>

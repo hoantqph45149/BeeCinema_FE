@@ -18,7 +18,7 @@ const Widgets = ({ data, date }) => {
           ? "ri-arrow-right-down-line"
           : "ri-arrow-right-up-line",
       badgeClass: totalRevenue?.change < 0 ? "danger" : "success",
-      percentage: totalRevenue?.change,
+      percentage: `${totalRevenue?.change}%`,
       counter: formatLargeNumber(totalRevenue?.value).value,
       suffix: formatLargeNumber(totalRevenue?.value).suffix,
       bgcolor: "success",
@@ -35,7 +35,7 @@ const Widgets = ({ data, date }) => {
           ? "ri-arrow-right-down-line"
           : "ri-arrow-right-up-line",
       badgeClass: ticketsSold?.change < 0 ? "danger" : "success",
-      percentage: ticketsSold?.change,
+      percentage: `${ticketsSold?.change}%`,
       counter: ticketsSold?.value,
       bgcolor: "info",
       icon: "bx bx-shopping-bag",
@@ -52,7 +52,7 @@ const Widgets = ({ data, date }) => {
           ? "ri-arrow-right-down-line"
           : "ri-arrow-right-up-line",
       badgeClass: newCustomers?.change < 0 ? "danger" : "success",
-      percentage: newCustomers?.change,
+      percentage: `${newCustomers?.change}%`,
       counter: newCustomers?.value,
       bgcolor: "warning",
       icon: "bx bx-user-circle",

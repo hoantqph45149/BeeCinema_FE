@@ -17,17 +17,31 @@ import RevenueDistribution from "./revenueDistribution";
 import TopRevenue from "./TopRevenue";
 import RevenueByCinema from "./RevenueByCinema";
 import QuantityByCinema from "./QuantityByCinema";
+import { useAuthContext } from "../../../../../Contexts/auth/UseAuth";
 const ComboStatistics = () => {
+  const { authUser } = useAuthContext();
+
+  const { data: cinemas } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas`,
+    {
+      enabled: !authUser?.cinema_id,
+    }
+  );
+
+  // Khởi tạo state mặc định
   const getDefaultDates = () => ({
     startDate: dayjs().subtract(1, "month").format("YYYY-MM-DD"),
     endDate: dayjs().format("YYYY-MM-DD"),
+    cinema_id: authUser?.cinema_id || "",
   });
+
   const [dates, setDates] = useState(getDefaultDates());
   const [filterDates, setFilterDates] = useState(getDefaultDates());
 
   const { data, isLoading } = useFetch(
     ["revenue-by-combo", filterDates],
-    `/revenue-by-combo?start_date=${filterDates.startDate}&end_date=${filterDates.endDate}`
+    `/revenue-by-combo?start_date=${filterDates.startDate}&end_date=${filterDates.endDate}&cinema_id=${filterDates.cinema_id}`
   );
 
   const handleChange = (e) => {
@@ -41,7 +55,6 @@ const ComboStatistics = () => {
     setFilterDates(dates);
   };
 
-  // Dữ liệu cho Widgets
   const WidgetsData = {
     total_revenue: data?.total_revenue,
     total_sold: data?.total_sold,
@@ -80,6 +93,28 @@ const ComboStatistics = () => {
                     onChange={handleChange}
                   />
                 </Col>
+
+                {!authUser?.cinema_id && (
+                  <Col md={4} lg={3}>
+                    <Label htmlFor="cinema_id" className="form-label">
+                      Rạp chiếu
+                    </Label>
+                    <select
+                      name="cinema_id"
+                      id="cinema_id"
+                      className="form-select"
+                      value={dates.cinema_id}
+                      onChange={handleChange}
+                    >
+                      <option value="">--- Tất cả ---</option>
+                      {cinemas?.map((cinema) => (
+                        <option key={cinema.id} value={cinema.id}>
+                          {cinema.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Col>
+                )}
 
                 <Col lg={2} md={4} sm={6} xs={12}>
                   <Button color="primary" onClick={handleFilter}>

@@ -14,7 +14,7 @@ export default function PrintTicket({ ticket }) {
           {
             url: `/tickets/confirm`,
             data: { ticket_id: ticket?.id },
-            shouldShowLoadingAlert: false,
+            shouldShowAlert: false,
           },
           {
             onSuccess: () => {

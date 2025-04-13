@@ -23,7 +23,7 @@ document.title = "Tạo combo";
 const AddCombo = () => {
   const { data: foodsData } = useFetch(["foods"], "/foods");
   const { create: createCombo } = useCRUD(["combos"]);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
 
   const nav = useNavigate();
   const [foods, setFoods] = useState([
@@ -396,7 +396,11 @@ const AddCombo = () => {
                           >
                             Danh sách
                           </Button>
-                          <Button type="submit" color="primary">
+                          <Button
+                            disabled={createCombo.isLoading || loadingImage}
+                            type="submit"
+                            color="primary"
+                          >
                             Thêm mới
                           </Button>
                         </div>

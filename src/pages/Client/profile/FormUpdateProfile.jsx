@@ -9,11 +9,10 @@ import { useCRUD } from "../../../Hooks/useCRUD";
 import useUploadImage from "../../../Hooks/useUploadImage";
 import { showAlert } from "../../../Components/Common/showAlert";
 
-const FormUpdateProfile = () => {
+const FormUpdateProfile = ({ setModal }) => {
   const { patch: updateUser } = useCRUD(["users"]);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading } = useUploadImage();
   const { authUser, setAuthUser } = useAuthContext();
-  console.log(authUser);
   const [selectedGender, setSelectedGender] = useState(authUser?.gender);
   const [image, setImage] = useState(
     authUser?.avatar ?? "/images/defaultavatar.jpg"
@@ -58,7 +57,7 @@ const FormUpdateProfile = () => {
 
       updateUser.mutate(
         {
-          url: `users/${authUser?.id}`,
+          url: `users/update`,
           data: {
             ...values,
             avatar: imgAvatar,
@@ -67,8 +66,8 @@ const FormUpdateProfile = () => {
         },
         {
           onSuccess: (data) => {
+            setModal(false);
             setAuthUser(data?.user);
-
             showAlert(
               "Thành công",
               "Cập nhật thông tin thành công!",
@@ -187,7 +186,11 @@ const FormUpdateProfile = () => {
         </div>
       </div>
       <div className="mt-4">
-        <Button className="!w-60" type="submit">
+        <Button
+          disabled={updateUser.isLoading || loading}
+          className="!w-60"
+          type="submit"
+        >
           Cập nhật
         </Button>
       </div>

@@ -33,7 +33,7 @@ function ProfileClient() {
         title="Cập nhật thông tin cá nhân"
         isFooter={false}
       >
-        <FormUpdateProfile />
+        <FormUpdateProfile setModal={setOpenModalProfile} />
       </Modal>
       <Modal
         isOpen={openModalResetPassword}

@@ -60,15 +60,5 @@ const TheaterOccupancyRate = ({ dataColors, data }) => {
     />
   );
 };
-TheaterOccupancyRate.propTypes = {
-  dataColors: PropTypes.array.isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      booked_seats: PropTypes.number.isRequired,
-      empty_seats: PropTypes.number.isRequired,
-      cinema: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-};
 
 export default TheaterOccupancyRate;

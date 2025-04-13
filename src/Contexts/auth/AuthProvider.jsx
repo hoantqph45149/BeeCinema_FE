@@ -6,6 +6,7 @@ export const AuthContextProvider = ({ children }) => {
   const [authUser, setAuthUser] = useState(null);
   const [permissions, setPermissions] = useState(null);
   const [role, setRole] = useState(null);
+  const [roles, setRoles] = useState(null);
 
   const hasPermission = useCallback(
     (permissionKey) => {
@@ -23,6 +24,8 @@ export const AuthContextProvider = ({ children }) => {
         setPermissions,
         role,
         setRole,
+        roles,
+        setRoles,
         hasPermission,
       }}
     >

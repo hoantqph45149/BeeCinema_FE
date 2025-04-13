@@ -20,27 +20,34 @@ import TicketSalesTrends from "./TicketSalesTrends";
 import TicketsByType from "./TicketsByType";
 import TopBestSellingMovies from "./TopBest-SellingMovies";
 import Widgets from "./Widgets";
+import { useAuthContext } from "./../../../../Contexts/auth/UseAuth";
 
 const TicketStatistics = () => {
-  // Lấy ngày mặc định (1 tháng trước)
+  const { authUser } = useAuthContext();
+
   const getDefaultDates = () => ({
     startDate: dayjs().subtract(1, "month").format("YYYY-MM-DD"),
     endDate: dayjs().format("YYYY-MM-DD"),
+    cinema_id: authUser?.cinema_id || "",
   });
 
-  // State lưu ngày được chọn (nhưng chưa lọc)
   const [dates, setDates] = useState(getDefaultDates());
 
-  // State lưu ngày thực sự dùng để lọc
   const [filterDates, setFilterDates] = useState(getDefaultDates());
 
-  // Fetch data dựa trên filterDates (chỉ thay đổi khi bấm lọc)
-  const { data, isLoading } = useFetch(
-    ["revenue-ticket-statistics", filterDates],
-    `/revenue-ticket-statistics?start_date=${filterDates.startDate}&end_date=${filterDates.endDate}`
+  const { data: cinemas } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas`,
+    {
+      enabled: !authUser?.cinema_id,
+    }
   );
 
-  // Xử lý khi thay đổi ngày nhưng chưa lọc ngay
+  const { data, isLoading } = useFetch(
+    ["revenue-ticket-statistics", filterDates],
+    `/revenue-ticket-statistics?start_date=${filterDates.startDate}&end_date=${filterDates.endDate}&cinema_id=${filterDates.cinema_id}`
+  );
+
   const handleChange = (e) => {
     setDates({
       ...dates,
@@ -48,14 +55,10 @@ const TicketStatistics = () => {
     });
   };
 
-  // Xử lý khi bấm nút "Lọc"
   const handleFilter = () => {
     setFilterDates(dates);
   };
 
-  console.log(data);
-
-  // Dữ liệu cho Widgets
   const WidgetsData = {
     totaltickets: data?.totaltickets,
     avgTicketsPerDay: data?.avgTicketsPerDay,
@@ -101,6 +104,29 @@ const TicketStatistics = () => {
                           onChange={handleChange}
                         />
                       </Col>
+
+                      {!authUser?.cinema_id && (
+                        <Col md={4} lg={3}>
+                          <Label htmlFor="cinema_id" className="form-label">
+                            Rạp chiếu
+                          </Label>
+                          <select
+                            name="cinema_id"
+                            id="cinema_id"
+                            className="form-select"
+                            value={dates.cinema_id}
+                            onChange={handleChange}
+                          >
+                            <option value="">--- Tất cả ---</option>
+                            {cinemas?.map((cinema) => (
+                              <option key={cinema.id} value={cinema.id}>
+                                {cinema.name}
+                              </option>
+                            ))}
+                          </select>
+                        </Col>
+                      )}
+
                       <Col lg={2} md={4} sm={6} xs={12}>
                         <Button color="primary" onClick={handleFilter}>
                           Lọc

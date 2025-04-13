@@ -342,8 +342,8 @@ const ShowtimePreview = () => {
         <Card>
           <CardHeader className="p-0 overflow-hidden">
             <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-black p-4">
-              <Row className="align-items-center">
-                <Col xs={12} md={4} className="mb-3 mb-md-0">
+              <Row className="">
+                <Col xs={12} md={6} className="mb-3 mb-md-0">
                   <div className="d-flex align-items-center">
                     <div className="position-relative me-3">
                       <img
@@ -385,7 +385,7 @@ const ShowtimePreview = () => {
                     </div>
                   </div>
                 </Col>
-                <Col xs={12} md={8}>
+                <Col xs={12}>
                   <div className="bg-white bg-opacity-10 rounded p-3">
                     <div className="d-flex justify-content-between align-items-center mb-2">
                       <h5 className="m-0 text-black">
@@ -435,74 +435,119 @@ const ShowtimePreview = () => {
 
                       <TabContent activeTab={activeTab}>
                         <TabPane tabId="1">
-                          {Object.entries(stats?.byDate || {}).length > 0 ? (
-                            <ListGroup flush className="bg-transparent">
-                              {Object.entries(stats?.byDate || {}).map(
+                          <Row>
+                            {Object.entries(stats?.byDate || {}).length > 0 ? (
+                              Object.entries(stats?.byDate || {}).map(
                                 ([date, data]) => (
-                                  <ListGroupItem
+                                  <Col
+                                    xs={12}
+                                    md={6}
+                                    lg={4}
                                     key={date}
-                                    className="bg-transparent border-white border-opacity-25 text-black"
+                                    className="mb-3"
                                   >
-                                    <div className="d-flex justify-content-between align-items-center">
-                                      <strong>{date}</strong>
-                                      <Badge
-                                        color="light"
-                                        className="text-dark"
+                                    <ListGroup flush className="bg-transparent">
+                                      <ListGroupItem
+                                        className="bg-light bg-opacity-10 border-0 rounded shadow-sm hover-bg"
+                                        style={{
+                                          transition:
+                                            "background-color 0.3s ease",
+                                        }}
                                       >
-                                        {data.total} suất
-                                      </Badge>
-                                    </div>
-                                    <div className="mt-2 ms-3">
-                                      {Object.entries(data.cinemas || {}).map(
-                                        ([cinemaId, cinema]) => (
-                                          <div
-                                            key={cinemaId}
-                                            className="d-flex justify-content-between text-blac mb-1"
+                                        <div className="d-flex justify-content-between align-items-center py-3">
+                                          <strong className="text-primary">
+                                            {date}
+                                          </strong>
+                                          <Badge
+                                            color="primary"
+                                            pill
+                                            className="px-3 py-2"
                                           >
-                                            <span>{cinema.name}</span>
-                                            <span>{cinema.count} suất</span>
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                  </ListGroupItem>
+                                            {data.total} suất
+                                          </Badge>
+                                        </div>
+                                        <div className="mt-2 ms-3">
+                                          {Object.entries(
+                                            data.cinemas || {}
+                                          ).map(([cinemaId, cinema]) => (
+                                            <div
+                                              key={cinemaId}
+                                              className="d-flex justify-content-between text-muted mb-2"
+                                            >
+                                              <span className="fw-medium">
+                                                {cinema.name}
+                                              </span>
+                                              <span>{cinema.count} suất</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </ListGroupItem>
+                                    </ListGroup>
+                                  </Col>
                                 )
-                              )}
-                            </ListGroup>
-                          ) : (
-                            <div className="text-center text-blac py-3">
-                              Chưa có suất chiếu generated
-                            </div>
-                          )}
+                              )
+                            ) : (
+                              <Col
+                                xs={12}
+                                className="text-center text-muted py-4"
+                              >
+                                <i className="bi bi-film fs-3"></i>
+                                <p className="mt-2">
+                                  Chưa có suất chiếu generated
+                                </p>
+                              </Col>
+                            )}
+                          </Row>
                         </TabPane>
 
                         <TabPane tabId="2">
-                          {Object.entries(stats?.byCinema || {}).length > 0 ? (
-                            <ListGroup flush className="bg-transparent">
-                              {Object.entries(stats?.byCinema || {}).map(
+                          <Row>
+                            {Object.entries(stats?.byCinema || {}).length >
+                            0 ? (
+                              Object.entries(stats?.byCinema || {}).map(
                                 ([id, cinema]) => (
-                                  <ListGroupItem
+                                  <Col
+                                    xs={12}
+                                    md={6}
+                                    lg={4}
                                     key={id}
-                                    className="bg-transparent border-white border-opacity-25 text-black"
+                                    className="mb-3"
                                   >
-                                    <div className="d-flex justify-content-between align-items-center">
-                                      <span>{cinema.name}</span>
-                                      <Badge
-                                        color="light"
-                                        className="text-dark"
+                                    <ListGroup flush className="bg-transparent">
+                                      <ListGroupItem
+                                        className="bg-light bg-opacity-10 border-0 rounded shadow-sm hover-bg"
+                                        style={{
+                                          transition:
+                                            "background-color 0.3s ease",
+                                        }}
                                       >
-                                        {cinema.count} suất
-                                      </Badge>
-                                    </div>
-                                  </ListGroupItem>
+                                        <div className="d-flex justify-content-between align-items-center py-3">
+                                          <span className="fw-medium text-dark">
+                                            {cinema.name}
+                                          </span>
+                                          <Badge
+                                            color="primary"
+                                            pill
+                                            className="px-3 py-2"
+                                          >
+                                            {cinema.count} suất
+                                          </Badge>
+                                        </div>
+                                      </ListGroupItem>
+                                    </ListGroup>
+                                  </Col>
                                 )
-                              )}
-                            </ListGroup>
-                          ) : (
-                            <div className="text-center text-blac py-3">
-                              Chưa có dữ liệu rạp
-                            </div>
-                          )}
+                              )
+                            ) : (
+                              <Col
+                                xs={12}
+                                className="text-center text-muted py-4"
+                              >
+                                <i className="bi bi-camera-reels fs-3"></i>
+                                <p className="mt-2">Chưa có dữ liệu rạp</p>
+                              </Col>
+                            )}
+                          </Row>
                         </TabPane>
                       </TabContent>
                     </Collapse>

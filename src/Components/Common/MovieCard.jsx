@@ -42,7 +42,7 @@ const MovieCard = ({ movie, showInfo = true }) => {
           <img
             src={movie?.img_thumbnail}
             alt={movie?.name}
-            className="w-full rounded-xl"
+            className="w-full   rounded-xl"
           />
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-xl"></div>
 
@@ -66,6 +66,10 @@ const MovieCard = ({ movie, showInfo = true }) => {
           ) : movie?.rating == "T18" ? (
             <div className="absolute top-2 left-2">
               <img src="/images/T18.png" alt="T18" />
+            </div>
+          ) : movie?.rating == "P" ? (
+            <div className="absolute top-2 left-2">
+              <img src="/images/p.png" alt="T18" />
             </div>
           ) : (
             <></>
