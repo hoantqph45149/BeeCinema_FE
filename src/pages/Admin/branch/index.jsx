@@ -19,8 +19,9 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import Loader from "../../../Components/Common/Loader";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
-//  Định nghĩa Schema để validate dữ liệu nhập vào
+// Định nghĩa Schema để validate dữ liệu nhập vào
 const branchSchema = Yup.object().shape({
   name: Yup.string()
     .required("Tên chi nhánh không được để trống")
@@ -28,6 +29,7 @@ const branchSchema = Yup.object().shape({
 });
 
 const Branch = () => {
+  const { hasPermission } = useAuthContext();
   const { data, isLoading } = useFetch(["branches"], "/branches");
   const { create, patch, delete: deleteBranch } = useCRUD(["branches"]);
   const [isEdit, setIsEdit] = useState(false);
@@ -51,21 +53,24 @@ const Branch = () => {
     onSubmit: (values) => {
       if (isEdit) {
         // update chi nhánh
-        try {
-          const res = patch.mutate({
-            url: `/branches/${branche.id}`,
-            data: values,
-          });
-          // console.log(res);
-        } catch (error) {
-          console.log(error);
+        if (hasPermission("Sửa chi nhánh")) {
+          try {
+            patch.mutate({
+              url: `/branches/${branche.id}`,
+              data: values,
+            });
+          } catch (error) {
+            console.log(error);
+          }
         }
       } else {
         // Thêm mới chi nhánh
-        try {
-          create.mutate({ url: "/branches", data: values });
-        } catch (error) {
-          console.log(error);
+        if (hasPermission("Thêm chi nhánh")) {
+          try {
+            create.mutate({ url: "/branches", data: values });
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
 
@@ -85,96 +90,93 @@ const Branch = () => {
   }, [modal]);
 
   const handleUpdateActive = (branche) => {
-    showConfirm(
-      "Thay đổi trạng thái",
-      "Bạn có chắc muốn thay đổi trạng thái không",
-      () => {
-        patch.mutate({
-          url: `/branches/${branche.id}`,
-          data: {
-            ...branche,
-            is_active: branche.is_active == 1 ? 0 : 1,
-          },
-        });
-      }
-    );
+    if (hasPermission("Sửa chi nhánh")) {
+      showConfirm(
+        "Thay đổi trạng thái",
+        "Bạn có chắc muốn thay đổi trạng thái không",
+        () => {
+          patch.mutate({
+            url: `/branches/${branche.id}`,
+            data: {
+              ...branche,
+              is_active: branche.is_active == 1 ? 0 : 1,
+            },
+          });
+        }
+      );
+    }
     setBranche({});
   };
 
   const handleDeleteBranche = (branche) => {
-    showConfirm(
-      "Xóa Chi Nhánh",
-      `Bạn có chắc muốn xóa chi nhánh ${branche.name} không?`,
-      () => {
-        deleteBranch.mutate(`/branches/${branche.id}`);
-      }
-    );
+    if (hasPermission("Xóa chi nhánh")) {
+      showConfirm(
+        "Xóa Chi Nhánh",
+        `Bạn có chắc muốn xóa chi nhánh ${branche.name} không?`,
+        () => {
+          deleteBranch.mutate(`/branches/${branche.id}`);
+        }
+      );
+    }
     setBranche({});
   };
 
   // Cấu hình cột cho bảng
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-      enableSorting: false,
-    },
-    {
-      header: "Tên chi nhánh",
-      accessorKey: "name",
-      enableColumnFilter: false,
-      enableSorting: true,
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "is_active",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        // console.log(cell);
-        return (
-          <>
-            <div className="form-check form-switch form-check-right">
-              <Input
-                className="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="flexSwitchCheckRightDisabled"
-                defaultChecked={cell.row.original.is_active == 1 ? true : false}
-                onChange={() => handleUpdateActive(cell.row.original)}
-              />
-            </div>
-          </>
-        );
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
+        enableSorting: false,
       },
-    },
-    {
-      header: "Ngày tạo",
-      accessorKey: "created_at",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return dayjs(cell.row.original.created_at).format("DD/MM/YYYY");
+      {
+        header: "Tên chi nhánh",
+        accessorKey: "name",
+        enableColumnFilter: false,
+        enableSorting: true,
       },
-    },
-    {
-      header: "Ngày cập nhật",
-      accessorKey: "updated_at",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return dayjs(cell.row.original.created_at).format("DD/MM/YYYY");
+      {
+        header: "Hoạt động",
+        accessorKey: "is_active",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <div className="form-check form-switch form-check-right">
+            <Input
+              disabled={!hasPermission("Sửa chi nhánh")}
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="flexSwitchCheckRightDisabled"
+              defaultChecked={cell.row.original.is_active == 1}
+              onChange={() => handleUpdateActive(cell.row.original)}
+            />
+          </div>
+        ),
       },
-    },
-
-    {
-      header: "Action",
-      cell: (cell) => {
-        return (
-          <>
-            <ul className="list-inline hstack gap-2 mb-0">
+      {
+        header: "Ngày tạo",
+        accessorKey: "created_at",
+        enableColumnFilter: false,
+        cell: (cell) =>
+          dayjs(cell.row.original.created_at).format("DD/MM/YYYY"),
+      },
+      {
+        header: "Ngày cập nhật",
+        accessorKey: "updated_at",
+        enableColumnFilter: false,
+        cell: (cell) =>
+          dayjs(cell.row.original.created_at).format("DD/MM/YYYY"),
+      },
+      {
+        header: "Action",
+        cell: (cell) => (
+          <ul className="list-inline hstack gap-2 mb-0">
+            {hasPermission("Sửa chi nhánh") && (
               <li className="list-inline-item">
                 <Button
                   color="primary"
-                  className="btn-sm "
+                  className="btn-sm"
                   onClick={() => {
                     toggle();
                     setIsEdit(true);
@@ -184,10 +186,12 @@ const Branch = () => {
                   <i className="ri-pencil-fill"></i>
                 </Button>
               </li>
+            )}
+            {hasPermission("Xóa chi nhánh") && (
               <li className="list-inline-item">
                 <Button
                   color="primary"
-                  className="btn-sm "
+                  className="btn-sm"
                   onClick={() => {
                     handleDeleteBranche(cell.row.original);
                     setBranche(cell.row.original);
@@ -196,18 +200,18 @@ const Branch = () => {
                   <i className="ri-delete-bin-5-fill"></i>
                 </Button>
               </li>
-            </ul>
-          </>
-        );
+            )}
+          </ul>
+        ),
       },
-    },
-  ]);
+    ],
+    [hasPermission]
+  );
 
   return (
     <div className="page-content">
       <Container fluid>
         <BreadCrumb title="Quản lý chi nhánh" pageTitle="Quản lý chi nhánh" />
-
         <Row>
           <Col>
             <Card>
@@ -218,28 +222,28 @@ const Branch = () => {
                   </div>
                   <div className="col-sm-auto">
                     <div className="d-flex gap-1 flex-wrap">
-                      <button
-                        type="button"
-                        className="btn btn-success add-btn"
-                        id="create-btn"
-                        onClick={() => {
-                          setIsEdit(false);
-                          toggle();
-                        }}
-                      >
-                        <i className="ri-add-line align-bottom me-1"></i>
-                        Tạo chi nhánh
-                      </button>{" "}
+                      {hasPermission("Thêm chi nhánh") && (
+                        <button
+                          type="button"
+                          className="btn btn-success add-btn"
+                          id="create-btn"
+                          onClick={() => {
+                            setIsEdit(false);
+                            toggle();
+                          }}
+                        >
+                          <i className="ri-add-line align-bottom me-1"></i>
+                          Tạo chi nhánh
+                        </button>
+                      )}
                     </div>
                   </div>
                 </Row>
               </CardHeader>
               <div className="card-body pt-0">
                 {isLoading ? (
-                  <>
-                    <Loader />
-                  </>
-                ) : (
+                  <Loader />
+                ) : hasPermission("Danh sách chi nhánh") ? (
                   <TableContainer
                     columns={columns}
                     data={branches}
@@ -251,6 +255,8 @@ const Branch = () => {
                     theadClass="table-light text-muted"
                     SearchPlaceholder="Search Products..."
                   />
+                ) : (
+                  <p>Bạn không có quyền xem danh sách chi nhánh.</p>
                 )}
               </div>
             </Card>
@@ -258,40 +264,43 @@ const Branch = () => {
         </Row>
 
         {/* Modal chỉnh sửa chi nhánh */}
-        <Modal isOpen={modal} toggle={toggle} centered>
-          <ModalHeader className="bg-light p-3" toggle={toggle}>
-            {isEdit ? "Sửa chi nhánh" : "Thêm chi nhánh"}
-          </ModalHeader>
-          <form onSubmit={formik.handleSubmit}>
-            <ModalBody>
-              <div className="mb-3">
-                <label className="form-label">Tên chi nhánh</label>
-                <input
-                  type="text"
-                  className={`form-control ${
-                    formik.touched.name && formik.errors.name
-                      ? "is-invalid"
-                      : ""
-                  }`}
-                  placeholder="Nhập tên chi nhánh"
-                  {...formik.getFieldProps("name")}
-                  value={formik?.values?.name}
-                />
-                {formik.touched.name && formik.errors.name && (
-                  <div className="invalid-feedback">{formik.errors.name}</div>
-                )}
+        {(hasPermission("Thêm chi nhánh") ||
+          hasPermission("Sửa chi nhánh")) && (
+          <Modal isOpen={modal} toggle={toggle} centered>
+            <ModalHeader className="bg-light p-3" toggle={toggle}>
+              {isEdit ? "Sửa chi nhánh" : "Thêm chi nhánh"}
+            </ModalHeader>
+            <form onSubmit={formik.handleSubmit}>
+              <ModalBody>
+                <div className="mb-3">
+                  <label className="form-label">Tên chi nhánh</label>
+                  <input
+                    type="text"
+                    className={`form-control ${
+                      formik.touched.name && formik.errors.name
+                        ? "is-invalid"
+                        : ""
+                    }`}
+                    placeholder="Nhập tên chi nhánh"
+                    {...formik.getFieldProps("name")}
+                    value={formik?.values?.name}
+                  />
+                  {formik.touched.name && formik.errors.name && (
+                    <div className="invalid-feedback">{formik.errors.name}</div>
+                  )}
+                </div>
+              </ModalBody>
+              <div className="modal-footer">
+                <Button type="button" color="light" onClick={toggle}>
+                  Đóng
+                </Button>
+                <Button type="submit" color="success">
+                  {isEdit ? "Sửa" : "Thêm"}
+                </Button>
               </div>
-            </ModalBody>
-            <div className="modal-footer">
-              <Button type="button" color="light" onClick={toggle}>
-                Đóng
-              </Button>
-              <Button type="submit" color="success">
-                {isEdit ? "Sửa" : "Thêm"}
-              </Button>
-            </div>
-          </form>
-        </Modal>
+            </form>
+          </Modal>
+        )}
       </Container>
     </div>
   );

@@ -1,7 +1,6 @@
+import dayjs from "dayjs";
 import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../Components/Common/ChartsDynamicColor";
-import dayjs from "dayjs";
-import PropTypes from "prop-types";
 
 const PeakHoursChart = ({ dataColors, data }) => {
   let chartColumnDistributedColors = getChartColorsArray(dataColors);
@@ -61,15 +60,6 @@ const PeakHoursChart = ({ dataColors, data }) => {
       height={350}
     />
   );
-};
-PeakHoursChart.propTypes = {
-  dataColors: PropTypes.array.isRequired,
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      total_tickets: PropTypes.number.isRequired,
-      hour: PropTypes.number.isRequired,
-    })
-  ).isRequired,
 };
 
 export default PeakHoursChart;

@@ -19,8 +19,10 @@ import { useNavigate } from "react-router-dom";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { showConfirm } from "../../../Components/Common/showAlert";
 import Loader from "../../../Components/Common/Loader";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 const Movie = () => {
+  const { hasPermission } = useAuthContext();
   const { data, isLoading } = useFetch(["movies"], "/movies");
   const { patch: patchMovie, delete: deleteMovie } = useCRUD(["movies"]);
   const nav = useNavigate();
@@ -32,10 +34,10 @@ const Movie = () => {
 
   useEffect(() => {
     if (data?.data) {
-      const filterMoviesPublish = data?.data.filter(
+      const filterMoviesPublish = data.data.filter(
         (item) => item.is_publish === true
       );
-      const filterMoviesUnPublish = data?.data.filter(
+      const filterMoviesUnPublish = data.data.filter(
         (item) => item.is_publish === false
       );
       setMoviesPublish(filterMoviesPublish);
@@ -45,52 +47,28 @@ const Movie = () => {
   }, [data?.data]);
 
   const toggleTab = (tab, type) => {
-    if (activeTab !== tab) {
+    if (activeTab !== tab && data?.data) {
       setActiveTab(tab);
-      let filterMovies = data.data;
       if (type === "all") {
         setMovies(data.data);
       } else if (type === "publish") {
-        filterMovies = data.data.filter((item) => item.is_publish === true);
-        setMovies(filterMovies);
+        setMovies(data.data.filter((item) => item.is_publish === true));
       } else {
-        filterMovies = data.data.filter((item) => item.is_publish === false);
-        setMovies(filterMovies);
+        setMovies(data.data.filter((item) => item.is_publish === false));
       }
     }
   };
 
   const handleUpdateActive = (movie, type) => {
-    if (type === "active") {
-      showConfirm(
-        "Thay đổi trạng thái",
-        "Bạn có chắc muốn thay đổi trạng thái không",
-        () => {
-          const dataUpdate = {
-            ...movie,
-            is_active: movie.is_active === true ? false : true,
-          };
-          patchMovie.mutate(
-            {
-              url: `/movies/${movie.id}`,
-              data: dataUpdate,
-            },
-            {
-              onSuccess: () => {
-                setMovie({});
-              },
-            }
-          );
-        }
-      );
-    } else {
+    if (hasPermission("Sửa phim")) {
+      const field = type === "active" ? "is_active" : "is_hot";
       const dataUpdate = {
         ...movie,
-        is_hot: movie.is_hot === true ? false : true,
+        [field]: movie[field] === true ? false : true,
       };
       showConfirm(
         "Thay đổi trạng thái",
-        "Bạn có chắc muốn thay đổi trạng thái không",
+        "Bạn có chắc muốn thay đổi trạng thái không?",
         () => {
           patchMovie.mutate(
             {
@@ -109,48 +87,49 @@ const Movie = () => {
   };
 
   const handleDeleteMovie = (movie) => {
-    showConfirm(
-      "Xóa Chi Nhánh",
-      `Bạn có chắc muốn xóa chi nhánh ${movie.name} không?`,
-      () => {
-        deleteMovie.mutate(`/movies/${movie.id}`);
-      }
-    );
+    if (hasPermission("Xóa phim")) {
+      showConfirm(
+        "Xóa Phim",
+        `Bạn có chắc muốn xóa phim ${movie.name} không?`,
+        () => {
+          deleteMovie.mutate(`/movies/${movie.id}`);
+        }
+      );
+    }
     setMovie({});
   };
 
   // Column
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-      enableSorting: false,
-    },
-    {
-      header: "Hình ảnh",
-      accessorKey: "img_thumbnail",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return (
-          <img
-            style={{
-              maxWidth: "250px",
-            }}
-            src={cell.row.original.img_thumbnail}
-            alt={cell.row.original.name}
-          />
-        );
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
+        enableSorting: false,
       },
-    },
-    {
-      header: "Thông tin phim",
-      accessorKey: "name",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        const movie = cell.row.original;
-        return (
-          <>
+      {
+        header: "Hình ảnh",
+        accessorKey: "img_thumbnail",
+        enableColumnFilter: false,
+        cell: (cell) =>
+          cell.row.original.img_thumbnail ? (
+            <img
+              style={{ maxWidth: "250px" }}
+              src={cell.row.original.img_thumbnail}
+              alt={cell.row.original.name}
+            />
+          ) : (
+            <span>Không có hình ảnh</span>
+          ),
+      },
+      {
+        header: "Thông tin phim",
+        accessorKey: "name",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const movie = cell.row.original;
+          return (
             <div
               className="container mt-4"
               style={{
@@ -161,122 +140,113 @@ const Movie = () => {
               }}
             >
               <h4 className="text-primary fw-bold">{movie.name}</h4>
-              <p>
-                <strong>Đạo diễn:</strong> {movie.director}
-              </p>
-              <p style={{ whiteSpace: "pre-line" }}>
-                <strong>Diễn viên:</strong> {movie.cast}
-              </p>
-              <p>
-                <strong>Thể loại:</strong> {movie.category}
-              </p>
-              <p>
-                <strong>Phân loại:</strong> {movie.rating}
-              </p>
-              <p>
-                <strong>Ngày khởi chiếu:</strong> {movie.release_date}
-              </p>
-              <p>
-                <strong>Ngày kết thúc:</strong> {movie.end_date}
-              </p>
-              <p>
-                <strong>Phiên bản:</strong>
-                {movie?.movie_versions?.map((version) => (
-                  <span
-                    key={version.id}
-                    className="btn btn-primary btn-sm me-2"
-                  >
-                    {version.name}
-                  </span>
-                ))}
-              </p>
-              <p>
-                <strong>Trailer code:</strong> {movie.trailer_url}
-              </p>
+              {hasPermission("Xem chi tiết phim") && (
+                <>
+                  <p>
+                    <strong>Đạo diễn:</strong> {movie.director}
+                  </p>
+                  <p style={{ whiteSpace: "pre-line" }}>
+                    <strong>Diễn viên:</strong> {movie.cast}
+                  </p>
+                  <p>
+                    <strong>Thể loại:</strong> {movie.category}
+                  </p>
+                  <p>
+                    <strong>Phân loại:</strong> {movie.rating}
+                  </p>
+                  <p>
+                    <strong>Ngày khởi chiếu:</strong> {movie.release_date}
+                  </p>
+                  <p>
+                    <strong>Ngày kết thúc:</strong> {movie.end_date}
+                  </p>
+                  <p>
+                    <strong>Phiên bản:</strong>
+                    {movie?.movie_versions?.map((version) => (
+                      <span
+                        key={version.id}
+                        className="btn btn-primary btn-sm me-2"
+                      >
+                        {version.name}
+                      </span>
+                    ))}
+                  </p>
+                  <p>
+                    <strong>Trailer code:</strong> {movie.trailer_url}
+                  </p>
+                </>
+              )}
             </div>
-          </>
-        );
+          );
+        },
       },
-    },
-    {
-      header: "Trạng thái",
-      accessorKey: "is_publish",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        switch (cell.getValue()) {
-          case true:
-            return (
-              <span className="badge text-uppercase bg-success text-white">
-                Đã xuất Bản
-              </span>
-            );
-          case false:
-            return (
-              <span className="badge text-uppercase bg-danger text-white">
-                Chưa Xuất Bản
-              </span>
-            );
-        }
+      {
+        header: "Trạng thái",
+        accessorKey: "is_publish",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return cell.getValue() ? (
+            <span className="badge text-uppercase bg-success text-white">
+              Đã xuất bản
+            </span>
+          ) : (
+            <span className="badge text-uppercase bg-danger text-white">
+              Chưa xuất bản
+            </span>
+          );
+        },
       },
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "is_active",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return (
-          <>
-            <div className="form-check form-switch form-check-right">
-              <Input
-                className="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="is_active"
-                defaultChecked={cell.row.original.is_active}
-                onChange={() => {
-                  handleUpdateActive(cell.row.original, "active");
-                  setMovie(cell.row.original);
-                }}
-              />
-            </div>
-          </>
-        );
+      {
+        header: "Hoạt động",
+        accessorKey: "is_active",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <div className="form-check form-switch form-check-right">
+            <Input
+              disabled={!hasPermission("Sửa phim")}
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id={`is_active_${cell.row.original.id}`}
+              defaultChecked={cell.row.original.is_active}
+              onChange={() => {
+                handleUpdateActive(cell.row.original, "active");
+                setMovie(cell.row.original);
+              }}
+            />
+          </div>
+        ),
       },
-    },
-    {
-      header: "Hot",
-      accessorKey: "is_hot",
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return (
-          <>
-            <div className="form-check form-switch form-check-right">
-              <Input
-                className="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="is_hot"
-                defaultChecked={cell.row.original.is_hot}
-                onChange={() => {
-                  handleUpdateActive(cell.row.original, "hot");
-                  setMovie(cell.row.original);
-                }}
-              />
-            </div>
-          </>
-        );
+      {
+        header: "Hot",
+        accessorKey: "is_hot",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <div className="form-check form-switch form-check-right">
+            <Input
+              disabled={!hasPermission("Sửa phim")}
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id={`is_hot_${cell.row.original.id}`}
+              defaultChecked={cell.row.original.is_hot}
+              onChange={() => {
+                handleUpdateActive(cell.row.original, "hot");
+                setMovie(cell.row.original);
+              }}
+            />
+          </div>
+        ),
       },
-    },
-    {
-      header: "Action",
-      cell: (cell) => {
-        return (
-          <>
-            <ul className="list-inline hstack gap-2 mb-0">
+      {
+        header: "Action",
+        cell: (cell) => (
+          <ul className="list-inline hstack gap-2 mb-0">
+            {hasPermission("Sửa phim") && (
               <li className="list-inline-item">
                 <Button
                   color="primary"
-                  className="btn-sm "
+                  className="btn-sm"
                   onClick={() => {
                     nav(`/admin/movie/${cell.row.original.id}/edit`);
                   }}
@@ -284,11 +254,13 @@ const Movie = () => {
                   <i className="ri-pencil-fill"></i>
                 </Button>
               </li>
+            )}
+            {hasPermission("Xóa phim") && (
               <li className="list-inline-item">
                 <Button
                   disabled={cell.row.original.is_publish}
                   color="primary"
-                  className="btn-sm "
+                  className="btn-sm"
                   onClick={() => {
                     handleDeleteMovie(cell.row.original);
                   }}
@@ -296,28 +268,30 @@ const Movie = () => {
                   <i className="ri-delete-bin-5-fill"></i>
                 </Button>
               </li>
-            </ul>
-          </>
-        );
+            )}
+          </ul>
+        ),
       },
-    },
-  ]);
+    ],
+    [hasPermission, nav]
+  );
 
-  document.title = "";
+  document.title = "Quản lý phim | Admin Dashboard";
+
   return (
     <div className="page-content">
       <Container fluid>
-        <BreadCrumb title="Danh sách Phim" pageTitle="Quản lý" />
+        <BreadCrumb title="Danh sách phim" pageTitle="Quản lý" />
         <Row>
           <Col lg={12}>
-            <Card id="orderList">
+            <Card id="movieList">
               <CardHeader className="border-0">
                 <Row className="align-items-center gy-3">
                   <div className="col-sm">
-                    <h5 className="card-title mb-0">Danh sách Phim</h5>
+                    <h5 className="card-title mb-0">Danh sách phim</h5>
                   </div>
                   <div className="col-sm-auto">
-                    <div className="d-flex gap-1 flex-wrap">
+                    {hasPermission("Thêm phim") && (
                       <button
                         type="button"
                         className="btn btn-success add-btn"
@@ -326,98 +300,99 @@ const Movie = () => {
                           nav("/admin/movie/add");
                         }}
                       >
-                        <i className="ri-add-line align-bottom me-1"></i>
-                        Tạo phim
-                      </button>{" "}
-                    </div>
+                        <i className="ri-add-line align-bottom me-1"></i> Tạo
+                        phim
+                      </button>
+                    )}
                   </div>
                 </Row>
               </CardHeader>
               <CardBody className="pt-0">
-                <div>
-                  <Nav
-                    className="nav-tabs nav-tabs-custom nav-success"
-                    role="tablist"
-                  >
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "1" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("1", "all");
-                        }}
-                        href="#"
-                      >
-                        <i className="ri-store-2-fill me-1 align-bottom"></i>{" "}
-                        Tất cả
-                        {data?.data.length > 0 && (
-                          <span className="badge bg-success align-middle ms-1">
-                            {data?.data.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "2" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("2", "publish");
-                        }}
-                        href="#"
-                      >
-                        {" "}
-                        <i className="ri-checkbox-circle-line me-1 align-bottom"></i>{" "}
-                        Đã xuất bản
-                        {moviesPublish.length > 0 && (
-                          <span className="badge bg-success align-middle ms-1">
-                            {moviesPublish.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink
-                        className={classnames(
-                          { active: activeTab === "3" },
-                          "fw-semibold"
-                        )}
-                        onClick={() => {
-                          toggleTab("3", "unPublish");
-                        }}
-                        href="#"
-                      >
-                        Bản nháp
-                        {moviesUnPublish.length > 0 && (
-                          <span className="badge bg-danger align-middle ms-1">
-                            {moviesUnPublish.length}
-                          </span>
-                        )}
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-                  {isLoading ? (
-                    <>
+                {hasPermission("Danh sách phim") ? (
+                  <>
+                    <Nav
+                      className="nav-tabs nav-tabs-custom nav-success"
+                      role="tablist"
+                    >
+                      <NavItem>
+                        <NavLink
+                          className={classnames(
+                            { active: activeTab === "1" },
+                            "fw-semibold"
+                          )}
+                          onClick={() => {
+                            toggleTab("1", "all");
+                          }}
+                          href="#"
+                        >
+                          <i className="ri-store-2-fill me-1 align-bottom"></i>{" "}
+                          Tất cả
+                          {data?.data?.length > 0 && (
+                            <span className="badge bg-success align-middle ms-1">
+                              {data.data.length}
+                            </span>
+                          )}
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames(
+                            { active: activeTab === "2" },
+                            "fw-semibold"
+                          )}
+                          onClick={() => {
+                            toggleTab("2", "publish");
+                          }}
+                          href="#"
+                        >
+                          <i className="ri-checkbox-circle-line me-1 align-bottom"></i>{" "}
+                          Đã xuất bản
+                          {moviesPublish.length > 0 && (
+                            <span className="badge bg-success align-middle ms-1">
+                              {moviesPublish.length}
+                            </span>
+                          )}
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames(
+                            { active: activeTab === "3" },
+                            "fw-semibold"
+                          )}
+                          onClick={() => {
+                            toggleTab("3", "unPublish");
+                          }}
+                          href="#"
+                        >
+                          Bản nháp
+                          {moviesUnPublish.length > 0 && (
+                            <span className="badge bg-danger align-middle ms-1">
+                              {moviesUnPublish.length}
+                            </span>
+                          )}
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                    {isLoading ? (
                       <Loader />
-                    </>
-                  ) : (
-                    <TableContainer
-                      columns={columns}
-                      data={movies || []}
-                      isGlobalFilter={true}
-                      isAddUserList={false}
-                      customPageSize={8}
-                      divClass="table-responsive table-card mb-1"
-                      tableClass="align-middle table-nowrap dt-responsive"
-                      theadClass="table-light text-muted"
-                      SearchPlaceholder="Search for order ID, customer, order status or something..."
-                    />
-                  )}
-                </div>
+                    ) : (
+                      <TableContainer
+                        columns={columns}
+                        data={movies || []}
+                        isGlobalFilter={true}
+                        isAddUserList={false}
+                        customPageSize={8}
+                        divClass="table-responsive table-card mb-1"
+                        tableClass="align-middle table-nowrap dt-responsive"
+                        theadClass="table-light text-muted"
+                        SearchPlaceholder="Tìm kiếm phim..."
+                      />
+                    )}
+                  </>
+                ) : (
+                  <p>Bạn không có quyền xem danh sách phim.</p>
+                )}
               </CardBody>
             </Card>
           </Col>

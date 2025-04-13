@@ -19,6 +19,7 @@ import {
   RejectIfAuthenticated,
   RequireAdmin,
   RequireVerifiedEmail,
+  RequirePermission,
 } from "./AuthProtected";
 import { ProtectedRoute } from "./AuthProtected";
 
@@ -64,7 +65,11 @@ const Index = () => {
               element={
                 <ProtectedRoute>
                   <VerticalLayout>
-                    <RequireAdmin>{route.component}</RequireAdmin>
+                    <RequireAdmin>
+                      <RequirePermission permission={route.permission}>
+                        {route.component}
+                      </RequirePermission>
+                    </RequireAdmin>
                   </VerticalLayout>
                 </ProtectedRoute>
               }

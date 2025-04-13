@@ -6,11 +6,18 @@ import GradientCharts from "./GradientCharts";
 import Section from "./Section";
 import TopMoviesCards from "./TopMoviesCards";
 import Widgets from "./Widgets";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
+document.title = "Tổng quan";
 const Overview = () => {
-  document.title = "Tổng quan";
-  const { data } = useFetch(["dashboard"], "/dashboard");
-  console.log("data", data);
+  const { authUser } = useAuthContext();
+
+  const { data } = useFetch(
+    ["dashboard"],
+    authUser?.cinema_id
+      ? `/dashboard?cinema_id=${authUser.cinema_id}`
+      : "/dashboard"
+  );
 
   const [rightColumn, setRightColumn] = useState(true);
   const toggleRightColumn = () => {

@@ -18,6 +18,7 @@ import Loader from "../../../Components/Common/Loader";
 import { useFetch } from "../../../Hooks/useCRUD";
 import dayjs from "dayjs";
 import { formatVND } from "../../../utils/Currency";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 const Ticket = () => {
   const { data: dataBranchs, isLoading: isLoadingBranch } = useFetch(
@@ -32,6 +33,8 @@ const Ticket = () => {
     ["cinemas"],
     "/cinemas"
   );
+
+  const { authUser } = useAuthContext();
   const nav = useNavigate();
   const [cinemas, setCinemas] = useState([]);
   const [idCinema, setIdCinema] = useState("");
@@ -70,9 +73,14 @@ const Ticket = () => {
   let queryString = "";
 
   if (!isLoadingBranch && !isLoadingCinema) {
+    const finalBranchId = authUser?.cinema_id
+      ? dataCinemas.find((item) => item.id === authUser.cinema_id).branch_id
+      : idBranch;
+    const finalCinemaId = authUser?.cinema_id ? authUser.cinema_id : idCinema;
+
     queryString = [
-      idBranch ? `branch_id=${idBranch}` : "",
-      idCinema ? `cinema_id=${idCinema}` : "",
+      finalBranchId ? `branch_id=${finalBranchId}` : "",
+      finalCinemaId ? `cinema_id=${finalCinemaId}` : "",
       idMovie ? `movie_id=${idMovie}` : "",
       status ? `status=${status}` : "",
       date ? `date=${date}` : "",
@@ -83,7 +91,10 @@ const Ticket = () => {
 
   const { data: dataTickets, isLoading: isLoadingTicket } = useFetch(
     ["tickets", idBranch, idCinema, idMovie, status, date],
-    `/tickets/filter?${queryString}`
+    `/tickets/filter?${queryString}`,
+    {
+      enabled: !isLoadingMovie && !isLoadingBranch && !isLoadingCinema,
+    }
   );
 
   const columns = useMemo(() => [
@@ -234,44 +245,50 @@ const Ticket = () => {
                     <Row className="align-items-center gy-3">
                       <Form>
                         <Row className="g-3">
-                          <Col lg={4} xl={2} md={6} sm={12}>
-                            <div>
-                              <Label className="form-label " for="address">
-                                Chi nhánh
-                              </Label>
-                              <select
-                                id="address"
-                                className="form-select"
-                                onClick={(e) =>
-                                  handleChangeBranch(e.target.value)
-                                }
-                              >
-                                {dataBranchs?.data?.map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </Col>
-                          <Col lg={4} xl={2} md={6} sm={12}>
-                            <div>
-                              <Label className="form-label " for="rap">
-                                Rạp
-                              </Label>
-                              <select
-                                id="rap"
-                                className="form-select"
-                                onChange={(e) => setIdCinema(e.target.value)}
-                              >
-                                {cinemas.map((item) => (
-                                  <option key={item.id} value={item.id}>
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </Col>
+                          {!authUser.cinema_id && (
+                            <>
+                              <Col lg={4} xl={2} md={6} sm={12}>
+                                <div>
+                                  <Label className="form-label " for="address">
+                                    Chi nhánh
+                                  </Label>
+                                  <select
+                                    id="address"
+                                    className="form-select"
+                                    onClick={(e) =>
+                                      handleChangeBranch(e.target.value)
+                                    }
+                                  >
+                                    {dataBranchs?.data?.map((item) => (
+                                      <option key={item.id} value={item.id}>
+                                        {item.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </Col>
+                              <Col lg={4} xl={2} md={6} sm={12}>
+                                <div>
+                                  <Label className="form-label " for="rap">
+                                    Rạp
+                                  </Label>
+                                  <select
+                                    id="rap"
+                                    className="form-select"
+                                    onChange={(e) =>
+                                      setIdCinema(e.target.value)
+                                    }
+                                  >
+                                    {cinemas.map((item) => (
+                                      <option key={item.id} value={item.id}>
+                                        {item.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </Col>
+                            </>
+                          )}
 
                           <Col lg={4} xl={2} md={6}>
                             <div>

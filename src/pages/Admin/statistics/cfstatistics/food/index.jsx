@@ -16,40 +16,49 @@ import Widgets from "./Widgets";
 import TypeFood from "./TypeFood";
 import TopSelling from "./TopSelling";
 import RevenueFood from "./RevenueFood";
+import { useAuthContext } from "../../../../../Contexts/auth/UseAuth";
 const FoodsStatistics = () => {
+  const { authUser } = useAuthContext();
+
+  const { data: cinemas } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas`,
+    {
+      enabled: !authUser?.cinema_id,
+    }
+  );
+
   const getDefaultDates = () => ({
     startDate: dayjs().subtract(1, "month").format("YYYY-MM-DD"),
     endDate: dayjs().format("YYYY-MM-DD"),
+    cinema_id: authUser?.cinema_id || "",
+    food_type: "",
   });
 
   const [dates, setDates] = useState(getDefaultDates());
   const [filterDates, setFilterDates] = useState(getDefaultDates());
-  const [foodType, setFoodType] = useState("");
 
   const buildApiUrl = () => {
     let url = `/revenue-by-food?start_date=${filterDates.startDate}&end_date=${filterDates.endDate}`;
-    if (foodType) {
-      url += `&food_type=${foodType}`;
+    if (filterDates.food_type) {
+      url += `&food_type=${filterDates.food_type}`;
+    }
+    if (filterDates.cinema_id) {
+      url += `&cinema_id=${filterDates.cinema_id}`;
     }
     return url;
   };
 
   const { data, isLoading } = useFetch(
-    ["revenue-by-food", filterDates, foodType],
+    ["revenue-by-food", filterDates],
     buildApiUrl()
   );
-
-  console.log(data);
 
   const handleChange = (e) => {
     setDates({
       ...dates,
       [e.target.name]: e.target.value,
     });
-  };
-
-  const handleFoodTypeChange = (e) => {
-    setFoodType(e.target.value);
   };
 
   const handleFilter = () => {
@@ -102,16 +111,42 @@ const FoodsStatistics = () => {
                   <select
                     id="type_food"
                     className="form-select"
-                    value={foodType}
-                    onChange={handleFoodTypeChange}
+                    name="food_type"
+                    value={dates.food_type}
+                    onChange={handleChange}
                   >
                     <option value="">Tất cả</option>
                     <option value="Đồ Ăn">Đồ ăn</option>
                     <option value="Đồ Uống">Đồ uống</option>
                   </select>
                 </Col>
+                {!authUser?.cinema_id && (
+                  <Col md={4} lg={3}>
+                    <Label htmlFor="cinema_id" className="form-label">
+                      Rạp chiếu
+                    </Label>
+                    <select
+                      name="cinema_id"
+                      id="cinema_id"
+                      className="form-select"
+                      value={dates.cinema_id}
+                      onChange={handleChange}
+                    >
+                      <option value="">--- Tất cả ---</option>
+                      {cinemas?.map((cinema) => (
+                        <option key={cinema.id} value={cinema.id}>
+                          {cinema.name}
+                        </option>
+                      ))}
+                    </select>
+                  </Col>
+                )}
                 <Col lg={2} md={4} sm={6} xs={12}>
-                  <Button color="primary" onClick={handleFilter}>
+                  <Button
+                    className="w-100"
+                    color="primary mt-2"
+                    onClick={handleFilter}
+                  >
                     Lọc
                   </Button>
                 </Col>

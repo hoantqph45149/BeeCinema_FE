@@ -74,6 +74,12 @@ import SeeSeatMap from "../pages/Admin/seat-template/SeeSeatMap";
 // contact
 import ContactAdmin from "../pages/Admin/contact";
 
+// phân quyền
+
+import Permision from "../pages/Admin/permistion";
+import AddPermistion from "../pages/Admin/permistion/AddPermistion";
+import UpdatePermiston from "../pages/Admin/permistion/UpdatePermiston";
+
 // Đường dẫn dành cho phía client
 import GoogleCallback from "../pages/Auth/google/GoogleCallback";
 import Login from "../pages/Auth/login/index";
@@ -159,109 +165,276 @@ const publicRoutes = [
 ];
 
 const authProtectedRoutes = [
-  // quản lý vé
+  // Quản lý vé
   {
     path: "/admin/ticket",
     component: <Ticket />,
+    permission: "Danh sách hóa đơn",
   },
   {
     path: "/admin/ticket/detail/:code",
     component: <TicketDetail />,
+    permission: "Xem chi tiết hóa đơn",
   },
 
-  // quản lý chi nhánh
-  { path: "/admin/Branch", component: <Branch /> },
+  // Quản lý chi nhánh
+  {
+    path: "/admin/Branch",
+    component: <Branch />,
+    permission: "Danh sách chi nhánh",
+  },
 
-  // quản lý rạp
-  { path: "/admin/cinema", component: <Cinema /> },
-  { path: "/admin/cinema/add", component: <AddCinema /> },
-  { path: "/admin/cinema/:id/update", component: <UpdateCinema /> },
+  // Quản lý rạp
+  {
+    path: "/admin/cinema",
+    component: <Cinema />,
+    permission: "Danh sách rạp",
+  },
+  {
+    path: "/admin/cinema/add",
+    component: <AddCinema />,
+    permission: "Thêm rạp",
+  },
+  {
+    path: "/admin/cinema/:id/update",
+    component: <UpdateCinema />,
+    permission: "Sửa rạp",
+  },
 
-  // quản lý phòng chiếu
-  { path: "/admin/room", component: <Room /> },
-  { path: "/admin/room/:id/edit", component: <RoomEdit /> },
+  // Quản lý phòng chiếu
+  {
+    path: "/admin/room",
+    component: <Room />,
+    permission: "Danh sách phòng chiếu",
+  },
+  {
+    path: "/admin/room/:id/edit",
+    component: <RoomEdit />,
+    permission: "Sửa phòng chiếu",
+  },
 
-  // quản lý mẫu sơ đồ ghế
-  { path: "/admin/seat-template", component: <SeatTemplate /> },
-  { path: "/admin/seat-template/:id/edit", component: <EditSeatTemplate /> },
+  // Quản lý mẫu sơ đồ ghế
+  {
+    path: "/admin/seat-template",
+    component: <SeatTemplate />,
+    permission: "Danh sách mẫu sơ đồ ghế",
+  },
+  {
+    path: "/admin/seat-template/:id/edit",
+    component: <EditSeatTemplate />,
+    permission: "Sửa mẫu sơ đồ ghế",
+  },
   {
     path: "/admin/seat-template/:id/see-seat-map",
     component: <SeeSeatMap />,
+    permission: "Danh sách mẫu sơ đồ ghế", // Giả định xem sơ đồ ghế cần quyền danh sách
   },
 
-  // quản lý phim
-  { path: "/admin/movie", component: <Movie /> },
-  { path: "/admin/movie/add", component: <AddMovie /> },
-  { path: "/admin/movie/:id/edit", component: <EditMovie /> },
+  // Quản lý phim
+  {
+    path: "/admin/movie",
+    component: <Movie />,
+    permission: "Danh sách phim",
+  },
+  {
+    path: "/admin/movie/add",
+    component: <AddMovie />,
+    permission: "Thêm phim",
+  },
+  {
+    path: "/admin/movie/:id/edit",
+    component: <EditMovie />,
+    permission: "Sửa phim",
+  },
 
-  // quản lý suất chiếu
+  // Quản lý suất chiếu
   {
     path: "/admin/showtime",
     component: <Showtime />,
+    permission: "Danh sách suất chiếu",
   },
   {
     path: "/admin/showtime/add",
     component: <AddShowtime />,
+    permission: "Thêm suất chiếu",
   },
   {
     path: "/admin/showtime/preview",
     component: <ShowtimePreview />,
+    permission: "Danh sách suất chiếu", // Giả định preview cần quyền danh sách
   },
   {
     path: "/admin/showtime/:id/edit",
     component: <Updateshowtime />,
+    permission: "Sửa suất chiếu",
   },
   {
     path: "/admin/showtime/:id/detail",
     component: <ShowtimeDetail />,
+    permission: "Xem chi tiết suất chiếu",
   },
 
-  // quản lý đồ ăn
-  { path: "/admin/food", component: <Food /> },
+  // Quản lý đồ ăn
+  {
+    path: "/admin/food",
+    component: <Food />,
+    permission: "Danh sách đồ ăn",
+  },
 
-  // quản lý combo
-  { path: "/admin/combo", component: <Combo /> },
-  { path: "/admin/combo/add", component: <AddCombo /> },
-  { path: "/admin/combo/:id/edit", component: <EditCombo /> },
+  // Quản lý combo
+  {
+    path: "/admin/combo",
+    component: <Combo />,
+    permission: "Danh sách combo",
+  },
+  {
+    path: "/admin/combo/add",
+    component: <AddCombo />,
+    permission: "Thêm combo",
+  },
+  {
+    path: "/admin/combo/:id/edit",
+    component: <EditCombo />,
+    permission: "Sửa combo",
+  },
 
-  // quản lý tài khoản
-  { path: "/admin/account", component: <Account /> },
-  { path: "/admin/account/add", component: <AddAccount /> },
-  { path: "/admin/account/:id/edit", component: <UpdateAccount /> },
+  // Quản lý tài khoản
+  {
+    path: "/admin/account",
+    component: <Account />,
+    permission: "Danh sách tài khoản",
+  },
+  {
+    path: "/admin/account/add",
+    component: <AddAccount />,
+    permission: "Thêm tài khoản",
+  },
+  {
+    path: "/admin/account/:id/edit",
+    component: <UpdateAccount />,
+    permission: "Sửa tài khoản",
+  },
 
-  // quản lý liên hệ
-  { path: "/admin/contact", component: <ContactAdmin /> },
-  // quản lý giảm giá
-  { path: "/admin/voucher", component: <Voucher /> },
-  { path: "/admin/voucher/add", component: <AddVoucher /> },
-  { path: "/admin/voucher/:id/edit", component: <EditVoucher /> },
+  // Quản lý liên hệ
+  {
+    path: "/admin/contact",
+    component: <ContactAdmin />,
+    permission: "Danh sách liên hệ",
+  },
 
-  // quản lý bài viết
-  { path: "/admin/post", component: <Post /> },
-  { path: "/admin/post/add", component: <AddPost /> },
-  { path: "/admin/post/:id/edit", component: <UpdatePost /> },
-  // quản lý giá vé
-  { path: "/admin/price", component: <PriceManage /> },
-  // quản lý banner
-  { path: "/admin/slide-show", component: <SlideShow /> },
-  { path: "/admin/slide-show/add", component: <AddSlideShow /> },
-  // quản lý cấp bậc (rank)
-  { path: "/admin/rank", component: <Rank /> },
-  // thống kê
-  { path: "/admin/revenue-statistics", component: <RevenueStatistics /> },
-  { path: "/admin/Ticket-statistics", component: <TicketStatistics /> },
-  { path: "/admin/combo-statistics", component: <ComboStatistics /> },
-  // trang chủ
+  // Quản lý giảm giá
+  {
+    path: "/admin/voucher",
+    component: <Voucher />,
+    permission: "Danh sách vouchers",
+  },
+  {
+    path: "/admin/voucher/add",
+    component: <AddVoucher />,
+    permission: "Thêm vouchers",
+  },
+  {
+    path: "/admin/voucher/:id/edit",
+    component: <EditVoucher />,
+    permission: "Sửa vouchers",
+  },
+
+  // Quản lý bài viết
+  {
+    path: "/admin/post",
+    component: <Post />,
+    permission: "Danh sách bài viết",
+  },
+  {
+    path: "/admin/post/add",
+    component: <AddPost />,
+    permission: "Thêm bài viết",
+  },
+  {
+    path: "/admin/post/:id/edit",
+    component: <UpdatePost />,
+    permission: "Sửa bài viết",
+  },
+
+  // Quản lý giá vé
+  {
+    path: "/admin/price",
+    component: <PriceManage />,
+    permission: "Danh sách giá",
+  },
+
+  // Quản lý banner
+  {
+    path: "/admin/slide-show",
+    component: <SlideShow />,
+    permission: "Danh sách slideshows",
+  },
+  {
+    path: "/admin/slide-show/add",
+    component: <AddSlideShow />,
+    permission: "Thêm slideshows",
+  },
+
+  // Quản lý cấp bậc (rank)
+  {
+    path: "/admin/rank",
+    component: <Rank />,
+    permission: "Thẻ thành viên",
+  },
+
+  // Quản lý phân quyền
+
+  {
+    path: "/admin/permission",
+    component: <Permision />,
+    permission: null,
+  },
+  {
+    path: "/admin/add/permission",
+    component: <AddPermistion />,
+    permission: null,
+  },
+  {
+    path: "/admin/update/permissions/:id",
+    component: <UpdatePermiston />,
+    permission: null,
+  },
+
+  // Thống kê
+  {
+    path: "/admin/revenue-statistics",
+    component: <RevenueStatistics />,
+    permission: "Danh sách thống kê",
+  },
+  {
+    path: "/admin/Ticket-statistics",
+    component: <TicketStatistics />,
+    permission: "Danh sách thống kê",
+  },
+  {
+    path: "/admin/combo-statistics",
+    component: <ComboStatistics />,
+    permission: "Danh sách thống kê",
+  },
+
+  // Trang chủ
+
   {
     path: "/admin/overview",
     component: <Overview />,
+    permission: "Danh sách thống kê", // Giả định tổng quan cần quyền thống kê
   },
   {
     path: "/admin",
     exact: true,
     component: <Navigate to="/admin/overview" />,
+    permission: null, // Không cần quyền cụ thể
   },
-  { path: "/admin", component: <Navigate to="/admin/overview" /> },
+  {
+    path: "/admin",
+    component: <Navigate to="/admin/overview" />,
+    permission: null, // Không cần quyền cụ thể
+  },
 ];
 
 const emailVerifiedRoutes = [
