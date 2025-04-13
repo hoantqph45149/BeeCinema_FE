@@ -14,7 +14,15 @@ import { useCRUD } from "../../Hooks/useCRUD";
 
 function ProfileDropdownClient() {
   const { create: logout } = useCRUD(["logout"]);
-  const { authUser, setAuthUser, role } = useAuthContext();
+  const {
+    authUser,
+    setAuthUser,
+    role,
+    roles,
+    setRole,
+    setRoles,
+    setPermissions,
+  } = useAuthContext();
   const nav = useNavigate();
   const handleLogout = () => {
     logout.mutate(
@@ -25,13 +33,20 @@ function ProfileDropdownClient() {
       },
       {
         onSuccess: () => {
-          setAuthUser(null);
           nav("/login");
+          console.log("Đăng xuất thành công");
+          setAuthUser(null);
+          setPermissions(null);
+          setRole(null);
+          setRoles(null);
         },
         onError: (error) => {
           if (error?.response?.data?.message == "Unauthenticated.") {
-            setAuthUser(null);
             nav("/login");
+            setAuthUser(null);
+            setPermissions(null);
+            setRole(null);
+            setRoles(null);
           }
         },
       }
@@ -47,7 +62,7 @@ function ProfileDropdownClient() {
         anchor="bottom"
         className="w-64 bg-white border rounded-lg shadow-lg"
       >
-        {role === "admin" && (
+        {roles.includes(role) && (
           <MenuItem>
             <Link
               className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"
@@ -55,11 +70,12 @@ function ProfileDropdownClient() {
                 window.location.href = "/admin";
               }}
             >
-              <LockKeyhole size={16} strokeWidth={1.5} className="mr-2" /> Truy
-              Cập Trang Quản Trị
+              <LockKeyhole size={16} strokeWidth={1.5} className="mr-2" />
+              Truy Cập Trang Quản Trị
             </Link>
           </MenuItem>
         )}
+
         <MenuItem>
           <Link
             className="px-4 py-4 text-sm hover:bg-gray-100 flex items-center"

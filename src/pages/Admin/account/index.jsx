@@ -7,7 +7,6 @@ import {
   CardHeader,
   Col,
   Container,
-  Modal,
   Nav,
   NavItem,
   NavLink,
@@ -16,123 +15,121 @@ import {
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import TableContainer from "../../../Components/Common/TableContainer";
 
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { showConfirm } from "./../../../Components/Common/showAlert";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
+import { useFetch } from "../../../Hooks/useCRUD";
 
 const Account = () => {
-  const [isEdit, setIsEdit] = useState(false);
+  const { roles } = useAuthContext();
   const { data } = useFetch(["users"], "/users");
+
   const nav = useNavigate();
-  const { delete: deleteUser } = useCRUD();
-  const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
 
   const toggleTab = (tab, status) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      // Thực hiện hành động với trạng thái "status" nếu cần.
-      console.log(`Tab ${tab} với trạng thái: ${status}`);
     }
   };
 
-  const handleDeleteUsers = (user) => {
-    showConfirm(
-      "Xóa Tài Khoản",
-      `Bạn có chắc muốn xóa tài khoản ${user.name} không?`,
-      () => {
-        deleteUser.mutate(`/users/${user.id}`);
-      }
-    );
-  };
-  const toggle = () => setModal(!modal);
-  // Column
   const filteredData = useMemo(() => {
     if (activeTab === "1") {
-      return data?.filter((user) => user.role === "admin") || [];
+      return data?.filter((user) => roles.includes(user.role)) || [];
     } else if (activeTab === "2") {
       return data?.filter((user) => user.role === "member") || [];
     }
     return data || [];
   }, [data, activeTab]);
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-      enableSorting: false,
-    },
-    {
-      header: "Họ và tên",
-      accessorKey: "name",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Hình ảnh",
-      accessorKey: "avatar",
 
-      enableColumnFilter: false,
-      cell: (cell) => {
-        return (
-          <img
-            style={{
-              maxWidth: "150px",
-            }}
-            src={cell.row.original.avatar}
-            alt={cell.row.original.title}
-          />
-        );
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
+        enableSorting: false,
       },
-    },
-    {
-      header: "Email",
-      accessorKey: "email",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Vai trò",
-      accessorKey: "role",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Cơ sở",
-      accessorKey: "amount",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Action",
-      cell: (cell) => {
-        return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            {cell.row.original.role !== "admin" && (
-              <li className="list-inline-item">
-                <Button
-                  color="primary"
-                  className="btn-sm "
-                  onClick={() => {
-                    nav(`/admin/account/${cell.row.original.id}/edit`);
-                  }}
-                >
-                  <i className="ri-pencil-fill"></i>
-                </Button>
-              </li>
-            )}
-            <li className="list-inline-item">
-              <Button
-                color="primary"
-                className="btn-sm "
-                onClick={() => {
-                  handleDeleteUsers(cell.row.original);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill"></i>
-              </Button>
-            </li>
-          </ul>
-        );
+      {
+        header: "Họ và tên",
+        accessorKey: "name",
+        enableColumnFilter: false,
       },
-    },
-  ]);
+      {
+        header: "Hình ảnh",
+        accessorKey: "avatar",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return (
+            <img
+              style={{
+                maxWidth: "150px",
+              }}
+              src={cell.row.original.avatar || "/images/defaultavatar.jpg"}
+              alt={cell.row.original.title}
+              className="avatar avatar-lg rounded-circle"
+            />
+          );
+        },
+      },
+      {
+        header: "Email",
+        accessorKey: "email",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Vai trò",
+        accessorKey: "role",
+        enableColumnFilter: false,
+      },
+      ...(activeTab === "1"
+        ? [
+            {
+              header: "Cơ sở",
+              accessorKey: "amount",
+              enableColumnFilter: false,
+            },
+          ]
+        : []),
+      {
+        header: "Action",
+        cell: (cell) => {
+          return (
+            <ul className="list-inline hstack gap-2 mb-0">
+              {cell.row.original.role !== "admin" &&
+                cell.row.original.role !== "member" && (
+                  <li className="list-inline-item">
+                    <Button
+                      color="primary"
+                      className="btn-sm"
+                      onClick={() => {
+                        nav(`/admin/account/${cell.row.original.id}/edit`);
+                      }}
+                    >
+                      <i className="ri-pencil-fill"></i>
+                    </Button>
+                  </li>
+                )}
+
+              {cell.row.original.role === "member" && (
+                <li className="list-inline-item">
+                  <Button
+                    color="primary"
+                    className="btn-sm"
+                    onClick={() => {
+                      nav(`/admin/account/${cell.row.original.id}/edit`);
+                    }}
+                  >
+                    <i className="ri-eye-line"></i>
+                  </Button>
+                </li>
+              )}
+            </ul>
+          );
+        },
+      },
+    ],
+    [activeTab]
+  );
 
   document.title = "";
   return (
@@ -211,12 +208,6 @@ const Account = () => {
                     SearchPlaceholder="Tìm kiếm tài khoản..."
                   />
                 </div>
-                <Modal
-                  id="showModal"
-                  isOpen={modal}
-                  toggle={toggle}
-                  centered
-                ></Modal>
               </CardBody>
             </Card>
           </Col>

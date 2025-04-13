@@ -3,7 +3,6 @@ import React from "react";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Col } from "reactstrap";
-import PropTypes from "prop-types";
 
 const Widgets = ({ data, date }) => {
   const ecomWidgets = [
@@ -110,23 +109,6 @@ const Widgets = ({ data, date }) => {
       ))}
     </React.Fragment>
   );
-};
-Widgets.propTypes = {
-  data: PropTypes.shape({
-    totaltickets: PropTypes.number,
-    avgTicketsPerDay: PropTypes.number,
-    peakHours: PropTypes.shape({
-      hour: PropTypes.number,
-    }),
-    cinemaOccupancy: PropTypes.shape({
-      occupancy_rate: PropTypes.number,
-      cinema: PropTypes.string,
-    }),
-  }),
-  date: PropTypes.shape({
-    startDate: PropTypes.instanceOf(Date),
-    endDate: PropTypes.instanceOf(Date),
-  }),
 };
 
 export default Widgets;

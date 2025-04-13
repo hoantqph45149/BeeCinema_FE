@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  Button,
   Card,
   CardBody,
   Col,
@@ -7,52 +10,56 @@ import {
   Form,
   Input,
   Label,
+  Modal,
+  ModalBody,
+  ModalHeader,
   Row,
-  Button,
 } from "reactstrap";
 import * as Yup from "yup";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { useFormik } from "formik";
-import useUploadImage from "../../../Hooks/useUploadImage";
-import { useNavigate, useParams } from "react-router-dom";
-import { use } from "react";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 const UpdateAccount = () => {
+  const { roles } = useAuthContext();
   const { id } = useParams();
   const nav = useNavigate();
-  const { data: user } = useFetch(["user", id], `/users/${id}`);
-  const { patch: patchUser } = useCRUD(["user", id]);
-  const { uploadImage } = useUploadImage();
+  const { data: user, isLoading: isLoadingUser } = useFetch(
+    ["user", id],
+    `/users/${id}`
+  );
+  const { data: datacinemas, isLoading: isLoadingCinema } = useFetch(
+    ["cinemas"],
+    "/cinemas"
+  );
 
-  const validationSchema = Yup.object({
-    avatar: Yup.mixed()
-      .required("Vui lòng chọn ảnh")
-      .test(
-        "fileFormat",
-        "Chỉ chấp nhận file JPG, JPEG, PNG",
-        (value) =>
-          value && ["image/jpg", "image/jpeg", "image/png"].includes(value.type)
-      )
-      .test(
-        "fileSize",
-        "Dung lượng ảnh không được quá 2MB",
-        (value) => value && value.size <= 2 * 1024 * 1024
-      ),
-    name: Yup.string().required("Tên không được để trống"),
-    email: Yup.string().required("Email không được để trống"),
-    phone: Yup.number()
-      .required("Số điện thoại không được để trống")
-      .typeError("Số điện thoại phải là số")
+  const { patch: patchUser } = useCRUD(["users", id]);
+  const [modal, setModal] = useState(false);
 
-      .min(10, "Số điện thoại phải có ít nhất 10 ký tự"),
-    password: Yup.string().required("Mật khâu không được để trống"),
+  const toggle = useCallback(() => {
+    setModal(!modal);
+  }, [modal]);
+
+  const passwordValidationSchema = Yup.object({
+    password: Yup.string().required("Mật khẩu không được để trống"),
     password_confirmation: Yup.string()
       .required("Xác nhận mật khẩu không được để trống")
       .oneOf([Yup.ref("password"), null], "Mật khẩu xác nhận không khớp"),
+  });
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Tên không được để trống"),
+    email: Yup.string()
+      .email("Email không hợp lệ")
+      .required("Email không được để trống"),
+    phone: Yup.string()
+      .required("Số điện thoại không được để trống")
+      .matches(/^[0-9]+$/, "Số điện thoại phải là số")
+      .min(10, "Số điện thoại phải có ít nhất 10 ký tự"),
     birthday: Yup.date().required("Ngày sinh không được để trống"),
     role: Yup.string().required("Vai trò không được để trống"),
-    address: Yup.string().required("Địa chỉ không được để trống"),
+    gender: Yup.string().required("Giới tính không được để trống"),
+    cinema_id: Yup.string().required("Rạp không được để trống"),
   });
 
   const formik = useFormik({
@@ -61,35 +68,50 @@ const UpdateAccount = () => {
       name: "",
       email: "",
       phone: "",
-      password: "",
-      password_confirmation: "",
       birthday: "",
-
       role: "",
       content: "",
       address: "",
+      gender: "",
+      cinema_id: "",
     },
     validationSchema,
-
-    onSubmit: async (values) => {
-      if (values.password != values.password_confirmation) {
-        alert("Mật khẩu xác nhận không khớp!");
-        return;
-      }
-      let image = user?.avatar || ""; // Kiểm tra user có tồn tại không
-
-      if (values.avatar && values.avatar !== user?.avatar) {
-        image = await uploadImage(values.avatar);
-      }
-
-      patchUser.mutate({
-        url: `/users/${id}`,
-        data: { ...values, avatar: image },
-      });
-
-      nav("/admin/account");
+    onSubmit: (values) => {
+      patchUser.mutate(
+        {
+          url: `/users/${id}`,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            nav("/admin/account");
+          },
+        }
+      );
     },
   });
+
+  const passwordFormik = useFormik({
+    initialValues: {
+      password: "",
+      password_confirmation: "",
+    },
+    validationSchema: passwordValidationSchema,
+    onSubmit: (values) => {
+      patchUser.mutate(
+        {
+          url: `/users/${id}/password`,
+          data: values,
+        },
+        {
+          onSuccess: () => {
+            toggle();
+          },
+        }
+      );
+    },
+  });
+
   useEffect(() => {
     if (user) {
       formik.setValues({
@@ -97,10 +119,11 @@ const UpdateAccount = () => {
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
-        password: user.password || "",
         birthday: user.birthday || "",
         role: user.role || "",
         address: user.address || "",
+        gender: user.gender || "",
+        cinema_id: user.cinema_id || "",
       });
     }
   }, [user]);
@@ -111,7 +134,7 @@ const UpdateAccount = () => {
     <div className="page-content">
       <Container fluid>
         <BreadCrumb
-          title="Thêm mới tài khoản quản trị viên"
+          title="Cập nhật tài khoản quản trị viên"
           pageTitle="Danh sách"
         />
 
@@ -121,58 +144,6 @@ const UpdateAccount = () => {
               <Card>
                 <CardBody>
                   <Row>
-                    <Col lg={12} className="text-center mb-4">
-                      <div className="avatar-upload position-relative d-inline-block">
-                        <div className="avatar-preview">
-                          <img
-                            src={
-                              formik.values.avatar instanceof File
-                                ? URL.createObjectURL(formik.values.avatar)
-                                : user?.avatar ||
-                                  "https://via.placeholder.com/100"
-                            }
-                            alt="Avatar"
-                            className="rounded-circle"
-                            width={100}
-                            height={100}
-                          />
-                        </div>
-                        <Label
-                          htmlFor="upload-avatar"
-                          className="position-absolute"
-                          style={{
-                            bottom: 0,
-                            right: 0,
-                            background: "#fff",
-                            borderRadius: "50%",
-                            padding: "5px",
-                            cursor: "pointer",
-                            boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-                          }}
-                        >
-                          <i className="fas fa-camera"></i>
-                        </Label>
-                        <Input
-                          type="file"
-                          className="d-none"
-                          id="upload-avatar"
-                          accept="image/png, image/jpeg, image/jpg"
-                          onChange={(event) => {
-                            formik.setFieldValue(
-                              "avatar",
-                              event.currentTarget.files[0] || ""
-                            );
-                          }}
-                        />
-                        {formik.touched.avatar && formik.errors.avatar && (
-                          <div className="text-danger">
-                            {formik.errors.avatar}
-                          </div>
-                        )}
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row>
                     <Col lg={4} md={12}>
                       <div className="mb-3">
                         <Label className="form-label">
@@ -180,7 +151,6 @@ const UpdateAccount = () => {
                         </Label>
                         <Input
                           type="text"
-                          id="name"
                           name="name"
                           className={`form-control ${
                             formik.touched.name && formik.errors.name
@@ -188,8 +158,7 @@ const UpdateAccount = () => {
                               : ""
                           }`}
                           placeholder="Họ và tên"
-                          value={formik.values.name || ""}
-                          onChange={formik.handleChange}
+                          {...formik.getFieldProps("name")}
                         />
                         {formik.touched.name && formik.errors.name && (
                           <div className="text-danger">
@@ -205,7 +174,6 @@ const UpdateAccount = () => {
                         </Label>
                         <Input
                           type="email"
-                          id="email"
                           name="email"
                           className={`form-control ${
                             formik.touched.email && formik.errors.email
@@ -213,8 +181,7 @@ const UpdateAccount = () => {
                               : ""
                           }`}
                           placeholder="user123@gmail.com"
-                          value={formik.values.email || ""}
-                          onChange={formik.handleChange}
+                          {...formik.getFieldProps("email")}
                         />
                         {formik.touched.email && formik.errors.email && (
                           <div className="text-danger">
@@ -229,8 +196,7 @@ const UpdateAccount = () => {
                           <span className="text-danger">*</span> Số điện thoại:
                         </Label>
                         <Input
-                          type="number"
-                          id="phone"
+                          type="text"
                           name="phone"
                           className={`form-control ${
                             formik.touched.phone && formik.errors.phone
@@ -238,8 +204,7 @@ const UpdateAccount = () => {
                               : ""
                           }`}
                           placeholder="0912345648"
-                          value={formik.values.phone || ""}
-                          onChange={formik.handleChange}
+                          {...formik.getFieldProps("phone")}
                         />
                         {formik.touched.phone && formik.errors.phone && (
                           <div className="text-danger">
@@ -250,75 +215,18 @@ const UpdateAccount = () => {
                     </Col>
                   </Row>
                   <Row>
-                    <Col lg={6}>
-                      <div className="mb-3">
-                        <Label className="form-label">
-                          <span className="text-danger">*</span> Mật khẩu:
-                        </Label>
-                        <Input
-                          type="password"
-                          id="password"
-                          name="password"
-                          className={`form-control ${
-                            formik.touched.password && formik.errors.password
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          placeholder="Mật khẩu"
-                          value={formik.values.password || ""}
-                          onChange={formik.handleChange}
-                        />
-                        {formik.touched.password && formik.errors.password && (
-                          <div className="text-danger">
-                            {formik.errors.password}
-                          </div>
-                        )}
-                      </div>
-                    </Col>
-                    <Col lg={6}>
-                      <div className="mb-3">
-                        <Label className="form-label">
-                          <span className="text-danger">*</span> Xác nhận mật
-                          khẩu:
-                        </Label>
-                        <Input
-                          type="password"
-                          id="password_confirmation"
-                          name="password_confirmation"
-                          className={`form-control ${
-                            formik.touched.password_confirmation &&
-                            formik.errors.password_confirmation
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          placeholder="Mật khẩu"
-                          value={formik.values.password_confirmation || ""}
-                          onChange={formik.handleChange}
-                        />
-                        {formik.touched.password_confirmation &&
-                          formik.errors.password_confirmation && (
-                            <div className="text-danger">
-                              {formik.errors.password_confirmation}
-                            </div>
-                          )}
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row>
                     <Col lg={3}>
                       <div className="mb-3">
                         <Label className="form-label">Ngày sinh:</Label>
                         <Input
                           type="date"
-                          id="birthday"
                           name="birthday"
                           className={`form-control ${
                             formik.touched.birthday && formik.errors.birthday
                               ? "is-invalid"
                               : ""
                           }`}
-                          value={formik.values.birthday || ""}
-                          onChange={formik.handleChange}
+                          {...formik.getFieldProps("birthday")}
                         />
                         {formik.touched.birthday && formik.errors.birthday && (
                           <div className="text-danger">
@@ -330,28 +238,50 @@ const UpdateAccount = () => {
                     <Col lg={3}>
                       <div className="mb-3">
                         <Label className="form-label">Giới tính:</Label>
-                        <Input type="select">
-                          <option>Nam</option>
-                          <option>Nữ</option>
+                        <Input
+                          type="select"
+                          name="gender"
+                          className={`form-control ${
+                            formik.touched.gender && formik.errors.gender
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          {...formik.getFieldProps("gender")}
+                        >
+                          <option value="">Chọn giới tính</option>
+                          <option value="nam">Nam</option>
+                          <option value="nữ">Nữ</option>
+                          <option value="khác">Khác</option>
                         </Input>
+                        {formik.touched.gender && formik.errors.gender && (
+                          <div className="text-danger">
+                            {formik.errors.gender}
+                          </div>
+                        )}
                       </div>
                     </Col>
                     <Col lg={3}>
                       <div className="mb-3">
                         <Label className="form-label">Vai trò:</Label>
                         <Input
-                          type="text"
-                          id="role"
+                          type="select"
                           name="role"
                           className={`form-control ${
                             formik.touched.role && formik.errors.role
                               ? "is-invalid"
                               : ""
                           }`}
-                          placeholder="Vui lòng nhập vui trò"
-                          value={formik.values.role || ""}
-                          onChange={formik.handleChange}
-                        />
+                          {...formik.getFieldProps("role")}
+                        >
+                          <option value="">Chọn vai trò</option>
+                          {roles
+                            .filter((item) => item !== "admin")
+                            .map((item) => (
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
+                            ))}
+                        </Input>
                         {formik.touched.role && formik.errors.role && (
                           <div className="text-danger">
                             {formik.errors.role}
@@ -362,10 +292,29 @@ const UpdateAccount = () => {
                     <Col lg={3}>
                       <div className="mb-3">
                         <Label className="form-label">Tại:</Label>
-                        <Input type="select">
-                          <option>Hà Đông</option>
-                          <option>Cầu Giấy</option>
+                        <Input
+                          type="select"
+                          name="cinema_id"
+                          className={`form-control ${
+                            formik.touched.cinema_id && formik.errors.cinema_id
+                              ? "is-invalid"
+                              : ""
+                          }`}
+                          {...formik.getFieldProps("cinema_id")}
+                        >
+                          <option value="">Chọn rạp</option>
+                          {datacinemas?.map((item) => (
+                            <option key={item.id} value={item.id}>
+                              {item.name}
+                            </option>
+                          ))}
                         </Input>
+                        {formik.touched.cinema_id &&
+                          formik.errors.cinema_id && (
+                            <div className="text-danger">
+                              {formik.errors.cinema_id}
+                            </div>
+                          )}
                       </div>
                     </Col>
                   </Row>
@@ -374,13 +323,13 @@ const UpdateAccount = () => {
                       <div className="mb-3">
                         <Label className="form-label">Địa chỉ:</Label>
                         <textarea
-                          id="address"
+                          name="address"
                           className={`form-control ${
                             formik.touched.address && formik.errors.address
                               ? "is-invalid"
                               : ""
                           }`}
-                          placeholder="Nhập mô tả"
+                          placeholder="Nhập địa chỉ"
                           rows="3"
                           {...formik.getFieldProps("address")}
                         />
@@ -392,10 +341,22 @@ const UpdateAccount = () => {
                       </div>
                     </Col>
                   </Row>
-                  <div className="d-flex justify-content-between">
-                    <Button color="secondary">Trở về</Button>
-                    <Button color="primary" type="submit">
-                      Cập nhật
+                  <Link onClick={toggle} className="text-primary">
+                    Đổi mật khẩu ?
+                  </Link>
+                  <div className="d-flex justify-content-between mt-3">
+                    <Button
+                      color="secondary"
+                      onClick={() => nav("/admin/account")}
+                    >
+                      Trở về
+                    </Button>
+                    <Button
+                      color="primary"
+                      type="submit"
+                      disabled={patchUser.isLoading}
+                    >
+                      {patchUser.isLoading ? "Đang cập nhật..." : "Cập nhật"}
                     </Button>
                   </div>
                 </CardBody>
@@ -403,6 +364,69 @@ const UpdateAccount = () => {
             </Form>
           </Col>
         </Row>
+        <Modal isOpen={modal} toggle={toggle} centered>
+          <ModalHeader className="bg-light p-3" toggle={toggle}>
+            Đổi mật khẩu
+          </ModalHeader>
+          <Form onSubmit={passwordFormik.handleSubmit}>
+            <ModalBody>
+              <div className="mb-3">
+                <Label className="form-label">Mật khẩu:</Label>
+                <Input
+                  type="password"
+                  name="password"
+                  className={`form-control ${
+                    passwordFormik.touched.password &&
+                    passwordFormik.errors.password
+                      ? "is-invalid"
+                      : ""
+                  }`}
+                  placeholder="Mật khẩu"
+                  {...passwordFormik.getFieldProps("password")}
+                />
+                {passwordFormik.touched.password &&
+                  passwordFormik.errors.password && (
+                    <div className="text-danger">
+                      {passwordFormik.errors.password}
+                    </div>
+                  )}
+              </div>
+              <div className="mb-3">
+                <Label className="form-label">Xác nhận mật khẩu:</Label>
+                <Input
+                  type="password"
+                  name="password_confirmation"
+                  className={`form-control ${
+                    passwordFormik.touched.password_confirmation &&
+                    passwordFormik.errors.password_confirmation
+                      ? "is-invalid"
+                      : ""
+                  }`}
+                  placeholder="Xác nhận mật khẩu"
+                  {...passwordFormik.getFieldProps("password_confirmation")}
+                />
+                {passwordFormik.touched.password_confirmation &&
+                  passwordFormik.errors.password_confirmation && (
+                    <div className="text-danger">
+                      {passwordFormik.errors.password_confirmation}
+                    </div>
+                  )}
+              </div>
+            </ModalBody>
+            <div className="modal-footer">
+              <Button type="button" color="light" onClick={toggle}>
+                Đóng
+              </Button>
+              <Button
+                type="submit"
+                color="success"
+                disabled={patchUser.isLoading}
+              >
+                {patchUser.isLoading ? "Đang cập nhật..." : "Cập nhật"}
+              </Button>
+            </div>
+          </Form>
+        </Modal>
       </Container>
     </div>
   );

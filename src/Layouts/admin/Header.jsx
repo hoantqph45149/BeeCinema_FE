@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown, DropdownToggle } from "reactstrap";
 
-//import Components
 import FullScreenDropdown from "../../Components/Common/FullScreenDropdown";
-import LightDark from "../../Components/Common/LightDark";
 import ProfileDropdown from "../../Components/Common/ProfileDropdown";
 
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
-import { changeSidebarVisibility } from "../../slices/thunks";
 import ScanQRCode from "../../Components/Common/ScanQRCode";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
+import { changeSidebarVisibility } from "../../slices/thunks";
 
 const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
   const dispatch = useDispatch();
+  const { hasPermission } = useAuthContext();
 
   const selectDashboardData = createSelector(
     (state) => state.Layout,
@@ -21,7 +21,6 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
       sidebarVisibilitytype: state.sidebarVisibilitytype,
     })
   );
-  // Inside your component
   const { sidebarVisibilitytype } = useSelector(selectDashboardData);
 
   const [search, setSearch] = useState(false);
@@ -144,16 +143,10 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
               </Dropdown>
 
               {/* Scan QR Code */}
-              <ScanQRCode />
+              {hasPermission("Quét hóa đơn") && <ScanQRCode />}
 
               {/* FullScreenDropdown */}
               <FullScreenDropdown />
-
-              {/* Dark/Light Mode set */}
-              <LightDark
-                layoutMode={layoutModeType}
-                onChangeLayoutMode={onChangeLayoutMode}
-              />
 
               {/* ProfileDropdown */}
               <ProfileDropdown />

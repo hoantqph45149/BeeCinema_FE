@@ -18,18 +18,28 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import isBetween from "dayjs/plugin/isBetween";
 
-import api from "../../../../apis/axios";
 import TableContainer from "../../../../Components/Common/TableContainer";
+import { useAuthContext } from "../../../../Contexts/auth/UseAuth";
 import { useCRUD, useFetch } from "../../../../Hooks/useCRUD";
+import { showAlert } from "../../../../Components/Common/showAlert";
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
 
 document.title = "Add showtime";
 const AddShowPerDay = () => {
+  const { authUser } = useAuthContext();
   const { create: createShowtime } = useCRUD(["showtimes"]);
   const { data: moviesData } = useFetch(["movies"], "/movies");
   const { data: branchesData } = useFetch(["branches"], "/branches/active");
+  const { data: cinema } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas/${authUser?.cinema_id}`,
+    {
+      enabled: !!authUser?.cinema_id,
+    }
+  );
+
   const nav = useNavigate();
   const [movies, setMovies] = useState([]);
   const [movieVersions, setMovieVersions] = useState([]);
@@ -37,7 +47,6 @@ const AddShowPerDay = () => {
   const [cinemas, setCinemas] = useState([]);
   const [rooms, setRooms] = useState([]);
   const [showtimesDate, setShowtimesDate] = useState([]);
-  const [storedStartTimes, setStoredStartTimes] = useState([]);
   const [filterShowtimes, setFilterShowtimes] = useState({
     branch_id: "",
     cinema_id: "",
@@ -46,42 +55,53 @@ const AddShowPerDay = () => {
   });
   const [isAuto, setIsAuto] = useState(false);
 
-  // console.log(branchesData);
+  const finalFilter = {
+    ...filterShowtimes,
+    cinema_id: authUser?.cinema_id || filterShowtimes?.cinema_id,
+    branch_id: cinema?.branch_id || filterShowtimes?.branch_id,
+  };
+
+  const { data: showtimeData } = useFetch(
+    ["showtimes-by-filter", finalFilter],
+    finalFilter &&
+      finalFilter.branch_id &&
+      finalFilter.cinema_id &&
+      finalFilter.room_id &&
+      finalFilter.date
+      ? `/showtimes?branch_id=${finalFilter.branch_id}&cinema_id=${finalFilter.cinema_id}&room_id=${finalFilter.room_id}&date=${finalFilter.date}`
+      : null,
+    {
+      enabled:
+        !!finalFilter?.branch_id &&
+        !!finalFilter?.cinema_id &&
+        !!finalFilter?.room_id &&
+        !!finalFilter?.date,
+    }
+  );
+
+  useEffect(() => {
+    if (showtimeData) {
+      const sorted = showtimeData.showtimes.sort((a, b) =>
+        dayjs(a.start_time, "YYYY-MM-DD HH:mm:ss").diff(
+          dayjs(b.start_time, "YYYY-MM-DD HH:mm:ss")
+        )
+      );
+      setShowtimesDate(sorted);
+    }
+  }, [showtimeData]);
 
   useEffect(() => {
     if (moviesData && branchesData) {
       setMovies(moviesData.data);
       setBranches(branchesData.branches);
     }
-  }, [moviesData, branchesData]);
-
-  useEffect(() => {
-    if (
-      filterShowtimes &&
-      filterShowtimes.branch_id !== "" &&
-      filterShowtimes.cinema_id !== "" &&
-      filterShowtimes.room_id !== "" &&
-      filterShowtimes.date !== ""
-    ) {
-      const fetchData = async () => {
-        try {
-          const { data } = await api.get(
-            `/showtimes?branch_id=${filterShowtimes.branch_id}&cinema_id=${filterShowtimes.cinema_id}&room_id=${filterShowtimes.room_id}&date=${filterShowtimes.date}`
-          );
-          const showtimes = data.showtimes.sort((a, b) => {
-            return dayjs(a.start_time, "YYYY-MM-DD HH:mm:ss").diff(
-              dayjs(b.start_time, "YYYY-MM-DD HH:mm:ss")
-            );
-          });
-          setShowtimesDate(showtimes);
-        } catch (error) {
-          console.error("Fetch error:", error);
-        }
-      };
-
-      fetchData();
+    if (authUser?.cinema_id && branchesData && cinema) {
+      const rooms = branchesData.branches
+        .find((branche) => branche.id == cinema?.branch_id)
+        .cinemas.find((cinema) => cinema.id == authUser?.cinema_id).rooms;
+      setRooms(rooms);
     }
-  }, [filterShowtimes]);
+  }, [moviesData, branchesData, cinema, authUser?.cinema_id]);
 
   const handleSetVersionMovie = (id) => {
     if (id === "") {
@@ -107,7 +127,6 @@ const AddShowPerDay = () => {
 
   const handleSetRoom = (id) => {
     const cinema = cinemas.find((cinema) => cinema.id == id);
-    console.log(cinema);
     setRooms(cinema.rooms);
   };
 
@@ -129,8 +148,12 @@ const AddShowPerDay = () => {
     validationSchema: Yup.object({
       movie_id: Yup.string().required("Vui lòng chọn phim"),
       movie_version_id: Yup.string().required("Vui lòng chọn phiên bản phim"),
-      branch_id: Yup.string().required("Vui lòng chọn chi nhánh"),
-      cinema_id: Yup.string().required("Vui lòng chọn rạp"),
+      branch_id: authUser.cinema_id
+        ? ""
+        : Yup.string().required("Vui lòng chọn chi nhánh"),
+      cinema_id: authUser.cinema_id
+        ? ""
+        : Yup.string().required("Vui lòng chọn rạp"),
       room_id: Yup.string().required("Vui lòng chọn phòng"),
       date: Yup.date()
         .required("Vui lòng chọn ngày khởi chiếu")
@@ -140,25 +163,52 @@ const AddShowPerDay = () => {
         : Yup.string()
             .required("Vui lòng nhập giờ bắt đầu")
             .test(
+              "start-after-7am",
+              "Giờ bắt đầu phải từ 07:00 sáng trở đi",
+              function (value) {
+                if (!value) return false;
+                const time = dayjs(value, "HH:mm");
+                const minTime = dayjs("07:00", "HH:mm");
+                return time.isSame(minTime) || time.isAfter(minTime);
+              }
+            )
+            .test(
               "start-time-validation",
               "Giờ bắt đầu phải lớn hơn hiện tại ít nhất 5h",
               function (value) {
                 if (!value) return false;
                 const { date } = this.parent;
+                if (!date) return false;
                 const formattedDate = dayjs(date).format("YYYY-MM-DD");
-                const startTime = dayjs(`${formattedDate} ${value}`);
+                const startTime = dayjs(
+                  `${formattedDate} ${value}`,
+                  "YYYY-MM-DD HH:mm"
+                );
                 if (dayjs(formattedDate).isSame(dayjs(), "day")) {
                   return startTime.isAfter(dayjs().add(5, "hour"));
                 }
                 return true;
               }
             ),
+
       end_hour: !isAuto
         ? Yup.string()
         : Yup.string()
             .required("Vui lòng nhập giờ kết thúc")
             .test(
-              "end-time-validation",
+              "end-before-midnight",
+              "Giờ kết thúc không được quá 23:59",
+              function (value) {
+                if (!value) return false;
+                const endTime = dayjs(value, "HH:mm");
+                const latestTime = dayjs("23:59", "HH:mm");
+                return (
+                  endTime.isSame(latestTime) || endTime.isBefore(latestTime)
+                );
+              }
+            )
+            .test(
+              "duration-at-least-12h",
               "Tổng thời gian phải >= 12 giờ",
               function (value) {
                 const { start_hour, date } = this.parent;
@@ -192,47 +242,56 @@ const AddShowPerDay = () => {
               start_time: Yup.string()
                 .required("Vui lòng nhập giờ bắt đầu")
                 .test(
+                  "is-after-7am",
+                  "Giờ bắt đầu không được trước 07:00 sáng",
+                  function (value) {
+                    if (!value) return false;
+                    const time = dayjs(value, "HH:mm");
+                    const minTime = dayjs("07:00", "HH:mm");
+                    return time.isSame(minTime) || time.isAfter(minTime);
+                  }
+                )
+                .test(
                   "is-after-now",
                   "Giờ bắt đầu phải lớn hơn giờ hiện tại ít nhất 5 tiếng",
                   function (value) {
                     if (!value) return false;
 
-                    const selectedDate = this.options.context?.date; // Ngày chiếu
+                    const selectedDate = this.options.context?.date;
                     if (!selectedDate) return false;
 
                     const now = dayjs();
-                    const nowPlus5Hours = now.add(5, "hour"); // Thời gian hiện tại + 5 tiếng
+                    const nowPlus5Hours = now.add(5, "hour");
 
-                    // Kết hợp ngày chiếu với giờ bắt đầu để có thời gian đầy đủ
                     const startDateTime = dayjs(
                       `${selectedDate} ${value}`,
                       "YYYY-MM-DD HH:mm"
                     );
 
-                    // Nếu ngày chiếu là hôm nay, kiểm tra giờ bắt đầu có lớn hơn hiện tại +5 tiếng không
                     if (dayjs(selectedDate).isSame(now, "day")) {
                       return startDateTime.isAfter(nowPlus5Hours);
                     }
 
-                    return true; // Nếu ngày chiếu không phải hôm nay, bỏ qua kiểm tra này
+                    return true;
                   }
                 )
                 .test(
-                  "is-after-prev-end",
-                  "Giờ bắt đầu phải lớn hơn giờ kết thúc của suất chiếu trước",
+                  "is-15min-after-prev",
+                  "Mỗi suất chiếu phải cách nhau ít nhất 15 phút",
                   function (value) {
                     const { path, parent, options } = this;
-                    const index = Number(path.match(/\d+/)?.[0]); // Lấy index của showtime hiện tại
-                    const prevShowtimes = options.context?.showtimes || []; // Danh sách suất chiếu
+                    const index = Number(path.match(/\d+/)?.[0]);
+                    const prevShowtimes = options.context?.showtimes || [];
 
-                    if (index === 0) return true; // Nếu là suất đầu tiên, không kiểm tra
+                    if (index === 0) return true;
 
                     const prevEndTime = prevShowtimes[index - 1]?.end_time;
                     if (!prevEndTime) return true;
 
-                    return dayjs(value, "HH:mm").isAfter(
-                      dayjs(prevEndTime, "HH:mm")
-                    );
+                    const currentStart = dayjs(value, "HH:mm");
+                    const previousEnd = dayjs(prevEndTime, "HH:mm");
+
+                    return currentStart.diff(previousEnd, "minute") >= 15;
                   }
                 )
                 .test(
@@ -242,10 +301,9 @@ const AddShowPerDay = () => {
                     const { parent } = this;
                     if (!value) return true;
 
-                    const selectedDate = this.options.context?.date; // Ngày chiếu
+                    const selectedDate = this.options.context?.date;
                     if (!selectedDate) return false;
 
-                    // Parse thời gian mới
                     const currentStart = dayjs(
                       `${selectedDate} ${value}`,
                       "YYYY-MM-DD HH:mm"
@@ -256,7 +314,6 @@ const AddShowPerDay = () => {
                     );
 
                     return showtimesDate.every((showtime) => {
-                      // Parse thời gian cũ từ mảng showtimesDate
                       const existingStart = dayjs(
                         showtime.start_time,
                         "YYYY-MM-DD HH:mm:ss"
@@ -266,7 +323,6 @@ const AddShowPerDay = () => {
                         "YYYY-MM-DD HH:mm:ss"
                       );
 
-                      // ✅ Kiểm tra nếu bị trùng hoặc nằm trong khoảng của suất chiếu đã có
                       const isOverlap =
                         currentStart.isSame(existingStart) ||
                         currentStart.isBetween(
@@ -300,8 +356,48 @@ const AddShowPerDay = () => {
                       return !isOverlap;
                     });
                   }
-                ),
+                )
+                .test(
+                  "is-15min-gap-with-existing",
+                  "Suất chiếu phải cách các suất đã có ít nhất 15 phút",
+                  function (value) {
+                    const { parent } = this;
+                    if (!value || !parent?.end_time) return true;
 
+                    const selectedDate = this.options.context?.date;
+                    if (!selectedDate) return false;
+
+                    const currentStart = dayjs(
+                      `${selectedDate} ${value}`,
+                      "YYYY-MM-DD HH:mm"
+                    );
+                    const currentEnd = dayjs(
+                      `${selectedDate} ${parent.end_time}`,
+                      "YYYY-MM-DD HH:mm"
+                    );
+
+                    return showtimesDate.every((showtime) => {
+                      const existingStart = dayjs(
+                        showtime.start_time,
+                        "YYYY-MM-DD HH:mm:ss"
+                      );
+                      const existingEnd = dayjs(
+                        showtime.end_time,
+                        "YYYY-MM-DD HH:mm:ss"
+                      );
+
+                      // Nếu cách nhau ít hơn 15 phút thì KHÔNG hợp lệ
+                      const diffStart = Math.abs(
+                        currentStart.diff(existingEnd, "minute")
+                      );
+                      const diffEnd = Math.abs(
+                        currentEnd.diff(existingStart, "minute")
+                      );
+
+                      return diffStart >= 15 && diffEnd >= 15;
+                    });
+                  }
+                ),
               end_time: Yup.string().required("Vui lòng nhập giờ kết thúc"),
             })
           ),
@@ -309,6 +405,10 @@ const AddShowPerDay = () => {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: (values) => {
+      if (authUser.cinema_id) {
+        values.cinema_id = authUser.cinema_id;
+        values.branch_id = cinema.branch_id;
+      }
       createShowtime.mutate(
         { url: "/add-showtime-per-day", data: values },
         {
@@ -328,7 +428,7 @@ const AddShowPerDay = () => {
     const movieDuration = movie.duration;
 
     const updatedShowtimes = formik.values.showtimes.map((showtime, index) => {
-      const startTime = storedStartTimes[index] || showtime.start_time;
+      const startTime = showtime.start_time;
       if (!startTime) return showtime;
 
       const startTimeObj = dayjs(startTime, "HH:mm");
@@ -439,70 +539,76 @@ const AddShowPerDay = () => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Label htmlFor="branch_id" className="form-label">
-                        Chi nhánh
-                      </Label>
-                      <select
-                        id="branch_id"
-                        name="branch_id"
-                        onChange={(e) => {
-                          formik.setFieldValue("branch_id", e.target.value);
-                          handleSetCinemaWithRoom(e.target.value);
-                          setFilterShowtimes({
-                            ...filterShowtimes,
-                            branch_id: e.target.value,
-                          });
-                        }}
-                        value={formik.values.branch_id}
-                        className="form-select mb-3"
-                      >
-                        <option value="">--- Chọn chi nhánh ---</option>
-                        {branches.map((branch) => (
-                          <option key={branch.id} value={branch.id}>
-                            {branch.name}
-                          </option>
-                        ))}
-                      </select>
-                      {formik.errors.branch_id && formik.touched.branch_id && (
-                        <div className="text-danger">
-                          {formik.errors.branch_id}
+                  {!authUser.cinema_id && (
+                    <>
+                      <Col lg={4}>
+                        <div className="mb-3">
+                          <Label htmlFor="branch_id" className="form-label">
+                            Chi nhánh
+                          </Label>
+                          <select
+                            id="branch_id"
+                            name="branch_id"
+                            onChange={(e) => {
+                              formik.setFieldValue("branch_id", e.target.value);
+                              handleSetCinemaWithRoom(e.target.value);
+                              setFilterShowtimes({
+                                ...filterShowtimes,
+                                branch_id: e.target.value,
+                              });
+                            }}
+                            value={formik.values.branch_id}
+                            className="form-select mb-3"
+                          >
+                            <option value="">--- Chọn chi nhánh ---</option>
+                            {branches.map((branch) => (
+                              <option key={branch.id} value={branch.id}>
+                                {branch.name}
+                              </option>
+                            ))}
+                          </select>
+                          {formik.errors.branch_id &&
+                            formik.touched.branch_id && (
+                              <div className="text-danger">
+                                {formik.errors.branch_id}
+                              </div>
+                            )}
                         </div>
-                      )}
-                    </div>
-                  </Col>
-                  <Col lg={4}>
-                    <div className="mb-3">
-                      <Label htmlFor="cinema_id" className="form-label">
-                        Rạp chiếu
-                      </Label>
-                      <select
-                        onChange={(e) => {
-                          formik.setFieldValue("cinema_id", e.target.value);
-                          handleSetRoom(e.target.value);
-                          setFilterShowtimes({
-                            ...filterShowtimes,
-                            cinema_id: e.target.value,
-                          });
-                        }}
-                        id="cinema_id"
-                        className="form-select mb-3"
-                      >
-                        <option value="">--- Chọn rạp ---</option>
-                        {cinemas?.map((cinema) => (
-                          <option key={cinema.id} value={cinema.id}>
-                            {cinema.name}
-                          </option>
-                        ))}
-                      </select>
-                      {formik.errors.cinema_id && formik.touched.cinema_id && (
-                        <div className="text-danger">
-                          {formik.errors.cinema_id}
+                      </Col>
+                      <Col lg={4}>
+                        <div className="mb-3">
+                          <Label htmlFor="cinema_id" className="form-label">
+                            Rạp chiếu
+                          </Label>
+                          <select
+                            onChange={(e) => {
+                              formik.setFieldValue("cinema_id", e.target.value);
+                              handleSetRoom(e.target.value);
+                              setFilterShowtimes({
+                                ...filterShowtimes,
+                                cinema_id: e.target.value,
+                              });
+                            }}
+                            id="cinema_id"
+                            className="form-select mb-3"
+                          >
+                            <option value="">--- Chọn rạp ---</option>
+                            {cinemas?.map((cinema) => (
+                              <option key={cinema.id} value={cinema.id}>
+                                {cinema.name}
+                              </option>
+                            ))}
+                          </select>
+                          {formik.errors.cinema_id &&
+                            formik.touched.cinema_id && (
+                              <div className="text-danger">
+                                {formik.errors.cinema_id}
+                              </div>
+                            )}
                         </div>
-                      )}
-                    </div>
-                  </Col>
+                      </Col>
+                    </>
+                  )}
                   <Col lg={4}>
                     <div className="mb-3">
                       <Label htmlFor="room_id" className="form-label">
@@ -566,34 +672,40 @@ const AddShowPerDay = () => {
                           onClick={() => {
                             const currentShowtimes = formik.values.showtimes;
 
-                            // Lấy suất chiếu cuối cùng
                             const lastShowtime =
                               currentShowtimes[currentShowtimes.length - 1];
 
-                            // Nếu có suất chiếu trước đó, lấy `end_time` và cộng 5 phút
                             const newStartTime = lastShowtime
                               ? dayjs(lastShowtime.end_time, "HH:mm")
-                                  .add(5, "minute")
+                                  .add(15, "minute")
                                   .format("HH:mm")
                               : "";
 
-                            console.log("newStartTime", newStartTime);
-
-                            // Lấy thời lượng phim
                             const movie = movies.find(
                               (movie) => movie.id == formik.values.movie_id
                             );
                             const movieDuration = movie?.duration || 0;
-                            console.log("Movie Duration:", movieDuration);
 
-                            // Tính `end_time` mới
                             const startTimeObj = dayjs(newStartTime, "HH:mm");
-                            const endTime = startTimeObj
+                            const newEndTimeObj = startTimeObj
                               .add(movieDuration, "minute")
-                              .add(15, "minute")
-                              .format("HH:mm");
+                              .add(15, "minute");
 
-                            // Cập nhật danh sách suất chiếu trong Formik
+                            // Check nếu vượt quá 24:00 thì không thêm nữa
+                            const isPastMidnight = newEndTimeObj.isAfter(
+                              dayjs("24:00", "HH:mm")
+                            );
+                            if (isPastMidnight) {
+                              showAlert(
+                                "",
+                                "Suất chiếu vượt quá 12h đêm, không thể thêm nữa!",
+                                "warning"
+                              );
+                              return;
+                            }
+
+                            const endTime = newEndTimeObj.format("HH:mm");
+
                             formik.setFieldValue("showtimes", [
                               ...currentShowtimes,
                               {
@@ -674,10 +786,6 @@ const AddShowPerDay = () => {
                   ) : (
                     <>
                       {formik.values.showtimes?.map((showtime, index) => {
-                        const prevEndTime =
-                          index > 0
-                            ? formik.values.showtimes[index - 1].end_time
-                            : null;
                         return (
                           <Row key={index}>
                             <Col lg={5}>
@@ -690,28 +798,10 @@ const AddShowPerDay = () => {
                                 </Label>
                                 <Input
                                   type="time"
-                                  className={`form-control ${
-                                    `${formik.touched.start_time}-${index}` &&
-                                    formik.errors.showtimes?.[index]?.start_time
-                                      ? "is-invalid"
-                                      : ""
-                                  }`}
+                                  className="form-control"
                                   value={showtime.start_time || ""}
                                   onChange={(e) => {
                                     const newStartTime = e.target.value;
-
-                                    if (
-                                      prevEndTime &&
-                                      dayjs(newStartTime, "HH:mm").isBefore(
-                                        dayjs(prevEndTime, "HH:mm")
-                                      )
-                                    ) {
-                                      formik.setFieldError(
-                                        `showtimes.${index}.start_time`,
-                                        "Giờ bắt đầu phải lớn hơn giờ kết thúc của suất trước!"
-                                      );
-                                      return;
-                                    }
 
                                     // Tính toán giờ kết thúc
                                     const movie = movies.find(
@@ -745,16 +835,15 @@ const AddShowPerDay = () => {
                                   onBlur={formik.handleBlur}
                                   id={`start_time-${index}`}
                                 />
-                                {`${formik.touched.start_time}-${index}` &&
-                                  formik.errors.showtimes?.[index]
-                                    ?.start_time && (
-                                    <div className="invalid-feedback">
-                                      {
-                                        formik.errors.showtimes[index]
-                                          .start_time
-                                      }
-                                    </div>
-                                  )}
+                                {formik.errors.showtimes?.[index]
+                                  ?.start_time && (
+                                  <div className="text-danger">
+                                    {
+                                      formik.errors.showtimes?.[index]
+                                        ?.start_time
+                                    }
+                                  </div>
+                                )}
                               </div>
                             </Col>
 

@@ -11,7 +11,8 @@ import { useCRUD } from "../../Hooks/useCRUD";
 
 const ProfileDropdown = () => {
   const { create: logout } = useCRUD(["logout"]);
-  const { authUser, setAuthUser } = useAuthContext();
+  const { authUser, setAuthUser, setPermissions, setRole, setRoles } =
+    useAuthContext();
   //Dropdown Toggle
   const [isProfileDropdown, setIsProfileDropdown] = useState(false);
   const toggleProfileDropdown = () => {
@@ -26,13 +27,20 @@ const ProfileDropdown = () => {
       },
       {
         onSuccess: () => {
-          setAuthUser(null);
           window.location.href = "/login";
+          console.log("Đăng xuất thành công");
+          setAuthUser(null);
+          setPermissions(null);
+          setRole(null);
+          setRoles(null);
         },
         onError: (error) => {
           if (error?.response?.data?.message == "Unauthenticated.") {
-            setAuthUser(null);
             window.location.href = "/login";
+            setAuthUser(null);
+            setPermissions(null);
+            setRole(null);
+            setRoles(null);
           }
         },
       }

@@ -24,15 +24,27 @@ import isBetween from "dayjs/plugin/isBetween";
 import { showAlert } from "../../../../Components/Common/showAlert";
 import { useCRUD, useFetch } from "../../../../Hooks/useCRUD";
 import { generateDateRange } from "../../../../utils/CheckDay";
+import { useAuthContext } from "../../../../Contexts/auth/UseAuth";
 
 dayjs.extend(isBetween);
 dayjs.extend(customParseFormat);
 
 document.title = "Add showtime";
 const AddMultipleShowtimes = () => {
+  const { authUser } = useAuthContext();
   const { create: createShowtime } = useCRUD(["showtimes"]);
+
   const { data: moviesData } = useFetch(["movies"], "/movies");
+
   const { data: branchesData } = useFetch(["branches"], "/branches/active");
+
+  const { data: cinema } = useFetch(
+    ["cinemas", authUser?.cinema_id],
+    `/cinemas/${authUser?.cinema_id}`,
+    {
+      enabled: !!authUser?.cinema_id,
+    }
+  );
   const nav = useNavigate();
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -44,45 +56,21 @@ const AddMultipleShowtimes = () => {
   const [rooms, setRooms] = useState([]);
   const [selectedRooms, setSelectedRooms] = useState([]);
   const [selectedCinemas, setSelectedCinemas] = useState([]);
-  const [selectedBranche, setSelectedBranche] = useState(null);
-  const [storedStartTimes, setStoredStartTimes] = useState([]);
   const [isAuto, setIsAuto] = useState(false);
-
-  const isEnabled = Boolean(
-    startDate &&
-      endDate &&
-      selectedCinemas.length > 0 &&
-      selectedRooms.length > 0 &&
-      selectedBranche
-  );
-
-  const { data: showtimeDate, isLoading: isLoadingShowtimeDate } = useFetch(
-    [
-      "showtimesDate",
-      startDate,
-      endDate,
-      selectedCinemas,
-      selectedRooms,
-      selectedBranche,
-    ],
-    `/listshowtimesdate?branh_id=${selectedBranche}&start_date=${dayjs(
-      startDate
-    ).format("YYYY-MM-DD")}&end_date=${dayjs(endDate).format(
-      "YYYY-MM-DD"
-    )}&cinema_id=${selectedCinemas}&room_id=${selectedRooms.map(
-      (room) => room.room_id
-    )}`,
-    {
-      enabled: isEnabled,
-    }
-  );
 
   useEffect(() => {
     if (moviesData && branchesData) {
       setMovies(moviesData.data);
       setBranches(branchesData.branches);
     }
-  }, [moviesData, branchesData]);
+    if (authUser?.cinema_id && branchesData && cinema) {
+      const rooms = branchesData.branches
+        .find((branche) => branche.id == cinema?.branch_id)
+        .cinemas.find((cinema) => cinema.id == authUser?.cinema_id).rooms;
+      setRooms(rooms);
+      setSelectedCinemas([authUser?.cinema_id]);
+    }
+  }, [moviesData, branchesData, cinema, authUser?.cinema_id]);
 
   const handleCheckboxChange = (date, isChecked) => {
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
@@ -108,8 +96,17 @@ const AddMultipleShowtimes = () => {
         })),
       ]);
     } else {
-      setSelectedCinemas((prev) => prev.filter((cinema) => cinema !== id));
+      setSelectedCinemas((prev) => prev.filter((cinemaId) => cinemaId !== id));
       setRooms((prev) => prev.filter((room) => room.cinema_id !== id));
+      // Xóa các phòng thuộc rạp bị bỏ chọn khỏi selectedRooms
+      setSelectedRooms((prev) =>
+        prev.filter((room) => {
+          const roomCinemaId = cinemas.find((c) =>
+            c.rooms.some((r) => r.id === room.room_id)
+          )?.id;
+          return roomCinemaId !== id;
+        })
+      );
     }
   };
 
@@ -190,22 +187,108 @@ const AddMultipleShowtimes = () => {
         : Yup.string()
             .required("Vui lòng nhập giờ kết thúc")
             .test(
-              "end-time-validation",
-              "Tổng thời gian phải >= 5 giờ",
+              "end-before-midnight",
+              "Giờ kết thúc không được quá 23:59",
               function (value) {
-                const { start_hour } = this.parent;
-                if (!start_hour || !value) return false;
+                if (!value) return false;
+                const endTime = dayjs(value, "HH:mm");
+                const latestTime = dayjs("23:59", "HH:mm");
+                return (
+                  endTime.isSame(latestTime) || endTime.isBefore(latestTime)
+                );
+              }
+            )
+            .test(
+              "duration-at-least-12h",
+              "Tổng thời gian phải >= 12 giờ",
+              function (value) {
+                const { start_hour, date } = this.parent;
+                if (!date || !start_hour || !value) return false;
 
-                const startTime = dayjs(start_hour, "HH:mm", true);
-                const endTime = dayjs(value, "HH:mm", true);
+                const formattedDate = dayjs(date).format("YYYY-MM-DD");
+
+                const startTime = dayjs(
+                  `${formattedDate} ${start_hour}`,
+                  "YYYY-MM-DD HH:mm",
+                  true
+                );
+                const endTime = dayjs(
+                  `${formattedDate} ${value}`,
+                  "YYYY-MM-DD HH:mm",
+                  true
+                );
 
                 if (!startTime.isValid() || !endTime.isValid()) {
                   return false;
                 }
 
-                return endTime.diff(startTime, "hour") >= 5;
+                return endTime.diff(startTime, "hour") >= 12;
               }
             ),
+      showtimes: isAuto
+        ? Yup.array()
+        : Yup.array().of(
+            Yup.object().shape({
+              start_time: Yup.string()
+                .required("Vui lòng nhập giờ bắt đầu")
+                .test(
+                  "is-after-7am",
+                  "Giờ bắt đầu không được trước 07:00 sáng",
+                  function (value) {
+                    if (!value) return false;
+                    const time = dayjs(value, "HH:mm");
+                    const minTime = dayjs("07:00", "HH:mm");
+                    return time.isSame(minTime) || time.isAfter(minTime);
+                  }
+                )
+                .test(
+                  "is-after-now",
+                  "Giờ bắt đầu phải lớn hơn giờ hiện tại ít nhất 5 tiếng",
+                  function (value) {
+                    if (!value) return false;
+
+                    const startDate = this.options.context?.start_date;
+                    if (!startDate) return false;
+
+                    const now = dayjs();
+                    const nowPlus5Hours = now.add(5, "hour");
+
+                    const selectedDate = dayjs(startDate);
+                    const startDateTime = dayjs(
+                      `${selectedDate.format("YYYY-MM-DD")} ${value}`,
+                      "YYYY-MM-DD HH:mm"
+                    );
+
+                    if (selectedDate.isSame(now, "day")) {
+                      return startDateTime.isAfter(nowPlus5Hours);
+                    }
+
+                    return true;
+                  }
+                )
+
+                .test(
+                  "is-15min-after-prev",
+                  "Mỗi suất chiếu phải cách nhau ít nhất 15 phút",
+                  function (value) {
+                    const { path, parent, options } = this;
+                    const index = Number(path.match(/\d+/)?.[0]);
+                    const prevShowtimes = options.context?.showtimes || [];
+
+                    if (index === 0) return true;
+
+                    const prevEndTime = prevShowtimes[index - 1]?.end_time;
+                    if (!prevEndTime) return true;
+
+                    const currentStart = dayjs(value, "HH:mm");
+                    const previousEnd = dayjs(prevEndTime, "HH:mm");
+
+                    return currentStart.diff(previousEnd, "minute") >= 15;
+                  }
+                ),
+              end_time: Yup.string().required("Vui lòng nhập giờ kết thúc"),
+            })
+          ),
     }),
     onSubmit: (values) => {
       if (!isAuto) {
@@ -213,38 +296,6 @@ const AddMultipleShowtimes = () => {
         delete values.end_hour;
       } else {
         delete values.showtimes;
-      }
-
-      const now = dayjs();
-      const currentHour = now.hour();
-      const isStartToday = dayjs(values.start_date).isSame(now, "day");
-      const isInNoShowDates = noShowDates.some((date) =>
-        dayjs(date).isSame(values.start_date, "day")
-      );
-      if (isStartToday && !isInNoShowDates) {
-        if (isAuto) {
-          if (parseInt(values.start_hour, 10) <= currentHour + 5) {
-            showAlert(
-              "Thất bại",
-              "Giờ bắt đầu phải lớn hơn giờ hiện tại ít nhất 5 giờ!",
-              "warning"
-            );
-            return;
-          }
-        } else {
-          if (Array.isArray(values.showtimes) && values.showtimes.length > 0) {
-            const firstShowtime = parseInt(values.showtimes[0].start_time, 10);
-            if (firstShowtime <= currentHour + 5) {
-              showAlert(
-                "Thất bại",
-                "Suất chiếu đầu tiên trong danh sách suất chiếu phải có giờ bắt đầu lớn hơn giờ hiện tại ít nhất 5 giờ!",
-                "warning"
-              );
-
-              return;
-            }
-          }
-        }
       }
 
       const data = {
@@ -255,9 +306,8 @@ const AddMultipleShowtimes = () => {
         end_date: dayjs(values.end_date).format("YYYY-MM-DD"),
         exclude_dates: noShowDates,
       };
-
       createShowtime.mutate(
-        { url: "/showtimes/preview", data: data },
+        { url: "/showtimes/preview", data: data, shouldShowAlert: false },
         {
           onSuccess: (data) => {
             nav("/admin/showtime/preview", {
@@ -271,38 +321,6 @@ const AddMultipleShowtimes = () => {
             });
             formik.resetForm();
           },
-          onError: (error) => {
-            const errorString = error.response.data.errors.cinema_ids[0];
-
-            const regex =
-              /rạp (\d+), phòng (\d+) từ (\d{2}:\d{2}) - (\d{2}:\d{2})/g;
-            const matches = [...errorString.matchAll(regex)];
-
-            const formattedErrors = matches.map((match) => ({
-              cinema: parseInt(match[1]),
-              room: parseInt(match[2]),
-              start: match[3],
-              end: match[4],
-            }));
-            console.log(
-              formattedErrors
-                .map(
-                  (error) =>
-                    `Rạp ${error.cinema}, phòng ${error.room} từ ${error.start} - ${error.end}`
-                )
-                .join("\n")
-            );
-            showAlert(
-              "Trùng suất chiếu tại",
-              formattedErrors
-                .map(
-                  (error) =>
-                    `Rạp ${error.cinema}, phòng ${error.room} từ ${error.start} - ${error.end}`
-                )
-                .join("<br>"),
-              "warning"
-            );
-          },
         }
       );
     },
@@ -315,7 +333,7 @@ const AddMultipleShowtimes = () => {
     const movieDuration = movie.duration;
 
     const updatedShowtimes = formik.values.showtimes.map((showtime, index) => {
-      const startTime = storedStartTimes[index] || showtime.start_time;
+      const startTime = showtime.start_time;
       if (!startTime) return showtime;
 
       const startTimeObj = dayjs(startTime, "HH:mm");
@@ -404,50 +422,107 @@ const AddMultipleShowtimes = () => {
                         )}
                     </div>
                   </Col>
-                  <Col lg={6}>
-                    <div className="mb-3">
-                      <Label htmlFor="branch_id" className="form-label">
-                        Chi nhánh
-                      </Label>
-                      <select
-                        id="branch_id"
-                        name="branch_id"
-                        onChange={(e) => {
-                          handleSetCinemaWithRoom(e.target.value);
-                          setSelectedBranche(e.target.value);
-                        }}
-                        className="form-select mb-3"
-                      >
-                        <option value="">--- Chọn chi nhánh ---</option>
-                        {branches.map((branch) => (
-                          <option key={branch.id} value={branch.id}>
-                            {branch.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col lg={6}>
-                    <Card>
-                      <CardHeader>
-                        <Label
-                          className="form-check-label"
-                          htmlFor="formCheck6"
-                        >
-                          Chọn rạp chiếu
+                  {!authUser.cinema_id && (
+                    <Col lg={6}>
+                      <div className="mb-3">
+                        <Label htmlFor="branch_id" className="form-label">
+                          Chi nhánh
                         </Label>
-                      </CardHeader>
-                      <CardBody>
-                        {cinemas.length > 0
-                          ? cinemas.map((cinema) => (
+                        <select
+                          id="branch_id"
+                          name="branch_id"
+                          onChange={(e) => {
+                            handleSetCinemaWithRoom(e.target.value);
+                          }}
+                          className="form-select mb-3"
+                        >
+                          <option value="">--- Chọn chi nhánh ---</option>
+                          {branches.map((branch) => (
+                            <option key={branch.id} value={branch.id}>
+                              {branch.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </Col>
+                  )}
+                  {!authUser.cinema_id && (
+                    <Col lg={6}>
+                      <Card>
+                        <CardHeader>
+                          <Label
+                            className="form-check-label fw-bold d-flex align-items-center gap-2"
+                            htmlFor="check-all-cinemas"
+                            style={{
+                              cursor: "pointer",
+                              color:
+                                selectedCinemas.length === cinemas.length &&
+                                cinemas.length > 0
+                                  ? "#007bff"
+                                  : "#333",
+                            }}
+                          >
+                            <Input
+                              className="form-check-input me-2"
+                              type="checkbox"
+                              id="check-all-cinemas"
+                              ref={(el) => {
+                                if (el) {
+                                  el.indeterminate =
+                                    selectedCinemas.length > 0 &&
+                                    selectedCinemas.length < cinemas.length;
+                                }
+                              }}
+                              checked={
+                                selectedCinemas.length === cinemas.length &&
+                                cinemas.length > 0
+                              }
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                if (checked) {
+                                  const allCinemaIds = cinemas.map(
+                                    (cinema) => cinema.id
+                                  );
+                                  setSelectedCinemas(allCinemaIds);
+                                  const allRooms = cinemas.flatMap((cinema) =>
+                                    cinema.rooms.map((room) => ({
+                                      ...room,
+                                      cinema_name: cinema.name,
+                                    }))
+                                  );
+                                  setRooms(allRooms);
+                                } else {
+                                  setSelectedCinemas([]);
+                                  setRooms([]);
+                                  setSelectedRooms([]);
+                                }
+                              }}
+                            />
+                            <span>
+                              {selectedCinemas.length === cinemas.length &&
+                              cinemas.length > 0
+                                ? "Bỏ chọn tất cả rạp"
+                                : selectedCinemas.length > 0
+                                ? `Đã chọn ${selectedCinemas.length}/${cinemas.length} rạp`
+                                : "Chọn tất cả rạp chiếu"}
+                            </span>
+                            {selectedCinemas.length > 0 && (
+                              <span className="badge bg-primary">
+                                {selectedCinemas.length}
+                              </span>
+                            )}
+                          </Label>
+                        </CardHeader>
+                        <CardBody>
+                          {cinemas.length > 0 ? (
+                            cinemas.map((cinema) => (
                               <div key={cinema.id} className="form-check mb-3">
                                 <Input
                                   className="form-check-input"
                                   type="checkbox"
                                   id={`cinema-${cinema.id}`}
                                   value={cinema.id}
+                                  checked={selectedCinemas.includes(cinema.id)}
                                   onChange={(e) => {
                                     handleCheckboxChangeCinema(
                                       cinema.id,
@@ -463,48 +538,104 @@ const AddMultipleShowtimes = () => {
                                 </Label>
                               </div>
                             ))
-                          : "Vui lòng chọn chi nhánh."}
-                      </CardBody>
-                    </Card>
-                  </Col>
+                          ) : (
+                            <div>Vui lòng chọn chi nhánh.</div>
+                          )}
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  )}
                   <Col lg={6}>
                     <Card>
                       <CardHeader>
                         <Label
-                          className="form-check-label"
-                          htmlFor="formCheck6"
+                          className="form-check-label fw-bold d-flex align-items-center gap-2"
+                          htmlFor="check-all-rooms"
+                          style={{
+                            cursor: "pointer",
+                            color:
+                              selectedRooms.length === rooms.length &&
+                              rooms.length > 0
+                                ? "#007bff"
+                                : "#333",
+                          }}
                         >
-                          Chọn phòng chiếu
+                          <Input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            id="check-all-rooms"
+                            ref={(el) => {
+                              if (el) {
+                                // Thêm trạng thái indeterminate
+                                el.indeterminate =
+                                  selectedRooms.length > 0 &&
+                                  selectedRooms.length < rooms.length;
+                              }
+                            }}
+                            checked={
+                              selectedRooms.length === rooms.length &&
+                              rooms.length > 0
+                            }
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              if (checked) {
+                                const allRooms = rooms.map((room) => ({
+                                  room_id: room.id,
+                                }));
+                                setSelectedRooms(allRooms);
+                              } else {
+                                setSelectedRooms([]);
+                              }
+                            }}
+                          />
+                          <span>
+                            {selectedRooms.length === rooms.length &&
+                            rooms.length > 0
+                              ? "Bỏ chọn tất cả phòng"
+                              : selectedRooms.length > 0
+                              ? `Đã chọn ${selectedRooms.length}/${rooms.length} phòng`
+                              : "Chọn tất cả phòng chiếu"}
+                          </span>
+                          {selectedRooms.length > 0 && (
+                            <span className="badge bg-primary">
+                              {selectedRooms.length}
+                            </span>
+                          )}
                         </Label>
                       </CardHeader>
                       <CardBody>
-                        {rooms.length > 0
-                          ? rooms.map((room) => (
-                              <div className="form-check mb-3" key={room.id}>
-                                <Input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id={`room-${room.id}`}
-                                  value={room.id}
-                                  onChange={(e) => {
-                                    handleCheckboxChangeRoom(
-                                      room.id,
-                                      e.target.checked
-                                    );
-                                  }}
-                                />
-                                <Label
-                                  className="form-check-label fw-semibold d-flex align-items-center gap-1"
-                                  htmlFor={`room-${room.id}`}
-                                >
-                                  {room.name}
-                                  <span className="badge bg-dark text-white fs-12">
-                                    Rạp {room.cinema_name}
-                                  </span>
-                                </Label>
-                              </div>
-                            ))
-                          : "Vui lòng chọn rạp chiếu."}
+                        {rooms.length > 0 ? (
+                          rooms.map((room) => (
+                            <div className="form-check mb-3" key={room.id}>
+                              <Input
+                                className="form-check-input"
+                                type="checkbox"
+                                id={`room-${room.id}`}
+                                value={room.id}
+                                checked={selectedRooms.some(
+                                  (r) => r.room_id === room.id
+                                )}
+                                onChange={(e) => {
+                                  handleCheckboxChangeRoom(
+                                    room.id,
+                                    e.target.checked
+                                  );
+                                }}
+                              />
+                              <Label
+                                className="form-check-label fw-semibold d-flex align-items-center gap-1"
+                                htmlFor={`room-${room.id}`}
+                              >
+                                {room.name}
+                                <span className="badge bg-dark text-white fs-12">
+                                  Rạp {room.cinema_name}
+                                </span>
+                              </Label>
+                            </div>
+                          ))
+                        ) : (
+                          <div>Vui lòng chọn rạp chiếu.</div>
+                        )}
                       </CardBody>
                     </Card>
                   </Col>
@@ -634,7 +765,7 @@ const AddMultipleShowtimes = () => {
 
                           const newStartTime = lastShowtime
                             ? dayjs(lastShowtime.end_time, "HH:mm")
-                                .add(5, "minute")
+                                .add(15, "minute")
                                 .format("HH:mm")
                             : "";
 
@@ -644,12 +775,25 @@ const AddMultipleShowtimes = () => {
                           const movieDuration = movie?.duration || 0;
 
                           const startTimeObj = dayjs(newStartTime, "HH:mm");
-                          const endTime = startTimeObj
+                          const newEndTimeObj = startTimeObj
                             .add(movieDuration, "minute")
-                            .add(15, "minute")
-                            .format("HH:mm");
+                            .add(15, "minute");
 
-                          // Cập nhật danh sách suất chiếu trong Formik
+                          // Check nếu vượt quá 24:00 thì không thêm nữa
+                          const isPastMidnight = newEndTimeObj.isAfter(
+                            dayjs("24:00", "HH:mm")
+                          );
+                          if (isPastMidnight) {
+                            showAlert(
+                              "",
+                              "Suất chiếu vượt quá 12h đêm, không thể thêm nữa!",
+                              "warning"
+                            );
+                            return;
+                          }
+
+                          const endTime = newEndTimeObj.format("HH:mm");
+
                           formik.setFieldValue("showtimes", [
                             ...currentShowtimes,
                             {
