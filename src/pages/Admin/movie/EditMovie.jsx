@@ -28,7 +28,7 @@ const EditMovie = () => {
   const [movie, setMovie] = useState({});
   const [selectedMulti, setselectedMulti] = useState(null);
   const [action, setAction] = useState(null);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
   useEffect(() => {
     if (data) {
       setMovie(data.movie);
@@ -507,7 +507,12 @@ const EditMovie = () => {
                           Danh sách phim
                         </Button>
                       ) : (
-                        <Button type="submit" color="primary" className="mr-3">
+                        <Button
+                          disabled={patchMovie.isLoading || loadingImage}
+                          type="submit"
+                          color="primary"
+                          className="mr-3"
+                        >
                           Lưu nháp
                         </Button>
                       )}
@@ -519,6 +524,7 @@ const EditMovie = () => {
                         }
                         type="submit"
                         color="primary"
+                        disabled={patchMovie.isLoading || loadingImage}
                       >
                         {movie.is_publish ? "Câp nhật" : "Xuất bản"}
                       </Button>

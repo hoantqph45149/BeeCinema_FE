@@ -27,7 +27,7 @@ const UpdatePost = () => {
   const nav = useNavigate();
   const { data: post } = useFetch(["posts", id], `/posts/${id}`);
   const { patch: patchPost } = useCRUD(["post", id]);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
 
   const { quill, quillRef } = useQuill({
     modules: {
@@ -183,7 +183,12 @@ const UpdatePost = () => {
               </Card>
 
               <div className="text-end mb-3">
-                <Button color="primary" type="submit" className="btn w-sm">
+                <Button
+                  disabled={patchPost.isLoading || loadingImage}
+                  color="primary"
+                  type="submit"
+                  className="btn w-sm"
+                >
                   Submit
                 </Button>
               </div>

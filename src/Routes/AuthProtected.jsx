@@ -52,17 +52,70 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const RequireAuth = ({ children }) => {
-  const { authUser } = useAuthContext();
+  const navigate = useNavigate();
+  const { setAuthUser, setRole, setPermissions, setRoles, authUser } =
+    useAuthContext();
 
-  if (!authUser) {
-    return <Navigate to="/login" />;
+  const [isDataReady, setIsDataReady] = useState(false);
+
+  const {
+    data,
+    error,
+    isLoading: isLoadingUser,
+  } = useFetch(["user"], "/user", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
+
+  const {
+    data: dataRoles,
+    error: errorRoles,
+    isLoading: isLoadingRoles,
+  } = useFetch(["roles"], "/roles", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
+
+  useEffect(() => {
+    if (data && dataRoles) {
+      setAuthUser(data?.user);
+      setRole(data?.user?.roles?.[0] || "");
+      setPermissions(data?.user?.permissions || []);
+      setRoles([...dataRoles, "admin"]);
+      setIsDataReady(true);
+    }
+  }, [data, dataRoles, setAuthUser, setRole, setPermissions, setRoles]);
+
+  useEffect(() => {
+    if (
+      error?.response?.status === 401 ||
+      errorRoles?.response?.status === 401
+    ) {
+      navigate("/login", { replace: true });
+    }
+  }, [error, errorRoles, navigate]);
+
+  if (isLoadingUser || isLoadingRoles)
+    return (
+      <div className="h-screen">
+        <Loading />
+      </div>
+    );
+
+  if (isDataReady) {
+    if (!authUser) {
+      return <Navigate to="/login" />;
+    }
   }
 
-  return <>{children}</>;
+  return isDataReady ? <>{children}</> : null;
 };
 
 const RequireVerifiedEmail = ({ children }) => {
   const { authUser } = useAuthContext();
+  console.log("check email_verified_at");
   if (!authUser || !authUser?.email_verified_at) {
     return <Navigate to="/" />;
   }

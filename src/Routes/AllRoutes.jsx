@@ -97,6 +97,7 @@ import ProfileClient from "../pages/Client/profile/index";
 import ShowtimeClient from "../pages/Client/showtime/index";
 import Thanks from "../pages/Client/Thanks/index";
 import TheaterInformation from "../pages/Client/theater-information/index";
+import FormForgotPassword from "../pages/Auth/form-forgot-password";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -106,6 +107,10 @@ const publicRoutesNonAuthLayout = [
   {
     path: "/register",
     component: <Register />,
+  },
+  {
+    path: "/change-password",
+    component: <FormForgotPassword />,
   },
   {
     path: "/google/callback",
@@ -442,6 +447,15 @@ const emailVerifiedRoutes = [
     path: "/choose-seat/:slug",
     component: <ChooseSeat />,
   },
+
+  {
+    path: "/checkout/:slug",
+    component: <Checkout />,
+  },
+  {
+    path: "/thanks/:code",
+    component: <Thanks />,
+  },
 ];
 
 const clientRoutes = [
@@ -451,20 +465,8 @@ const clientRoutes = [
     component: <Navigate to="/" />,
   },
   {
-    path: "/choose-seat/:slug",
-    component: <ChooseSeat />,
-  },
-  {
     path: "/profile",
     component: <ProfileClient />,
-  },
-  {
-    path: "/checkout/:slug",
-    component: <Checkout />,
-  },
-  {
-    path: "/thanks/:code",
-    component: <Thanks />,
   },
 
   { path: "*", component: <Navigate to="/" /> },

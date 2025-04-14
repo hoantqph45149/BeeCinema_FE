@@ -294,7 +294,11 @@ const Branch = () => {
                 <Button type="button" color="light" onClick={toggle}>
                   Đóng
                 </Button>
-                <Button type="submit" color="success">
+                <Button
+                  disabled={create.isLoading || patch.isLoading}
+                  type="submit"
+                  color="success"
+                >
                   {isEdit ? "Sửa" : "Thêm"}
                 </Button>
               </div>

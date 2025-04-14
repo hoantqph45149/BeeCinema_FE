@@ -21,10 +21,8 @@ const UpdateCinema = () => {
   const { id } = useParams();
   const { data: branches } = useFetch(["branches"], "/branches");
   const { data: cinema } = useFetch(["cinema"], `/cinemas/${id}`);
-  // console.log(cinema);
   const { patch: patchCinema } = useCRUD();
 
-  //  Xác thực dữ liệu với Yup
   const validationSchema = Yup.object({
     name: Yup.string().required("Tên rạp không được để trống"),
     branch_id: Yup.string().required("Vui lòng chọn chi nhánh"),
@@ -32,7 +30,6 @@ const UpdateCinema = () => {
     description: Yup.string().required("Mô tả không được để trống"),
   });
 
-  //  Quản lý form với Formik
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -167,7 +164,12 @@ const UpdateCinema = () => {
               </Card>
 
               <div className="text-end mb-3">
-                <Button color="primary" type="submit" className="btn w-sm">
+                <Button
+                  disabled={patchCinema.isLoading}
+                  color="primary"
+                  type="submit"
+                  className="btn w-sm"
+                >
                   Submit
                 </Button>
               </div>

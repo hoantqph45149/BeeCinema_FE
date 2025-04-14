@@ -160,7 +160,12 @@ const AddCinema = () => {
               </Card>
 
               <div className="text-end mb-3">
-                <Button color="primary" type="submit" className="btn w-sm">
+                <Button
+                  disabled={createCinema.isLoading}
+                  color="primary"
+                  type="submit"
+                  className="btn w-sm"
+                >
                   Submit
                 </Button>
               </div>

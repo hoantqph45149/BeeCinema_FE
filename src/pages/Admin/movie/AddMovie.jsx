@@ -23,10 +23,9 @@ import { useNavigate } from "react-router-dom";
 const AddMovie = () => {
   const nav = useNavigate();
   const { create: createMovie } = useCRUD(["movie"]);
-
   const [selectedMulti, setselectedMulti] = useState(null);
   const [action, setAction] = useState(null);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
   const SingleOptions = [
     { value: "Phụ Đề", label: "Phụ Đề" },
     { value: "Lồng Tiếng", label: "Lồng Tiếng" },
@@ -522,6 +521,7 @@ const AddMovie = () => {
                         Lưu nháp
                       </Button>
                       <Button
+                        disabled={loadingImage || createMovie.isLoading}
                         onClick={() => setAction("publish")}
                         type="submit"
                         color="primary"

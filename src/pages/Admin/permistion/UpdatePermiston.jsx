@@ -142,6 +142,7 @@ const UpdatePermiston = () => {
                             Danh sách
                           </Button>
                           <Button
+                            disabled={patchRole.isLoading}
                             type="submit"
                             color="primary"
                             className="ms-2"

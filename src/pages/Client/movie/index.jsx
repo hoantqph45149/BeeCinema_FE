@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
+import Loading from "../../../Components/Common/Loading";
 import MovieCard from "../../../Components/Common/MovieCard";
 import TabMovies from "../../../Components/Common/TabMovies";
-import { useFetch } from "../../../Hooks/useCRUD";
 import { useBrancheContext } from "../../../Contexts/branche/UseBrancheContext";
-import api from "../../../apis/axios";
+import { useFetch } from "./../../../Hooks/useCRUD";
 
 const MoviesClient = () => {
   const { cinema } = useBrancheContext();
@@ -11,45 +11,42 @@ const MoviesClient = () => {
   const [phimSapChieu, setPhimSapChieu] = useState([]);
   const [xuatChieuDB, setXuatChieuDB] = useState([]);
 
-  useEffect(() => {
-    if (cinema?.id) {
-      const fetchData = async () => {
-        try {
-          const { data } = await api.get(`/movies/tab?cinema_id=${cinema.id}`);
-
-          if (!data) {
-            return;
-          }
-
-          setPhimDangChieu(
-            data.moviesShowing
-              ? [...data.moviesShowing].sort(
-                  (a, b) => b.showtimes_count - a.showtimes_count
-                )
-              : []
-          );
-          setPhimSapChieu(
-            data.moviesUpcoming
-              ? [...data.moviesUpcoming].sort(
-                  (a, b) => b.showtimes_count - a.showtimes_count
-                )
-              : []
-          );
-          setXuatChieuDB(
-            data.moviesSpecial
-              ? [...data.moviesSpecial].sort(
-                  (a, b) => b.showtimes_count - a.showtimes_count
-                )
-              : []
-          );
-        } catch (error) {
-          console.error("Lỗi khi fetch dữ liệu:", error);
-        }
-      };
-
-      fetchData();
+  const { data, isLoading } = useFetch(
+    ["movies-tab", cinema?.id],
+    `/movies/tab?cinema_id=${cinema?.id}`,
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      refetchOnMount: false,
+      enabled: !!cinema?.id,
     }
-  }, [cinema]);
+  );
+
+  useEffect(() => {
+    if (data && !isLoading) {
+      setPhimDangChieu(
+        data.moviesShowing
+          ? [...data.moviesShowing].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
+      setPhimSapChieu(
+        data.moviesUpcoming
+          ? [...data.moviesUpcoming].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
+      setXuatChieuDB(
+        data.moviesSpecial
+          ? [...data.moviesSpecial].sort(
+              (a, b) => b.showtimes_count - a.showtimes_count
+            )
+          : []
+      );
+    }
+  }, [data]);
 
   const movieTabs = [
     {
@@ -92,13 +89,19 @@ const MoviesClient = () => {
   return (
     <>
       <div className="my-10">
-        <TabMovies
-          tabs={movieTabs}
-          defaultTab="PHIM ĐANG CHIẾU"
-          onTabChange={(tab) => {
-            console.log("Tab changed!", tab);
-          }}
-        />
+        {isLoading ? (
+          <div className="h-[400px]">
+            <Loading />
+          </div>
+        ) : (
+          <TabMovies
+            tabs={movieTabs}
+            defaultTab="PHIM ĐANG CHIẾU"
+            onTabChange={(tab) => {
+              // console.log("Tab changed!", tab);
+            }}
+          />
+        )}
       </div>
     </>
   );

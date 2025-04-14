@@ -26,7 +26,7 @@ const AddPost = () => {
   const nav = useNavigate();
 
   const { create: createPost } = useCRUD(["posts"]);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
 
   const { quill, quillRef } = useQuill({
     modules: {
@@ -194,7 +194,12 @@ const AddPost = () => {
                 </CardBody>
               </Card>
               <div className="text-end mb-3">
-                <Button color="primary" type="submit" className="btn w-sm">
+                <Button
+                  disabled={createPost.isLoading || loadingImage}
+                  color="primary"
+                  type="submit"
+                  className="btn w-sm"
+                >
                   Submit
                 </Button>
               </div>

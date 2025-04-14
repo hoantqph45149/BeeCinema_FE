@@ -610,7 +610,7 @@ const Room = () => {
                         <Button
                           type="submit"
                           color="success"
-                          disabled={formik.isSubmitting}
+                          disabled={createRoom.isLoading || patchRoom.isLoading}
                         >
                           {isEdit ? "Sửa" : "Thêm"}
                         </Button>

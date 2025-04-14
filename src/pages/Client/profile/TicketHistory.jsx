@@ -5,92 +5,16 @@ import dayjs from "dayjs";
 import { formatVND } from "../../../utils/Currency";
 import Loading from "../../../Components/Common/Loading";
 
-const ticketHistory = [
-  {
-    id: 1,
-    event: "Dune: Part Two",
-    date: "10/03/2025",
-    bookingDate: "05/03/2025",
-    seat: "H5",
-    price: "150,000đ",
-    status: "Đã thanh toán",
-    cinema: "CGV Aeon Mall",
-    room: "P301",
-    combo: "Bắp + Nước ngọt",
-  },
-  {
-    id: 2,
-    event: "Godzilla x Kong: The New Empire",
-    date: "15/03/2025",
-    bookingDate: "10/03/2025",
-    seat: "G12",
-    price: "180,000đ",
-    status: "Chưa thanh toán",
-    cinema: "Lotte Cinema Quận 7",
-    room: "P201",
-    combo: "Combo siêu bắp",
-  },
-  {
-    id: 3,
-    event: "Taylor Swift: The Eras Tour",
-    date: "20/04/2025",
-    bookingDate: "01/04/2025",
-    seat: "VIP A1",
-    price: "2,500,000đ",
-    status: "Đã thanh toán",
-    combo: "Không có",
-  },
-  {
-    id: 4,
-    event: "Avengers 5: Secret Wars",
-    date: "05/05/2025",
-    bookingDate: "01/05/2025",
-    seat: "F9",
-    price: "200,000đ",
-    status: "Chưa thanh toán",
-    cinema: "BHD Star Bitexco",
-    room: "P701",
-    combo: "Combo đặc biệt",
-  },
-  {
-    id: 5,
-    event: "Rap Việt All-Star",
-    date: "12/06/2025",
-    bookingDate: "25/05/2025",
-    seat: "C7",
-    price: "800,000đ",
-    status: "Đã thanh toán",
-    combo: "Vé VIP có nước suối",
-  },
-  {
-    id: 6,
-    event: "Fast & Furious 11",
-    date: "20/07/2025",
-    bookingDate: "15/07/2025",
-    seat: "D10",
-    price: "160,000đ",
-    status: "Đã thanh toán",
-    cinema: "CGV VivoCity",
-    room: "P501",
-    combo: "Bắp caramel + Pepsi",
-  },
-  {
-    id: 7,
-    event: "Concert Sơn Tùng M-TP",
-    date: "01/09/2025",
-    bookingDate: "10/08/2025",
-    seat: "A12",
-    price: "1,200,000đ",
-    status: "Chưa thanh toán",
-    combo: "Vé VIP có quà tặng",
-  },
-];
-
 const ITEMS_PER_PAGE = 9;
 const TicketHistory = () => {
   const { data: ticketHistory, isLoading } = useFetch(
     ["ticketHistory"],
-    "/booking-history"
+    "/booking-history",
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      refetchOnMount: false,
+    }
   );
 
   const [currentPage, setCurrentPage] = useState(1);

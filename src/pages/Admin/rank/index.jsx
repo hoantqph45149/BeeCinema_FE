@@ -35,7 +35,6 @@ const Rank = () => {
   const toggleTab = (tab, status) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      // Thực hiện hành động với trạng thái "status" nếu cần.
       console.log(`Tab ${tab} với trạng thái: ${status}`);
     }
   };
@@ -65,7 +64,6 @@ const Rank = () => {
     validationSchema: rankSchema,
     onSubmit: (values, { resetForm }) => {
       if (isEdit) {
-        // update chi nhánh
         try {
           patch.mutate({
             url: `/ranks/${rank.id}`,
@@ -330,7 +328,11 @@ const Rank = () => {
                       <Button type="button" color="light" onClick={toggle}>
                         Đóng
                       </Button>
-                      <Button type="submit" color="success">
+                      <Button
+                        disabled={create.isLoading || patch.isLoading}
+                        type="submit"
+                        color="success"
+                      >
                         {isEdit ? "Sửa" : "Thêm"}
                       </Button>
                     </div>

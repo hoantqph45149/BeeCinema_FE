@@ -11,7 +11,7 @@ import {
   Button,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-import { useFetch } from "../../../Hooks/useCRUD";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import Loader from "../../../Components/Common/Loader";
@@ -28,6 +28,7 @@ const AddPermistion = () => {
     ["permissions"],
     "/permission"
   );
+  const { create: createRole } = useCRUD(["roles"]);
   const [permissions, setPermissions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectAll, setSelectAll] = useState(false);
@@ -68,9 +69,14 @@ const AddPermistion = () => {
       name: values.name,
       permissions: permissions,
     };
-    console.log("Dữ liệu gửi đi:", roleData);
-    // Ở đây bạn có thể gọi API để tạo role mới
-    // Ví dụ: await createRole(roleData);
+    createRole.mutate(
+      { url: "/roles/add", data: roleData },
+      {
+        onSuccess: () => {
+          nav(`/admin/permission`);
+        },
+      }
+    );
   };
 
   return (
@@ -113,7 +119,11 @@ const AddPermistion = () => {
                               className="invalid-feedback"
                             />
                           </div>
-                          <Button type="submit" color="primary">
+                          <Button
+                            disabled={createRole.isLoading}
+                            type="submit"
+                            color="primary"
+                          >
                             Thêm vai trò
                           </Button>
                         </Form>

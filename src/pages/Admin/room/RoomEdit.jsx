@@ -16,9 +16,8 @@ import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
 const RoomEdit = () => {
   const { id } = useParams();
-  const { data: room } = useFetch(["room", { id }], `/rooms/${id}`);
-  const { patch: patchRoom } = useCRUD(["room"]);
-  console.log(room);
+  const { data: room } = useFetch(["rooms", { id }], `/rooms/${id}`);
+  const { patch: patchRoom } = useCRUD(["rooms"]);
 
   const [matrix, setMatrix] = useState({});
   const [seatsByRow, setSeatsByRow] = useState([]);
@@ -332,6 +331,7 @@ const RoomEdit = () => {
                             color="primary"
                             type="submit"
                             className="btn w-sm"
+                            disabled={patchRoom.isLoading}
                           >
                             Cập nhật
                           </Button>
@@ -345,6 +345,7 @@ const RoomEdit = () => {
                             color="primary"
                             type="submit"
                             className="btn w-sm"
+                            disabled={patchRoom.isLoading}
                           >
                             Xuất Bản
                           </Button>

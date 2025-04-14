@@ -18,21 +18,12 @@ import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import { useEffect } from "react";
 
 const ContactAdmin = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const {
-    create,
-    put,
-    get: getRanks,
-    patch,
-    delete: deleteRanks,
-  } = useCRUD(["contacts"]);
+  const { patch } = useCRUD(["contacts"]);
   const [selectedContact, setSelectedContact] = useState(null);
   const [modal, setModal] = useState(false);
   const [activeTab, setActiveTab] = useState("1");
   const { data } = useFetch(["contact"], "/contact");
-  const [contact, setContact] = useState([]);
   const [contacts, setContacts] = useState([]);
-  // console.log(data);
   useEffect(() => {
     if (data?.data) {
       setContacts(data.data);

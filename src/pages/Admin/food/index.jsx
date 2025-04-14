@@ -34,7 +34,6 @@ const Food = () => {
   const [isEdit, setIsEdit] = useState(false);
   const [modal, setModal] = useState(false);
 
-  // Định nghĩa Schema để validate dữ liệu nhập vào
   const foodSchema = Yup.object().shape({
     name: Yup.string()
       .required("Tên đồ ăn không được để trống")
@@ -448,7 +447,7 @@ const Food = () => {
                 <Button
                   type="submit"
                   color="success"
-                  disabled={imageLoading || formik.isSubmitting}
+                  disabled={imageLoading || create.isLoading || patch.isLoading}
                 >
                   {isEdit ? "Sửa" : "Thêm"}
                 </Button>

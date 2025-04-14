@@ -3,7 +3,11 @@ import { useState, useEffect } from "react";
 import { useFetch } from "../../../Hooks/useCRUD";
 
 const Banner = () => {
-  const { data } = useFetch(["bannerActive"], "/banners/active");
+  const { data } = useFetch(["bannerActive"], "/banners/active", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
   const [currentSlide, setCurrentSlide] = useState(0);
   const [banners, setBanners] = useState([]);
 

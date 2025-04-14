@@ -19,48 +19,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import { showAlert } from "../../../Components/Common/showAlert";
 
-const validationSchema = Yup.object({
-  name: Yup.string()
-    .max(255, "Tên không được vượt quá 255 ký tự")
-    .required("Tên không được để trống"),
-  email: Yup.string()
-    .email("Email không hợp lệ")
-    .max(255, "Email không được vượt quá 255 ký tự")
-    .required("Email không được để trống"),
-  phone: Yup.string()
-    .matches(
-      /^((0[2-9])|(84[2-9]))[0-9]{8}$/,
-      "Số điện thoại không hợp lệ (VD: 0987654321 hoặc 84987654321)"
-    )
-    .required("Số điện thoại không được để trống"),
-  password: Yup.string()
-    .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
-    .required("Mật khẩu không được để trống"),
-  password_confirmation: Yup.string()
-    .oneOf([Yup.ref("password"), null], "Mật khẩu xác nhận không khớp")
-    .required("Xác nhận mật khẩu không được để trống"),
-  birthday: Yup.date()
-    .max(new Date(), "Ngày sinh không được là tương lai")
-    .required("Ngày sinh không được để trống"),
-  gender: Yup.string()
-    .oneOf(["nam", "nữ", "khác"], "Giới tính không hợp lệ")
-    .required("Giới tính không được để trống"),
-  role: Yup.string().required("Vai trò không được để trống"),
-  id_cinema: Yup.number()
-    .nullable()
-    .positive("ID rạp phải là số dương")
-    .integer("ID rạp phải là số nguyên"),
-});
-
 const AddAdminAccount = () => {
-  const { roles } = useAuthContext();
+  const { roles, authUser, role } = useAuthContext();
   const nav = useNavigate();
   const { data: datacinemas, isLoading: isLoadingCinema } = useFetch(
     ["cinemas"],
     "/cinemas"
   );
   const { create: createUsers } = useCRUD(["users"]);
-
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const { uploadImage, loading: loadingImage } = useUploadImage();
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -69,12 +37,48 @@ const AddAdminAccount = () => {
       password: "",
       password_confirmation: "",
       birthday: "",
+      address: "",
       gender: "",
       role: "",
+      avatar: null,
       id_cinema: null,
     },
-    validationSchema: validationSchema,
+    validationSchema: Yup.object({
+      name: Yup.string()
+        .max(255, "Tên không được vượt quá 255 ký tự")
+        .required("Tên không được để trống"),
+      email: Yup.string()
+        .email("Email không hợp lệ")
+        .max(255, "Email không được vượt quá 255 ký tự")
+        .required("Email không được để trống"),
+      phone: Yup.string()
+        .matches(
+          /^((0[2-9])|(84[2-9]))[0-9]{8}$/,
+          "Số điện thoại không hợp lệ (VD: 0987654321 hoặc 84987654321)"
+        )
+        .required("Số điện thoại không được để trống"),
+      password: Yup.string()
+        .min(8, "Mật khẩu phải có ít nhất 8 ký tự")
+        .required("Mật khẩu không được để trống"),
+      password_confirmation: Yup.string()
+        .oneOf([Yup.ref("password"), null], "Mật khẩu xác nhận không khớp")
+        .required("Xác nhận mật khẩu không được để trống"),
+      birthday: Yup.date()
+        .max(new Date(), "Ngày sinh không được là tương lai")
+        .required("Ngày sinh không được để trống"),
+      gender: Yup.string()
+        .oneOf(["nam", "nữ", "khác"], "Giới tính không hợp lệ")
+        .required("Giới tính không được để trống"),
+      role: Yup.string().required("Vai trò không được để trống"),
+      id_cinema: authUser.cinema_id
+        ? ""
+        : Yup.number()
+            .nullable()
+            .positive("ID rạp phải là số dương")
+            .integer("ID rạp phải là số nguyên"),
+    }),
     onSubmit: async (values) => {
+      if (values.avatar) values.avatar = await uploadImage(values.avatar);
       const dataToSend = {
         name: values.name,
         email: values.email,
@@ -84,8 +88,14 @@ const AddAdminAccount = () => {
         birthday: values.birthday,
         gender: values.gender,
         role: values.role,
+        address: values.address,
+        avatar: values.avatar,
         id_cinema: values.id_cinema || null,
       };
+
+      if (authUser.cinema_id) dataToSend.id_cinema = authUser.cinema_id;
+
+      console.log(dataToSend);
       createUsers.mutate(
         { url: "/users/create", data: dataToSend },
         {
@@ -104,6 +114,13 @@ const AddAdminAccount = () => {
     },
   });
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
   document.title = "Thêm mới tài khoản quản trị viên";
 
   return (
@@ -118,6 +135,38 @@ const AddAdminAccount = () => {
             <Form onSubmit={formik.handleSubmit}>
               <Card>
                 <CardBody>
+                  <Row>
+                    <Col lg={12}>
+                      <div className="mb-3 text-center">
+                        <img
+                          src={avatarPreview || "/images/defaultavatar.jpg"}
+                          alt="Avatar"
+                          className="avatar avatar-md rounded-circle"
+                        />
+                        <div className="mt-2">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            id="avatarUpload"
+                            style={{ display: "none" }}
+                            onChange={(e) => {
+                              formik.setFieldValue("avatar", e.target.files[0]);
+                              handleAvatarChange(e);
+                            }}
+                          />
+                          <Button
+                            color="primary"
+                            size="sm"
+                            onClick={() =>
+                              document.getElementById("avatarUpload").click()
+                            }
+                          >
+                            <i className="ri-image-add-fill"></i>
+                          </Button>
+                        </div>
+                      </div>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col lg={4} md={12}>
                       <div className="mb-3">
@@ -314,7 +363,12 @@ const AddAdminAccount = () => {
                         >
                           <option value="">Chọn vai trò</option>
                           {roles
-                            .filter((role) => role !== "admin")
+                            .filter((r) => {
+                              if (authUser.cinema_id) {
+                                return r !== "admin" && r !== "admin_cinema";
+                              }
+                              return r !== "admin";
+                            })
                             .map((role) => (
                               <option key={role} value={role}>
                                 {role.charAt(0).toUpperCase() + role.slice(1)}
@@ -328,52 +382,69 @@ const AddAdminAccount = () => {
                         )}
                       </div>
                     </Col>
-                    <Col lg={3}>
+                    {!authUser.cinema_id && (
+                      <Col lg={3}>
+                        <div className="mb-3">
+                          <Label className="form-label">Rạp:</Label>
+                          <Input
+                            type="select"
+                            id="id_cinema"
+                            name="id_cinema"
+                            className={`form-control ${
+                              formik.touched.id_cinema &&
+                              formik.errors.id_cinema
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            value={formik.values.id_cinema || ""}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            disabled={isLoadingCinema}
+                          >
+                            <option value="">Chọn rạp</option>
+                            {datacinemas?.map((cinema) => (
+                              <option key={cinema.id} value={cinema.id}>
+                                {cinema.name}
+                              </option>
+                            ))}
+                          </Input>
+                          {formik.touched.id_cinema &&
+                            formik.errors.id_cinema && (
+                              <div className="text-danger">
+                                {formik.errors.id_cinema}
+                              </div>
+                            )}
+                        </div>
+                      </Col>
+                    )}
+                  </Row>
+                  <Row>
+                    <Col lg={12}>
                       <div className="mb-3">
-                        <Label className="form-label">Rạp:</Label>
-                        <Input
-                          type="select"
-                          id="id_cinema"
-                          name="id_cinema"
-                          className={`form-control ${
-                            formik.touched.id_cinema && formik.errors.id_cinema
-                              ? "is-invalid"
-                              : ""
-                          }`}
-                          value={formik.values.id_cinema || ""}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          disabled={isLoadingCinema}
-                        >
-                          <option value="">Chọn rạp</option>
-                          {datacinemas?.map((cinema) => (
-                            <option key={cinema.id} value={cinema.id}>
-                              {cinema.name}
-                            </option>
-                          ))}
-                        </Input>
-                        {formik.touched.id_cinema &&
-                          formik.errors.id_cinema && (
-                            <div className="text-danger">
-                              {formik.errors.id_cinema}
-                            </div>
-                          )}
+                        <Label className="form-label">Địa chỉ:</Label>
+                        <textarea
+                          name="address"
+                          className={`form-control`}
+                          placeholder="Nhập địa chỉ"
+                          rows="3"
+                          {...formik.getFieldProps("address")}
+                        />
                       </div>
                     </Col>
                   </Row>
                   <div className="d-flex justify-content-between">
-                    <Button
-                      color="secondary"
-                      onClick={() => nav("/admin/account")}
-                    >
+                    <Button color="dark" onClick={() => nav("/admin/account")}>
+                      <i className="ri-arrow-left-line align-bottom me-1"></i>
                       Trở về
                     </Button>
                     <Button
                       color="primary"
                       type="submit"
-                      disabled={createUsers.isLoading}
+                      disabled={createUsers.isLoading || loadingImage}
                     >
-                      {createUsers.isLoading ? "Đang tạo..." : "Thêm mới"}
+                      {createUsers.isLoading || loadingImage
+                        ? "Đang tạo..."
+                        : "Thêm mới"}
                     </Button>
                   </div>
                 </CardBody>

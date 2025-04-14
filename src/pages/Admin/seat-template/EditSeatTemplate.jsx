@@ -31,9 +31,6 @@ const EditSeatTemplate = () => {
   const [seatMap, setSeatMap] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const isSeatsInitialized = useRef(false);
-  // console.log("seats", seats);
-  // console.log("seatMap", seatMap);
-  console.log(seatTemplate);
 
   useEffect(() => {
     if (seatTemplate) {
@@ -662,6 +659,7 @@ const EditSeatTemplate = () => {
                         color="primary"
                         type="submit"
                         className="btn w-sm"
+                        disabled={patchSeatTemplate.isLoading}
                       >
                         {seatTemplate?.is_publish === false
                           ? "Xuất Bản"

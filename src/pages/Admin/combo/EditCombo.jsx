@@ -24,7 +24,7 @@ const EditCombo = () => {
   const { data: foodsData } = useFetch(["foods"], "/foods");
   const { data: comboData } = useFetch(["combos"], `/combos/${id}`);
   const { patch: patchCombo } = useCRUD(["combos"]);
-  const { uploadImage } = useUploadImage();
+  const { uploadImage, loading: loadingImage } = useUploadImage();
   const nav = useNavigate();
   const [foods, setFoods] = useState([]);
 
@@ -365,7 +365,11 @@ const EditCombo = () => {
                           >
                             Danh sách
                           </Button>
-                          <Button type="submit" color="primary">
+                          <Button
+                            disabled={patchCombo.isLoading || loadingImage}
+                            type="submit"
+                            color="primary"
+                          >
                             Cập nhật
                           </Button>
                         </div>
