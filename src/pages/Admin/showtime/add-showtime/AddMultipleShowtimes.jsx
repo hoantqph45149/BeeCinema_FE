@@ -181,6 +181,24 @@ const AddMultipleShowtimes = () => {
 
                 return startTime.isAfter(minTime) || startTime.isSame(minTime);
               }
+            )
+            .test(
+              "start-time-validation",
+              "Giờ bắt đầu phải lớn hơn hiện tại ít nhất 5h",
+              function (value) {
+                if (!value) return false;
+                const { start_date } = this.parent;
+                if (!start_date) return false;
+                const formattedDate = dayjs(start_date).format("YYYY-MM-DD");
+                const startTime = dayjs(
+                  `${formattedDate} ${value}`,
+                  "YYYY-MM-DD HH:mm"
+                );
+                if (dayjs(formattedDate).isSame(dayjs(), "day")) {
+                  return startTime.isAfter(dayjs().add(5, "hour"));
+                }
+                return true;
+              }
             ),
       end_hour: !isAuto
         ? Yup.string()
@@ -202,10 +220,10 @@ const AddMultipleShowtimes = () => {
               "duration-at-least-12h",
               "Tổng thời gian phải >= 12 giờ",
               function (value) {
-                const { start_hour, date } = this.parent;
-                if (!date || !start_hour || !value) return false;
+                const { start_hour, start_date } = this.parent;
+                if (!start_date || !start_hour || !value) return false;
 
-                const formattedDate = dayjs(date).format("YYYY-MM-DD");
+                const formattedDate = dayjs(start_date).format("YYYY-MM-DD");
 
                 const startTime = dayjs(
                   `${formattedDate} ${start_hour}`,

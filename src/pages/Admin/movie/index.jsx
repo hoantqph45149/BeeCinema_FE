@@ -29,7 +29,6 @@ const Movie = () => {
   const [moviesPublish, setMoviesPublish] = useState([]);
   const [moviesUnPublish, setMoviesUnPublish] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [movie, setMovie] = useState({});
   const [activeTab, setActiveTab] = useState("1");
 
   useEffect(() => {
@@ -70,17 +69,10 @@ const Movie = () => {
         "Thay đổi trạng thái",
         "Bạn có chắc muốn thay đổi trạng thái không?",
         () => {
-          patchMovie.mutate(
-            {
-              url: `/movies/${movie.id}`,
-              data: dataUpdate,
-            },
-            {
-              onSuccess: () => {
-                setMovie({});
-              },
-            }
-          );
+          patchMovie.mutate({
+            url: `/movies/${movie.id}`,
+            data: dataUpdate,
+          });
         }
       );
     }
@@ -96,7 +88,6 @@ const Movie = () => {
         }
       );
     }
-    setMovie({});
   };
 
   // Column
@@ -208,10 +199,10 @@ const Movie = () => {
               type="checkbox"
               role="switch"
               id={`is_active_${cell.row.original.id}`}
+              checked={cell.row.original.is_active}
               defaultChecked={cell.row.original.is_active}
               onChange={() => {
                 handleUpdateActive(cell.row.original, "active");
-                setMovie(cell.row.original);
               }}
             />
           </div>
@@ -229,10 +220,10 @@ const Movie = () => {
               type="checkbox"
               role="switch"
               id={`is_hot_${cell.row.original.id}`}
+              checked={cell.row.original.is_hot}
               defaultChecked={cell.row.original.is_hot}
               onChange={() => {
                 handleUpdateActive(cell.row.original, "hot");
-                setMovie(cell.row.original);
               }}
             />
           </div>

@@ -452,10 +452,6 @@ const emailVerifiedRoutes = [
     path: "/checkout/:slug",
     component: <Checkout />,
   },
-  {
-    path: "/thanks/:code",
-    component: <Thanks />,
-  },
 ];
 
 const clientRoutes = [
@@ -463,6 +459,10 @@ const clientRoutes = [
     path: "/",
     exact: true,
     component: <Navigate to="/" />,
+  },
+  {
+    path: "/thanks/:code",
+    component: <Thanks />,
   },
   {
     path: "/profile",

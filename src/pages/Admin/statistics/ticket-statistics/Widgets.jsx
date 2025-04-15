@@ -35,7 +35,7 @@ const Widgets = ({ data, date }) => {
       label: "Giờ Cao Điểm",
       badgeClass: "success",
       counter: dayjs()
-        .hour(data?.peakHours?.hour)
+        .hour(data?.peakHours?.hour || 0)
         .minute(0)
         .second(0)
         .format("HH:mm"),

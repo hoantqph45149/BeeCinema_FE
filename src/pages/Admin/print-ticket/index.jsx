@@ -6,7 +6,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 import { useCRUD } from "../../../Hooks/useCRUD";
 
 export default function PrintTicket({ ticket }) {
-  const { create: confirmTicket } = useCRUD(["ticket", ticket?.id]);
+  const { create: confirmTicket } = useCRUD(["tickets", ticket?.code]);
   const handlePrint = () => {
     if (ticket?.status === "Đã thanh toán") {
       showConfirm("In Vé", `Bạn có chắc muốn in vé không?`, () => {
@@ -22,31 +22,48 @@ export default function PrintTicket({ ticket }) {
                 printable: "beecinema",
                 type: "html",
                 style: `
-                @media print {
-                  #beecinema {
-                    display: block !important;
+                  @media print {
+                    #beecinema {
+                      display: block !important;
+                    }
                   }
-                }
-        
-                /* Định nghĩa kích thước trang A4 */
-                @page { size: A4; margin: 0mm; padding: 0mm; }
-                
-                /* Reset margin và padding mặc định */
-                body { margin: 0; padding: 0; background: white !important; }
-                import Ticket from './../ticket/index';
-        
-                /* Đảm bảo mỗi ticketContainer chiếm một trang */
-                .ticketContainer {
-                  page-break-after: always;
-                  text-align: center;
-                  box-sizing: border-box;
-                }
-        
-                .ticketContainer:last-child {
-                  page-break-after: auto;
-                }
-              `,
-                scanStyles: false,
+          
+                  /* Định nghĩa kích thước trang A4 */
+                  @page {
+                    size: A4;
+                    margin: 5mm;
+                  }
+          
+                  /* Reset margin và padding mặc định */
+                  body {
+                    margin: 0;
+                    padding: 0;
+                    background: white !important;
+                  }
+          
+                  /* Đảm bảo mỗi ticketContainer chiếm một trang */
+                  .ticketContainer {
+                    width: 210mm;
+                    height: 297mm;
+                    page-break-after: always;
+                    break-inside: avoid;
+                    text-align: center;
+                    box-sizing: border-box;
+                    overflow: hidden;
+                  }
+          
+                  .ticketContainer:last-child {
+                    page-break-after: auto;
+                  }
+          
+                  /* Đảm bảo nội dung bên trong không tràn */
+                  .ticketContainer > * {
+                    max-height: 297mm;
+                    overflow: hidden;
+                  }
+                `,
+                targetStyles: ["*"],
+                scanStyles: true,
                 documentTitle: "Beecinema",
               });
             },
@@ -66,24 +83,41 @@ export default function PrintTicket({ ticket }) {
         }
 
         /* Định nghĩa kích thước trang A4 */
-        @page { size: A4; margin: 0mm; padding: 0mm; }
-        
+        @page {
+          size: A4;
+          margin: 5mm;
+        }
+
         /* Reset margin và padding mặc định */
-        body { margin: 0; padding: 0; background: white !important; }
-        import Ticket from './../ticket/index';
+        body {
+          margin: 0;
+          padding: 0;
+          background: white !important;
+        }
 
         /* Đảm bảo mỗi ticketContainer chiếm một trang */
         .ticketContainer {
+          width: 210mm;
+          height: 297mm;
           page-break-after: always;
+          break-inside: avoid;
           text-align: center;
           box-sizing: border-box;
+          overflow: hidden;
         }
 
         .ticketContainer:last-child {
           page-break-after: auto;
         }
+
+        /* Đảm bảo nội dung bên trong không tràn */
+        .ticketContainer > * {
+          max-height: 297mm;
+          overflow: hidden;
+        }
       `,
-      scanStyles: false,
+      targetStyles: ["*"],
+      scanStyles: true,
       documentTitle: "Beecinema",
     });
   };

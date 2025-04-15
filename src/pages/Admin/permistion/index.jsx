@@ -20,6 +20,7 @@ const Permistion = () => {
   const { data, isLoading } = useFetch(["roles"], "/roles/permission");
   const nav = useNavigate();
   const [roles, setRoles] = useState([]);
+
   useEffect(() => {
     if (data) {
       setRoles(data.filter((item) => item.role !== "member"));
@@ -65,7 +66,6 @@ const Permistion = () => {
                   {perm}
                 </span>
               ))}
-
               {hiddenCount > 0 && (
                 <span
                   className="badge bg-secondary"
@@ -80,23 +80,24 @@ const Permistion = () => {
         },
         enableColumnFilter: false,
       },
-
       {
         header: "Action",
         cell: (cell) => (
           <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item">
-              <Button
-                disabled={cell.row.original.role === "admin"}
-                color="primary"
-                className="btn-sm"
-                onClick={() => {
-                  nav(`/admin/update/permissions/${cell.row.original.id}`);
-                }}
-              >
-                <i className="ri-pencil-fill"></i>
-              </Button>
-            </li>
+            {hasPermission("Sửa quyền") &&
+              cell.row.original.role !== "admin" && (
+                <li className="list-inline-item">
+                  <Button
+                    color="primary"
+                    className="btn-sm"
+                    onClick={() => {
+                      nav(`/admin/update/permissions/${cell.row.original.id}`);
+                    }}
+                  >
+                    <i className="ri-pencil-fill"></i>
+                  </Button>
+                </li>
+              )}
           </ul>
         ),
       },
@@ -120,7 +121,7 @@ const Permistion = () => {
                       <h5 className="card-title mb-0">Danh sách Quyền</h5>
                     </div>
                     <div className="col-sm-auto">
-                      {hasPermission("Thêm rạp") && (
+                      {hasPermission("Thêm quyền") && (
                         <button
                           type="button"
                           className="btn btn-success add-btn"
@@ -137,7 +138,7 @@ const Permistion = () => {
                 <CardBody>
                   {isLoading ? (
                     <Loader />
-                  ) : (
+                  ) : hasPermission("Danh sách quyền") ? (
                     <TableContainer
                       columns={columns}
                       data={roles || []}
@@ -149,6 +150,8 @@ const Permistion = () => {
                       theadClass="table-light text-muted"
                       SearchPlaceholder="Tìm kiếm Quyền..."
                     />
+                  ) : (
+                    <p>Bạn không có quyền xem danh sách quyền.</p>
                   )}
                 </CardBody>
               </Card>

@@ -148,6 +148,7 @@ const Branch = () => {
               type="checkbox"
               role="switch"
               id="flexSwitchCheckRightDisabled"
+              checked={cell.row.original.is_active == 1}
               defaultChecked={cell.row.original.is_active == 1}
               onChange={() => handleUpdateActive(cell.row.original)}
             />

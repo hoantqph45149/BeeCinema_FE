@@ -20,10 +20,11 @@ import TableContainer from "../../../Components/Common/TableContainer";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import { useFetch } from "../../../Hooks/useCRUD";
+import Loader from "../../../Components/Common/Loader";
 
 const Account = () => {
   const { roles, authUser } = useAuthContext();
-  const { data } = useFetch(
+  const { data, isLoading } = useFetch(
     ["users", authUser.cinema_id],
     `/users${authUser.cinema_id ? `?cinema_id=${authUser.cinema_id}` : ""}`
   );
@@ -222,17 +223,21 @@ const Account = () => {
                       </NavItem>
                     )}
                   </Nav>
-                  <TableContainer
-                    columns={columns}
-                    data={filteredData} // Sử dụng danh sách đã lọc
-                    isGlobalFilter={true}
-                    isAddUserList={false}
-                    customPageSize={8}
-                    divClass="table-responsive table-card mb-1"
-                    tableClass="align-middle table-nowrap"
-                    theadClass="table-light text-muted"
-                    SearchPlaceholder="Tìm kiếm tài khoản..."
-                  />
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    <TableContainer
+                      columns={columns}
+                      data={filteredData}
+                      isGlobalFilter={true}
+                      isAddUserList={false}
+                      customPageSize={8}
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Tìm kiếm tài khoản..."
+                    />
+                  )}
                 </div>
               </CardBody>
             </Card>

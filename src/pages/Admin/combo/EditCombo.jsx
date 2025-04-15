@@ -95,14 +95,21 @@ const EditCombo = () => {
         image = await uploadImage(values.img_thumbnail);
       }
 
-      patchCombo.mutate({
-        url: `/combos/${id}`,
-        data: {
-          ...values,
-          combo_foods: foods,
-          img_thumbnail: image,
+      patchCombo.mutate(
+        {
+          url: `/combos/${id}`,
+          data: {
+            ...values,
+            combo_foods: foods,
+            img_thumbnail: image,
+          },
         },
-      });
+        {
+          onSuccess: () => {
+            nav("/admin/combo");
+          },
+        }
+      );
     },
   });
 

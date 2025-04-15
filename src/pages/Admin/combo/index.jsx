@@ -20,10 +20,9 @@ import { formatVND } from "./../../../utils/Currency";
 const Combo = () => {
   const { hasPermission } = useAuthContext();
   const { data, isLoading } = useFetch(["combos"], "/combos");
-  const { patch, delete: deleteCombo } = useCRUD(["combos"]); // Thêm patch và delete
+  const { patch, delete: deleteCombo } = useCRUD(["combos"]);
   const nav = useNavigate();
   const [combos, setCombos] = useState([]);
-  const [combo, setCombo] = useState({});
 
   useEffect(() => {
     if (data?.data) {
@@ -41,7 +40,6 @@ const Combo = () => {
         }
       );
     }
-    setCombo({});
   };
 
   const handleUpdateActive = (combo) => {
@@ -60,10 +58,8 @@ const Combo = () => {
         }
       );
     }
-    setCombo({});
   };
 
-  // Cột của Table
   const columns = useMemo(
     () => [
       {
@@ -134,8 +130,11 @@ const Combo = () => {
               type="checkbox"
               role="switch"
               id={`is_active_${cell.row.original.id}`}
+              checked={cell.row.original.is_active}
               defaultChecked={cell.row.original.is_active}
-              onChange={() => handleUpdateActive(cell.row.original)}
+              onChange={() => {
+                handleUpdateActive(cell.row.original);
+              }}
             />
           </div>
         ),
@@ -164,7 +163,6 @@ const Combo = () => {
                   className="btn-sm"
                   onClick={() => {
                     handleDeleteCombo(cell.row.original);
-                    setCombo(cell.row.original);
                   }}
                 >
                   <i className="ri-delete-bin-5-fill"></i>

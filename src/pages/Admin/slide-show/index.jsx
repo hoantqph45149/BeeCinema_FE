@@ -6,23 +6,22 @@ import {
   Col,
   Container,
   Input,
-  Modal,
   Row,
 } from "reactstrap";
 
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
+import { showConfirm } from "../../../Components/Common/showAlert";
 import TableContainer from "../../../Components/Common/TableContainer";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { showConfirm } from "../../../Components/Common/showAlert";
+import Loader from "../../../Components/Common/Loader";
 
 const SlideShow = () => {
-  const { data: banners } = useFetch(["banners"], "/banners");
+  const { data: banners, isLoading } = useFetch(["banners"], "/banners");
   const { patch: patchBanners, delete: deleteBanner } = useCRUD(["banners"]);
 
   const nav = useNavigate();
-  const [banner, setBanner] = useState({});
   const handleUpdateActive = (banner) => {
     showConfirm(
       "Thay đổi trạng thái",
@@ -38,7 +37,6 @@ const SlideShow = () => {
         });
       }
     );
-    setBanner({});
   };
 
   const handleDeleteBanner = (banner) => {
@@ -49,7 +47,6 @@ const SlideShow = () => {
         deleteBanner.mutate(`/banners/${banner.id}`);
       }
     );
-    setBanner({});
   };
   const columns = useMemo(() => [
     {
@@ -97,7 +94,6 @@ const SlideShow = () => {
       accessorKey: "is_active",
       enableColumnFilter: false,
       cell: (cell) => {
-        // console.log(cell);
         return (
           <>
             <div className="form-check form-switch form-check-right">
@@ -106,10 +102,10 @@ const SlideShow = () => {
                 type="checkbox"
                 role="switch"
                 id="flexSwitchCheckRightDisabled"
+                checked={cell.row.original.is_active}
                 defaultChecked={cell.row.original.is_active}
                 onChange={() => {
                   handleUpdateActive(cell.row.original);
-                  setBanner(cell.row.original);
                 }}
               />
             </div>
@@ -130,7 +126,6 @@ const SlideShow = () => {
                   className="btn-sm "
                   onClick={() => {
                     handleDeleteBanner(cell.row.original);
-                    setBanner(cell.row.original);
                   }}
                 >
                   <i className="ri-delete-bin-5-fill"></i>
@@ -177,7 +172,9 @@ const SlideShow = () => {
                   </Row>
                 </CardHeader>
                 <div className="card-body pt-0">
-                  <div>
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
                     <TableContainer
                       columns={columns}
                       data={banners || []}
@@ -185,9 +182,9 @@ const SlideShow = () => {
                       isAddUserList={false}
                       customPageSize={8}
                       className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
+                      SearchPlaceholder="Search ..."
                     />
-                  </div>
+                  )}
                 </div>
               </Card>
             </Col>

@@ -140,7 +140,7 @@ const Ticket = () => {
                     cell.row.original.status == "Đã thanh toán"
                       ? "primary"
                       : cell.row.original.status == "Đã xuất vé"
-                      ? "succses"
+                      ? "success"
                       : "danger"
                   }
                 >

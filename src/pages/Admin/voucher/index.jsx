@@ -128,6 +128,7 @@ const Voucher = () => {
               type="checkbox"
               role="switch"
               id={`is_active_${cell.row.original.id}`}
+              checked={cell.row.original.is_active}
               defaultChecked={cell.row.original.is_active}
               onChange={() => handleUpdateActive(cell.row.original)}
             />
@@ -193,7 +194,7 @@ const Voucher = () => {
                   <div className="col-sm-auto">
                     {hasPermission("Thêm vouchers") && (
                       <button
-                        type="button" 
+                        type="button"
                         className="btn btn-success add-btn"
                         id="create-btn"
                         onClick={() => nav("/admin/voucher/add")}
