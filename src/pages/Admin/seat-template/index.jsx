@@ -282,6 +282,7 @@ const SeatTemplate = () => {
               type="checkbox"
               role="switch"
               id={`is_active_${cell.row.original.id}`}
+              checked={cell.row.original.is_active}
               defaultChecked={cell.row.original.is_active}
               onChange={() => handleUpdateActive(cell.row.original)}
             />

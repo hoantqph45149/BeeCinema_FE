@@ -26,10 +26,10 @@ const Post = () => {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    if (data?.data) {
-      setPosts(data.data);
+    if (data) {
+      setPosts(data);
     }
-  }, [data?.data]);
+  }, [data]);
 
   const handleDeletePosts = (post) => {
     if (hasPermission("Xóa bài viết")) {
@@ -133,6 +133,7 @@ const Post = () => {
                 type="checkbox"
                 role="switch"
                 id={`is_active_${cell.row.original.id}`}
+                checked={cell.row.original.is_active}
                 defaultChecked={cell.row.original.is_active}
                 onChange={() => handleUpdateActive(cell.row.original)}
               />

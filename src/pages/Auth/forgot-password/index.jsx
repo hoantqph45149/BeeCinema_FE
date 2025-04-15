@@ -106,7 +106,7 @@ const ForgotPassword = () => {
           </p>
 
           <Link
-            to="/signin"
+            to="/login"
             className="inline-flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-accent hover:bg-gray-50 transition"
           >
             <span className="mr-2">←</span> Trở về trang đăng nhập

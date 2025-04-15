@@ -23,7 +23,6 @@ const Cinema = () => {
   const { patch, delete: deleteCinema } = useCRUD(["cinemas"]);
   const nav = useNavigate();
   const [cinemas, setCinemas] = useState([]);
-  const [cinema, setCinema] = useState({});
 
   useEffect(() => {
     if (data) {
@@ -41,7 +40,6 @@ const Cinema = () => {
         }
       );
     }
-    setCinema({});
   };
 
   const handleUpdateActive = (cinema) => {
@@ -60,7 +58,6 @@ const Cinema = () => {
         }
       );
     }
-    setCinema({});
   };
 
   // Cột của Table
@@ -99,6 +96,7 @@ const Cinema = () => {
               type="checkbox"
               role="switch"
               id="flexSwitchCheckRightDisabled"
+              checked={cell.row.original.is_active == 1}
               defaultChecked={cell.row.original.is_active == 1}
               onChange={() => handleUpdateActive(cell.row.original)}
             />
@@ -129,7 +127,6 @@ const Cinema = () => {
                   className="btn-sm"
                   onClick={() => {
                     handleDeleteCinema(cell.row.original);
-                    setCinema(cell.row.original);
                   }}
                 >
                   <i className="ri-delete-bin-5-fill"></i>

@@ -23,7 +23,7 @@ export const showLoadingAlert = () => {
   });
 };
 
-export const showConfirm = (title, text, confirmCallback) => {
+export const showConfirm = (title, text, confirmCallback, cancelCallback) => {
   return MySwal.fire({
     title,
     text,
@@ -36,6 +36,11 @@ export const showConfirm = (title, text, confirmCallback) => {
   }).then((result) => {
     if (result.isConfirmed && typeof confirmCallback === "function") {
       confirmCallback();
+    } else if (
+      result.dismiss === MySwal.DismissReason.cancel &&
+      typeof cancelCallback === "function"
+    ) {
+      cancelCallback();
     }
   });
 };

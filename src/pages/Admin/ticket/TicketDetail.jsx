@@ -267,7 +267,7 @@ const TicketDetail = () => {
                           ticket?.status == "Đã thanh toán"
                             ? "primary"
                             : ticket?.status == "Đã xuất vé"
-                            ? "succses"
+                            ? "success"
                             : "danger"
                         }
                       >

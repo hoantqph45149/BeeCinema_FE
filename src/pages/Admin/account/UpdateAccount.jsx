@@ -167,7 +167,6 @@ const UpdateAccount = () => {
   useEffect(() => {
     if (user) {
       formik.setValues({
-        avatar: user.avatar || "",
         name: user.name || "",
         email: user.email || "",
         phone: user.phone || "",
@@ -176,7 +175,7 @@ const UpdateAccount = () => {
         address: user.address || "",
         gender: user.gender || "",
         cinema_id: authUser.cinema_id || user.cinema_id || "",
-        avatar: user.avatar || null,
+        avatar: user.avatar || "",
       });
     }
   }, [user, authUser.cinema_id]);
