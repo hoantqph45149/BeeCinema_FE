@@ -114,13 +114,57 @@ const RequireAuth = ({ children }) => {
 };
 
 const RequireVerifiedEmail = ({ children }) => {
-  const { authUser } = useAuthContext();
-  console.log("check email_verified_at");
-  if (!authUser || !authUser?.email_verified_at) {
-    return <Navigate to="/" />;
+  const navigate = useNavigate();
+  const {
+    setAuthUser,
+    setRole,
+    setPermissions,
+    setRoles,
+    role,
+    roles,
+    authUser,
+  } = useAuthContext();
+
+  const [isDataReady, setIsDataReady] = useState(false);
+
+  const { data, error } = useFetch(["user"], "/user", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
+
+  const { data: dataRoles, error: errorRoles } = useFetch(["roles"], "/roles", {
+    staleTime: Infinity,
+    cacheTime: Infinity,
+    refetchOnMount: false,
+  });
+
+  useEffect(() => {
+    if (data && dataRoles) {
+      setAuthUser(data?.user);
+      setRole(data?.user?.roles?.[0] || "");
+      setPermissions(data?.user?.permissions || []);
+      setRoles([...dataRoles, "admin"]);
+      setIsDataReady(true);
+    }
+  }, [data, dataRoles, setAuthUser, setRole, setPermissions, setRoles]);
+
+  useEffect(() => {
+    if (
+      error?.response?.status === 401 ||
+      errorRoles?.response?.status === 401
+    ) {
+      navigate("/login", { replace: true });
+    }
+  }, [error, errorRoles, navigate]);
+
+  if (isDataReady) {
+    if (!authUser || !authUser?.email_verified_at) {
+      return <Navigate to="/" />;
+    }
   }
 
-  return <>{children}</>;
+  return isDataReady ? <>{children}</> : null;
 };
 
 const RejectIfAuthenticated = ({ children }) => {

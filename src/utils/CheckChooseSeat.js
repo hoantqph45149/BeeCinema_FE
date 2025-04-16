@@ -40,38 +40,53 @@ export const checkTerminalSeat = (seatsByRow, user_id) => {
 };
 
 // kiểm tra ghế so le nhau
-
 export const checkStaggeredChairs = (seatsByRow, user_id) => {
   let errorStaggeredChairs = false;
-  let messageStaggeredChairs = "";
+  const seatNamesWithError = new Set();
+
   seatsByRow.forEach((rowData) => {
     const seatsInRow = rowData.seats;
-    const selectedIndexes = seatsInRow
-      .map((seat, index) =>
-        seat.pivot.user_id == user_id && seat.pivot.status == "hold"
-          ? index
-          : null
-      )
-      .filter((index) => index !== null);
-    for (let i = 0; i < selectedIndexes.length - 1; i++) {
-      const gap = selectedIndexes[i + 1] - selectedIndexes[i];
-      if (gap === 2) {
-        const emptySeatIndex = selectedIndexes[i] + 1;
-        const emptySeat = seatsInRow[emptySeatIndex];
+
+    seatsInRow.forEach((seat, index) => {
+      if (seat.pivot.status === "available" && seat.is_active) {
+        const prevSeat = seatsInRow[index - 1];
+        const nextSeat = seatsInRow[index + 1];
+
+        const prevIsHoldOrSold =
+          prevSeat &&
+          (prevSeat.pivot.status === "booked" ||
+            (prevSeat.pivot.status === "hold" &&
+              prevSeat.pivot.user_id === user_id));
+
+        const nextIsHold =
+          nextSeat &&
+          nextSeat.pivot.status === "hold" &&
+          nextSeat.pivot.user_id === user_id;
+
+        const prevIsHold =
+          prevSeat &&
+          prevSeat.pivot.status === "hold" &&
+          prevSeat.pivot.user_id === user_id;
+
+        const nextIsHoldOrSold =
+          nextSeat &&
+          (nextSeat.pivot.status === "booked" ||
+            (nextSeat.pivot.status === "hold" &&
+              nextSeat.pivot.user_id === user_id));
+
         if (
-          emptySeat &&
-          emptySeat.pivot.status === "available" &&
-          emptySeat.is_active
+          (prevIsHoldOrSold && nextIsHold) ||
+          (prevIsHold && nextIsHoldOrSold)
         ) {
           errorStaggeredChairs = true;
-          messageStaggeredChairs += `${emptySeat.name} `;
+          seatNamesWithError.add(seat.name); // 💡 Thêm vào Set
         }
       }
-    }
+    });
   });
 
   return {
     errorStaggeredChairs,
-    messageStaggeredChairs,
+    messageStaggeredChairs: Array.from(seatNamesWithError).join(" "), // ❌ tránh lặp
   };
 };

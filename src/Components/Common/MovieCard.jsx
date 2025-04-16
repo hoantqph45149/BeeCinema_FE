@@ -42,11 +42,10 @@ const MovieCard = ({ movie, showInfo = true }) => {
           <img
             src={movie?.img_thumbnail}
             alt={movie?.name}
-            className="w-full   rounded-xl"
+            className="w-full rounded-xl"
           />
           <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-50 transition-opacity rounded-xl"></div>
 
-          {/* Play Button */}
           <div
             onClick={() => setOpenModalTrailer(true)()}
             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
@@ -89,10 +88,11 @@ const MovieCard = ({ movie, showInfo = true }) => {
             <div>
               <Link
                 to={`/movies/${movie?.id}/detail`}
-                className="text-lg font-bold text-accent truncate py-3 font-oswald"
+                className="text-lg font-bold text-accent truncate py-2 font-oswald w-full block max-w-full hover:underline"
               >
                 {movie?.name}
               </Link>
+
               <p className="text-sm py-1 font-lato">
                 <span className="font-bold">Thể loại:</span> {movie?.category}
               </p>
