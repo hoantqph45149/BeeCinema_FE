@@ -900,7 +900,7 @@ const AddShowPerDay = () => {
                 <Button onClick={() => nav("/admin/showtime")} color="primary">
                   Danh sách
                 </Button>
-                <Button type="submit" color="primary">
+                <Button  type="submit" color="primary">
                   Xuất bản
                 </Button>
               </div>

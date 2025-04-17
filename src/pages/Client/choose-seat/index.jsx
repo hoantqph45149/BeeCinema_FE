@@ -220,16 +220,14 @@ const ChooseSeat = () => {
     }
     const isValid = handleSeatSelection(seatsByRow, authUser?.id);
 
-    console.log("isValid", isValid);
-    // if (isValid) {
-    //   nav(`/checkout/${slug}`);
-    // }
+    if (isValid) {
+      nav(`/checkout/${slug}`);
+    }
   };
   return (
     <div className="container my-10">
       {isLoading ? (
         <>
-          {" "}
           <div className="container py-80">
             <Loading />
           </div>

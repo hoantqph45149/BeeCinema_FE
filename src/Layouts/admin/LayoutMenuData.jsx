@@ -220,6 +220,13 @@ const Navdata = () => {
           parentId: "dichvuvauudai",
           isVisible: hasPermission("Danh sách vouchers"),
         },
+        {
+          id: 4,
+          label: "Quản lý giá vé",
+          link: "/admin/price-management",
+          parentId: "dichvuvauudai",
+          isVisible: role === "admin",
+        },
       ].filter((item) => item.isVisible),
     },
     {

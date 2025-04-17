@@ -40,7 +40,9 @@ const Filter = ({
       <DebouncedInput
         type="text"
         value={columnFilterValue ?? ""}
-        onChange={(event) => column.setFilterValue(event.target.value)}
+        onChange={(event) => {
+          column.setFilterValue(event);
+        }}
         placeholder="Search..."
         className="w-36 border shadow rounded"
         list={column.id + "list"}
@@ -54,7 +56,7 @@ const Filter = ({
 const DebouncedInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 300,
   ...props
 }) => {
   const [value, setValue] = useState(initialValue);
