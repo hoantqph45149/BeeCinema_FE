@@ -35,12 +35,10 @@ const ChooseSeat = () => {
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [matrixSeat, setMatrixSeat] = useState({});
   const [holdExpiresAt, setHoldExpiresAt] = useState(null);
-  // console.log(showtimeData);
   const selectedSeatsRef = useRef(selectedSeats);
   useEffect(() => {
     selectedSeatsRef.current = selectedSeats;
   }, [selectedSeats]);
-  // console.log(holdExpiresAt);
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
@@ -88,20 +86,17 @@ const ChooseSeat = () => {
   }, [showtimeData]);
 
   useEffect(() => {
-    // Tính tổng tiền
     const totalAmount = selectedSeats.reduce(
       (amount, seat) => amount + Number(seat.pivot.price),
       0
     );
     setTotalAmount(totalAmount);
 
-    // Nếu không có ghế nào được chọn, reset holdExpiresAt
     if (selectedSeats.length === 0) {
       setHoldExpiresAt(null);
       return;
     }
 
-    // Chỉ set nếu holdExpiresAt đang là null
     if (holdExpiresAt === null) {
       const closestSeat = selectedSeats.reduce((minSeat, seat) => {
         return !minSeat ||
@@ -118,7 +113,6 @@ const ChooseSeat = () => {
     }
   }, [selectedSeats]);
 
-  // Bắt sự kiện realtime
   useEffect(() => {
     const channel = echo.channel(`showtime.${showtimeData?.showtime?.id}`);
 
@@ -234,7 +228,6 @@ const ChooseSeat = () => {
     <div className="container my-10">
       {isLoading ? (
         <>
-          {" "}
           <div className="container py-80">
             <Loading />
           </div>

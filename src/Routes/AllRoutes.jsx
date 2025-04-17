@@ -64,7 +64,6 @@ import RevenueStatistics from "../pages/Admin/statistics/revenue-statistics";
 import TicketStatistics from "../pages/Admin/statistics/ticket-statistics";
 // quản lý giá
 import AddAccount from "../pages/Admin/account/AddAccount";
-import PriceManage from "../pages/Admin/pricemanage/price-manage";
 
 // quản lý sơ đồ ghế
 import EditSeatTemplate from "../pages/Admin/seat-template/EditSeatTemplate";
@@ -98,6 +97,8 @@ import ShowtimeClient from "../pages/Client/showtime/index";
 import Thanks from "../pages/Client/Thanks/index";
 import TheaterInformation from "../pages/Client/theater-information/index";
 import FormForgotPassword from "../pages/Auth/form-forgot-password";
+import PriceTicket from "../pages/Client/price-ticket";
+import PriceManage from "../pages/Admin/pricemanage";
 
 const publicRoutesNonAuthLayout = [
   {
@@ -143,6 +144,10 @@ const publicRoutes = [
   {
     path: "/contact",
     component: <Contact />,
+  },
+  {
+    path: "/price-ticket",
+    component: <PriceTicket />,
   },
 
   {
@@ -363,7 +368,7 @@ const authProtectedRoutes = [
 
   // Quản lý giá vé
   {
-    path: "/admin/price",
+    path: "/admin/price-management",
     component: <PriceManage />,
     permission: "Danh sách giá",
   },

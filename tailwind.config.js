@@ -14,9 +14,20 @@ export default {
           "30%": { opacity: "0.5" },
           "100%": { transform: "scale(1.3)", opacity: "0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+        spin: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         ping: "ping 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+        float: "float 6s ease-in-out infinite",
+        "float-slow": "float 8s ease-in-out infinite",
+        "spin-slow": "spin 20s linear infinite",
       },
       colors: {
         primary: "#FFFFFF", // Màu chính (trắng)

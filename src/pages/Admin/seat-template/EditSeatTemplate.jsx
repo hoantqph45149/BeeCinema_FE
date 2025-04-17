@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -26,6 +26,7 @@ const EditSeatTemplate = () => {
     ["seatTemplate", { id }],
     `/seat-templates/${id}`
   );
+  const nav = useNavigate();
   const { patch: patchSeatTemplate } = useCRUD(["seatTemplate"]);
   const [seats, setSeats] = useState([]);
   const [seatMap, setSeatMap] = useState([]);
@@ -353,7 +354,6 @@ const EditSeatTemplate = () => {
 
   const handleSubmit = (is_publish, is_active) => {
     const data = selectedSeats.sort((a, b) => {
-      // Sắp xếp theo coordinates_y theo thứ tự bảng chữ cái
       if (a.coordinates_y > b.coordinates_y) {
         return 1;
       }
@@ -361,7 +361,6 @@ const EditSeatTemplate = () => {
         return -1;
       }
 
-      // Nếu coordinates_y bằng nhau, sắp xếp theo coordinates_x (theo thứ tự số)
       return parseInt(a.coordinates_x) - parseInt(b.coordinates_x);
     });
     if (data.length === 0) {
@@ -382,15 +381,20 @@ const EditSeatTemplate = () => {
         is_publish,
         is_active,
       };
-      patchSeatTemplate.mutate({
-        url: `/seat-templates/${id}`,
-        data: dataUpdate,
-      });
+      patchSeatTemplate.mutate(
+        {
+          url: `/seat-templates/${id}`,
+          data: dataUpdate,
+        },
+        {
+          onSuccess: () => {
+            nav(`/admin/seat-template`);
+          },
+        }
+      );
     }
   };
 
-  // console.log("seatMap", seatMap);
-  // console.log("selectedSeats", selectedSeats);
   return (
     <>
       <div className="page-content">

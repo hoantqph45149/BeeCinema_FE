@@ -125,7 +125,9 @@ const SeatTemplate = () => {
           },
           {
             onSuccess: (data) => {
-              nav(`/admin/seat-template/${data.seatTemplate.id}/edit`);
+              if (!data?.seatTemplate?.is_publish) {
+                nav(`/admin/seat-template/${data.seatTemplate.id}/edit`);
+              }
             },
           }
         );

@@ -116,8 +116,7 @@ const Room = () => {
 
   const handleChangeBranch = (idBranche) => {
     const theaters =
-      cinemas?.data?.filter((item) => item.branch_id == idBranche) || [];
-    setTheatersByBranch(theaters);
+      cinemas?.filter((item) => item.branch_id == idBranche) || [];
   };
 
   const handleUpdateActive = (roomItem) => {
