@@ -94,8 +94,6 @@ const AddPost = () => {
       try {
         const imageUrl = await uploadImage(values.img_post);
 
-        console.log({ ...values, img_post: imageUrl });
-
         createPost.mutate(
           { url: "/posts", data: { ...values, img_post: imageUrl } },
           {

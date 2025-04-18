@@ -172,15 +172,12 @@ const Updateshowtime = () => {
     }),
 
     onSubmit: (values) => {
-      // console.log(values);
       updateShowtime.mutate({
         url: `/showtimes/${id}`,
         data: values,
       });
     },
   });
-
-  // console.log(showtime);
 
   useEffect(() => {
     if (formik.values.start_time && formik.values.movie_id) {

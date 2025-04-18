@@ -110,7 +110,6 @@ const AddMovie = () => {
           versions: movieVersion,
           ...(action === "publish" && { action: "publish" }),
         };
-        console.log("movieData", movieData);
 
         if (movieData.img_thumbnail) {
           createMovie.mutate(

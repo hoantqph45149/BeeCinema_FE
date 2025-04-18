@@ -33,24 +33,19 @@ const ContactAdmin = () => {
   const toggleTab = (tab, status) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      console.log(`Tab ${tab} với trạng thái: ${status}`);
     }
   };
   const handleStatusChange = (e, id) => {
     const newStatus = e.target.value;
-    try {
-      patch.mutate({
-        url: `/contact/${id}`,
-        data: { status: newStatus },
-      });
-      setContacts((prevContacts) =>
-        prevContacts.map((c) => (c.id === id ? { ...c, status: newStatus } : c))
-      );
-      if (selectedContact && selectedContact.id === id) {
-        setSelectedContact((prev) => ({ ...prev, status: newStatus }));
-      }
-    } catch (error) {
-      console.log(error);
+    patch.mutate({
+      url: `/contact/${id}`,
+      data: { status: newStatus },
+    });
+    setContacts((prevContacts) =>
+      prevContacts.map((c) => (c.id === id ? { ...c, status: newStatus } : c))
+    );
+    if (selectedContact && selectedContact.id === id) {
+      setSelectedContact((prev) => ({ ...prev, status: newStatus }));
     }
   };
 

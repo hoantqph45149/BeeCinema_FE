@@ -434,7 +434,7 @@ const AddShowPerDay = () => {
       const startTimeObj = dayjs(startTime, "HH:mm");
       const endTime = startTimeObj
         .add(movieDuration, "minute")
-        .add(15, "minute");
+        .add(0, "minute");
 
       return { ...showtime, end_time: endTime.format("HH:mm") };
     });
@@ -689,7 +689,7 @@ const AddShowPerDay = () => {
                             const startTimeObj = dayjs(newStartTime, "HH:mm");
                             const newEndTimeObj = startTimeObj
                               .add(movieDuration, "minute")
-                              .add(15, "minute");
+                              .add(0, "minute");
 
                             // Check nếu vượt quá 24:00 thì không thêm nữa
                             const isPastMidnight = newEndTimeObj.isAfter(
@@ -815,7 +815,7 @@ const AddShowPerDay = () => {
                                       "HH:mm"
                                     )
                                       .add(movieDuration, "minute")
-                                      .add(15, "minute")
+                                      .add(0, "minute")
                                       .format("HH:mm");
 
                                     formik.setValues({
@@ -900,7 +900,7 @@ const AddShowPerDay = () => {
                 <Button onClick={() => nav("/admin/showtime")} color="primary">
                   Danh sách
                 </Button>
-                <Button  type="submit" color="primary">
+                <Button type="submit" color="primary">
                   Xuất bản
                 </Button>
               </div>

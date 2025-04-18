@@ -41,7 +41,6 @@ const UpdateCinema = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
       patchCinema.mutate({
         url: `/cinemas/${id}`,
         data: { ...values, is_active: values.is_active === true ? 1 : 0 },

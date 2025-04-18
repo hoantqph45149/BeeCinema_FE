@@ -2,8 +2,6 @@ import ReactApexChart from "react-apexcharts";
 import getChartColorsArray from "../../../../../Components/Common/ChartsDynamicColor";
 
 const RevenueDistribution = ({ dataColors, data }) => {
-  console.log(data); // Kiểm tra dữ liệu đầu vào
-
   let chartPieBasicColors = getChartColorsArray(dataColors);
 
   // Tính tổng doanh thu hoặc số lượng theo rạp chiếu phim

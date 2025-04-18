@@ -68,7 +68,6 @@ const UpdatePost = () => {
     validationSchema,
     onSubmit: async (values) => {
       let image = post.img_post;
-      console.log(values);
       if (values.img_post !== post.img_post) {
         image = await uploadImage(values.img_post);
       }

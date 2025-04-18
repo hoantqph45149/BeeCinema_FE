@@ -7,7 +7,6 @@ import { formatLargeNumber } from "./../../../utils/Currency";
 const Widgets = ({ data, date }) => {
   const { totalRevenue, ticketsSold, newCustomers, customerRetentionRate } =
     data;
-  console.log("date", date);
   const ecomWidgets = [
     {
       id: 1,

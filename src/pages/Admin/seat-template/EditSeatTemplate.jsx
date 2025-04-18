@@ -50,7 +50,6 @@ const EditSeatTemplate = () => {
         }))
       );
 
-      // console.log("seatTemplate:", seatTemplate);
       const copySeatTemplateSeatMap = seats;
       const seatMap = copySeatTemplateSeatMap.map((row) => {
         let skipNext = false; // Biến để bỏ qua ghế bị che phủ
@@ -71,7 +70,6 @@ const EditSeatTemplate = () => {
                 );
               })
             );
-            // console.log("isDouble", isDouble);
             if (isDouble) {
               skipNext = true; // Đánh dấu ghế tiếp theo cần bỏ qua
             }
@@ -125,13 +123,10 @@ const EditSeatTemplate = () => {
 
   const handleSeatClick = useCallback(
     (rowIndex, colIndex) => {
-      // console.log(rowIndex, colIndex);
       const seat =
         seatMap.length > 0
           ? seatMap[rowIndex].seats[colIndex]
           : seats[rowIndex].seats[colIndex];
-
-      // console.log(seat);
 
       const updateSeats = (seat, action) => {
         if (seatMap.length > 0) {

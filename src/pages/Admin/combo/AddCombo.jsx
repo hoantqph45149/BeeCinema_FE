@@ -113,8 +113,6 @@ const AddCombo = () => {
     },
   });
 
-  console.log("foods", foodsData);
-
   useEffect(() => {
     if (foodsData && foods) {
       const totalPrice = foods.reduce((sum, selectedFood) => {

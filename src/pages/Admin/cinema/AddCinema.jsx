@@ -40,7 +40,6 @@ const AddCinema = () => {
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
       createCinema.mutate({ url: "/cinemas", data: values });
       nav("/admin/cinema");
     },

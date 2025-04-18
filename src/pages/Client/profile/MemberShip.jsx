@@ -37,7 +37,7 @@ const MemberShip = () => {
 
   return (
     <div className="container mt-4 bg-primary rounded-xl shadow-lg">
-      <h2 className="text-xl flex items-center justify-center gap-2 font-semibold py-6 text-secondary text-center">
+      <h2 className="text-lg sm:text-xl md:text-2xl flex items-center justify-center gap-2 font-semibold py-6 text-secondary text-center">
         <IdCard size={30} /> Thẻ thành viên
       </h2>
       {isLoading ? (
@@ -47,24 +47,31 @@ const MemberShip = () => {
       ) : (
         <>
           <div className="bg-primary">
-            <h2 className="text-lg font-semibold border-b pb-2">Tổng quan</h2>
+            <h2 className="text-base sm:text-lg md:text-xl font-semibold border-b pb-2">
+              Tổng quan
+            </h2>
 
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex flex-col lg:flex-row lg:items-center gap-2">
-                <p className="text-secondary">Cấp độ thẻ: </p>
-                <p className="font-bold">{membership?.rank?.name}</p>
+            <div className="flex flex-col sm:flex-row sm:justify-between items-center mt-4 gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-center sm:text-left">
+                <p className="text-secondary text-sm sm:text-base">
+                  Cấp độ thẻ:
+                </p>
+                <p className="font-bold text-sm sm:text-base">
+                  {membership?.rank?.name}
+                </p>
               </div>
-              <div className="flex flex-col lg:flex-row lg:items-center gap-2">
-                <p className="text-secondary">Số thẻ: </p>
-                <p className="font-bold">{membership?.code}</p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-center sm:text-left">
+                <p className="text-secondary text-sm sm:text-base">Số thẻ:</p>
+                <p className="font-bold text-sm sm:text-base">
+                  {membership?.code}
+                </p>
               </div>
             </div>
 
             <div className="mt-4">
-              <p className="text-secondary">
+              <p className="text-secondary text-sm sm:text-base">
                 Số tiền đã chi tiêu{" "}
                 <span className="font-bold">
-                  {" "}
                   {formatVND(membership?.total_spent)}
                 </span>
               </p>
@@ -88,7 +95,7 @@ const MemberShip = () => {
                   return (
                     <div
                       key={rank.name}
-                      className="absolute text-xs text-secondary flex flex-col items-center"
+                      className="absolute text-[10px] sm:text-xs text-secondary flex flex-col items-center"
                       style={{
                         left: `${positionPercentage}%`,
                         transform: "translateX(-50%)",
@@ -109,10 +116,10 @@ const MemberShip = () => {
                           {rankIcons[rank.name] ?? <Medal size={20} />}
                         </div>
 
-                        <p className="font-semibold text-sm px-1">
+                        <p className="font-semibold text-xs sm:text-sm px-1">
                           {rank.name}
                         </p>
-                        <p className="text-gray-500">
+                        <p className="text-gray-500 text-[10px] sm:text-xs">
                           {formatVND(rank.total_spent)}
                         </p>
                       </div>
@@ -124,24 +131,47 @@ const MemberShip = () => {
 
             {/* Điểm thành viên */}
             <div className="mt-16 text-secondary">
-              <p>
+              <p className="text-sm sm:text-base">
                 Điểm đã tích lũy:{" "}
                 <span className="font-bold">
                   {membership?.totalEarnedPoints.toLocaleString()} điểm
                 </span>
               </p>
-              <p>
+              <p className="text-sm sm:text-base">
                 Điểm đã sử dụng:{" "}
                 <span className="font-bold">
                   {Math.abs(membership?.totalSpentPoints).toLocaleString()} điểm
                 </span>
               </p>
-              <p>
+              <p className="text-sm sm:text-base">
                 Điểm hiện có:{" "}
                 <span className="font-bold">
                   {membership?.points.toLocaleString()} điểm
                 </span>
               </p>
+            </div>
+
+            {/* Lưu ý */}
+            <div className="mt-8 text-secondary">
+              <p className="font-bold text-sm sm:text-base">Lưu ý:</p>
+              <ul className="list-disc pl-5 text-sm sm:text-base">
+                <li>
+                  Điểm tích lũy được tính dựa trên các giao dịch hợp lệ trong hệ
+                  thống.
+                </li>
+                <li>
+                  Điểm đã sử dụng không thể hoàn lại sau khi quy đổi hoặc sử
+                  dụng.
+                </li>
+                <li>
+                  Điểm hiện có có thể được sử dụng để đổi ưu đãi hoặc quà tặng
+                  theo quy định.
+                </li>
+                <li>
+                  Vui lòng kiểm tra thời hạn sử dụng của điểm để tránh mất điểm
+                  do hết hạn.
+                </li>
+              </ul>
             </div>
           </div>
           <PointHistory pointsHistory={membership?.point_histories} />

@@ -27,15 +27,12 @@ const Contact = () => {
       message: (contact && contact?.message) || "",
     },
     validationSchema: contactSchema,
-      onSubmit: (values, { resetForm }) => {
-      try {
-        create.mutate({
-          url: "/contact",
-          data: { ...values },
-        });
-      } catch (error) {
-        console.log(error);
-      }
+    onSubmit: (values, { resetForm }) => {
+      create.mutate({
+        url: "/contact",
+        data: { ...values },
+      });
+
       resetForm();
       setModal(false);
     },

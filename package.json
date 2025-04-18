@@ -10,7 +10,7 @@
     "dev": "vite --port 3000 --host",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port 3000 --host"
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^43.2.0",

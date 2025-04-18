@@ -40,13 +40,13 @@ const Checkout = () => {
   const [priceCombos, setPriceCombos] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
+  const [loadingCheckout, setLoadingCheckout] = useState(false);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
 
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
-        // console.log("selectedSeatsRef.current", selectedSeatsRef.current);
         selectedSeatsRef.current.forEach((seat) => {
           chooseSeat.mutate({
             url: "/update-seat",
@@ -170,6 +170,7 @@ const Checkout = () => {
   };
 
   const handleCheckout = async () => {
+    setLoadingCheckout(true);
     const combo = combos.reduce((acc, item) => {
       acc[item.id] = item.quantity;
       return acc;
@@ -193,15 +194,15 @@ const Checkout = () => {
       rank_at_booking: membership.rank.name,
     };
 
-    console.log(dataPost);
     const { data } = await api.post("/payment", dataPost);
 
     if (data?.payment_url) {
       window.location.href = data?.payment_url;
+      setLoadingCheckout(false);
     }
   };
 
-  return isLoadingCheckout || isLoadingMembership ? (
+  return isLoadingCheckout || isLoadingMembership || loadingCheckout ? (
     <div className="h-screen">
       <Loading />
     </div>

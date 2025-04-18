@@ -40,7 +40,6 @@ const EditMovie = () => {
       );
     }
   }, [data]);
-  //   console.log(movie);
   const SingleOptions = [
     { value: "Phụ Đề", label: "Phụ Đề" },
     { value: "Lồng Tiếng", label: "Lồng Tiếng" },
@@ -115,7 +114,6 @@ const EditMovie = () => {
           image = await uploadImage(values.img_thumbnail);
         }
 
-        // console.log("image", image);
         const movieData = {
           ...values,
           img_thumbnail: image,

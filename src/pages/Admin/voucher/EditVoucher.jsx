@@ -27,7 +27,6 @@ document.title =
 const EditVoucher = () => {
   const { id } = useParams();
   const { data } = useFetch(["vouchers", id], `/vouchers/${id}`);
-  console.log(data);
   const { patch: patchVoucher } = useCRUD(["vouchers"]);
   const nav = useNavigate();
   const [type, setType] = useState("");
@@ -128,7 +127,6 @@ const EditVoucher = () => {
     initialValues,
     validationSchema,
     onSubmit: (values) => {
-      console.log(values);
       const start_date = dayjs(values.start_date).format("YYYY-MM-DD HH:mm:ss");
       const end_date = dayjs(values.end_date).format("YYYY-MM-DD HH:mm:ss");
       patchVoucher.mutate(

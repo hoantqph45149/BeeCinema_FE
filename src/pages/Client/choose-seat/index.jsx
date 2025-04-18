@@ -42,7 +42,6 @@ const ChooseSeat = () => {
   useEffect(() => {
     const handlePageLeave = () => {
       if (selectedSeatsRef.current.length > 0) {
-        console.log("selectedSeatsRef.current", selectedSeatsRef.current);
         selectedSeatsRef.current.forEach((seat) => {
           chooseSeat.mutate({
             url: "/update-seat",

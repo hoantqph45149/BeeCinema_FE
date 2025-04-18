@@ -3,7 +3,6 @@ import getChartColorsArray from "./../../../../Components/Common/ChartsDynamicCo
 import PropTypes from "prop-types";
 
 const RevenueCinema = ({ dataColors, data }) => {
-  console.log(data);
   let chartPieBasicColors = getChartColorsArray(dataColors);
   const series = data?.map((item) => Number.parseInt(item.revenue));
   let options = {
