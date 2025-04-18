@@ -54,23 +54,15 @@ const Branch = () => {
       if (isEdit) {
         // update chi nhánh
         if (hasPermission("Sửa chi nhánh")) {
-          try {
-            patch.mutate({
-              url: `/branches/${branche.id}`,
-              data: values,
-            });
-          } catch (error) {
-            console.log(error);
-          }
+          patch.mutate({
+            url: `/branches/${branche.id}`,
+            data: values,
+          });
         }
       } else {
         // Thêm mới chi nhánh
         if (hasPermission("Thêm chi nhánh")) {
-          try {
-            create.mutate({ url: "/branches", data: values });
-          } catch (error) {
-            console.log(error);
-          }
+          create.mutate({ url: "/branches", data: values });
         }
       }
 

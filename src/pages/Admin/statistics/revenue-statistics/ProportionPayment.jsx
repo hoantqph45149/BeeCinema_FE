@@ -3,7 +3,6 @@ import getChartColorsArray from "./../../../../Components/Common/ChartsDynamicCo
 
 const ProportionPayment = ({ dataColors, data }) => {
   var chartPieBasicColors = getChartColorsArray(dataColors);
-  console.log("ProportionPayment", data);
   const series = data?.map((item) => Number.parseInt(item.total_amount));
   var options = {
     chart: {

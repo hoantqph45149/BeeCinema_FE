@@ -65,7 +65,6 @@ const CinemaPrice = () => {
   const [selectedPriceRule, setSelectedPriceRule] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [priceRules, setPriceRules] = useState([]);
-
   useEffect(() => {
     if (dataPriceRules && dataCinema) {
       setActiveTab(dataCinema[0]?.id);
@@ -589,9 +588,8 @@ const CinemaPrice = () => {
                                     </td>
                                     <td className="fw-bold text-success">
                                       {formatVND(
-                                        (slot.base_price +
-                                          slot.surcharge.double) *
-                                          2
+                                        slot.base_price * 2 +
+                                          slot.surcharge.double
                                       )}
                                     </td>
                                   </tr>

@@ -54,13 +54,9 @@ export function Login() {
   });
 
   const handleGoogleLogin = async () => {
-    try {
-      const { data } = await api.get("/auth/google");
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.log(error);
+    const { data } = await api.get("/auth/google");
+    if (data.url) {
+      window.location.href = data.url;
     }
   };
 

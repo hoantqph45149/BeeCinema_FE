@@ -95,7 +95,6 @@ const AddAdminAccount = () => {
 
       if (authUser.cinema_id) dataToSend.id_cinema = authUser.cinema_id;
 
-      console.log(dataToSend);
       createUsers.mutate(
         { url: "/users/create", data: dataToSend },
         {

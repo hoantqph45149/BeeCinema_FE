@@ -35,7 +35,6 @@ const Rank = () => {
   const toggleTab = (tab, status) => {
     if (activeTab !== tab) {
       setActiveTab(tab);
-      console.log(`Tab ${tab} với trạng thái: ${status}`);
     }
   };
   const rankSchema = Yup.object().shape({
@@ -64,24 +63,16 @@ const Rank = () => {
     validationSchema: rankSchema,
     onSubmit: (values, { resetForm }) => {
       if (isEdit) {
-        try {
-          patch.mutate({
-            url: `/ranks/${rank.id}`,
-            data: { ...values, is_default: rank.is_default },
-          });
-        } catch (error) {
-          console.log(error);
-        }
+        patch.mutate({
+          url: `/ranks/${rank.id}`,
+          data: { ...values, is_default: rank.is_default },
+        });
       } else {
         // Thêm mới chi nhánh
-        try {
-          create.mutate({
-            url: "/ranks",
-            data: { ...values, is_default: false },
-          });
-        } catch (error) {
-          console.log(error);
-        }
+        create.mutate({
+          url: "/ranks",
+          data: { ...values, is_default: false },
+        });
       }
       resetForm();
       setModal(false);

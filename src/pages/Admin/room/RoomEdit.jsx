@@ -114,7 +114,6 @@ const RoomEdit = () => {
                                       const seat = rowData.seats.find(
                                         (seat) => seat.coordinates_x == x
                                       );
-                                      // console.log(seat);
                                       if (hideNextSeat) {
                                         hideNextSeat = false;
                                         return null;

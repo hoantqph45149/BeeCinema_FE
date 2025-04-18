@@ -34,7 +34,6 @@ function ProfileDropdownClient() {
       {
         onSuccess: () => {
           nav("/login");
-          console.log("Đăng xuất thành công");
           setAuthUser(null);
           setPermissions(null);
           setRole(null);
