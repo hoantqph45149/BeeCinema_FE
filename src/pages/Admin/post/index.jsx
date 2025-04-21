@@ -1,152 +1,235 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
-
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Row,
+} from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import dayjs from "dayjs";
+import { showConfirm } from "../../../Components/Common/showAlert";
+import Loader from "../../../Components/Common/Loader";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 const Post = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
+  const { hasPermission } = useAuthContext();
+  const { data, isLoading } = useFetch(["posts"], "/posts");
+  const nav = useNavigate();
+  const { patch: patchPost } = useCRUD(["posts"]);
+  const { delete: deletePost } = useCRUD(["posts"]);
+  const [posts, setPosts] = useState([]);
 
-  const toggle = () => setModal(!modal);
-  // Customers Column
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Tiêu đề",
-      accessorKey: "customer",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Hình ảnh",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Người tạo",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Lượt xem",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Ngày tạo",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "date",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Action",
-      cell: (cellProps) => {
-        return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
-          </ul>
-        );
+  useEffect(() => {
+    if (data) {
+      setPosts(data);
+    }
+  }, [data]);
+
+  const handleDeletePosts = (post) => {
+    if (hasPermission("Xóa bài viết")) {
+      showConfirm(
+        "Xóa Bài Viết",
+        `Bạn có chắc muốn xóa bài viết ${post.title} không?`,
+        () => {
+          deletePost.mutate(`/posts/${post.id}`);
+        }
+      );
+    }
+  };
+
+  const handleUpdateActive = (post) => {
+    if (hasPermission("Sửa bài viết")) {
+      showConfirm(
+        "Thay đổi trạng thái",
+        "Bạn có chắc muốn thay đổi trạng thái không?",
+        () => {
+          patchPost.mutate({
+            url: `/posts/${post.id}`,
+            data: {
+              ...post,
+              is_active: post.is_active ? false : true,
+            },
+          });
+        }
+      );
+    }
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
       },
-    },
-  ]);
+      {
+        header: "Tiêu đề",
+        accessorKey: "title",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <span
+            style={{
+              maxWidth: "250px",
+              display: "inline-block",
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+            }}
+            className="fw-medium"
+          >
+            {cell.row.original.title}
+          </span>
+        ),
+      },
+      {
+        header: "Hình ảnh",
+        accessorKey: "img_post",
+        enableColumnFilter: false,
+        cell: (cell) =>
+          cell.row.original.img_post ? (
+            <img
+              style={{ maxWidth: "250px" }}
+              src={cell.row.original.img_post}
+              alt={cell.row.original.title}
+            />
+          ) : (
+            <span>Không có hình ảnh</span>
+          ),
+      },
+      {
+        header: "Người tạo",
+        accessorKey: "user.name",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Lượt xem",
+        accessorKey: "view_count",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Ngày tạo",
+        accessorKey: "created_at",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <span>
+            {dayjs(cell.row.original.created_at).format("DD/MM/YYYY")}
+          </span>
+        ),
+      },
+      {
+        header: "Hoạt động",
+        accessorKey: "is_active",
+        enableColumnFilter: false,
+        cell: (cell) =>
+          hasPermission("Sửa bài viết") ? (
+            <div className="form-check form-switch form-check-right">
+              <Input
+                className="form-check-input"
+                type="checkbox"
+                role="switch"
+                id={`is_active_${cell.row.original.id}`}
+                checked={cell.row.original.is_active}
+                defaultChecked={cell.row.original.is_active}
+                onChange={() => handleUpdateActive(cell.row.original)}
+              />
+            </div>
+          ) : null,
+      },
+      {
+        header: "Action",
+        cell: (cell) => (
+          <ul className="list-inline hstack gap-2 mb-0">
+            {hasPermission("Sửa bài viết") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    nav(`/admin/post/${cell.row.original.id}/edit`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+            )}
+            {hasPermission("Xóa bài viết") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    handleDeletePosts(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            )}
+          </ul>
+        ),
+      },
+    ],
+    [hasPermission, nav]
+  );
 
-  document.title = "";
+  document.title = "Quản lý bài viết | Admin Dashboard";
+
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <Container fluid>
-          <BreadCrumb title="Quản lý bài viết" pageTitle="Quản lý" />
-          <Row>
-            <Col lg={12}>
-              <Card id="customerList">
-                <CardHeader className="border-0">
-                  <Row className="g-4 align-items-center">
-                    <div className="col-sm">
-                      <div>
-                        <h5 className="card-title mb-0">Danh sách bài viết</h5>
-                      </div>
-                    </div>
-                    <div className="col-sm-auto">
-                      <div>
-                        <button
-                          type="button"
-                          className="btn btn-success add-btn"
-                          id="create-btn"
-                          onClick={() => {
-                            setIsEdit(false);
-                            toggle();
-                          }}
-                        >
-                          <i className="ri-add-line align-bottom me-1"></i> Thêm
-                          bài viết
-                        </button>{" "}
-                      </div>
-                    </div>
-                  </Row>
-                </CardHeader>
-                <div className="card-body pt-0">
-                  <div>
-                    <TableContainer
-                      columns={columns}
-                      data={[]}
-                      isGlobalFilter={true}
-                      isAddUserList={false}
-                      customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
-                    />
+    <div className="page-content">
+      <Container fluid>
+        <BreadCrumb title="Quản lý bài viết" pageTitle="Quản lý" />
+        <Row>
+          <Col lg={12}>
+            <Card id="postList">
+              <CardHeader className="border-0">
+                <Row className="g-4 align-items-center">
+                  <div className="col-sm">
+                    <h5 className="card-title mb-0">Danh sách bài viết</h5>
                   </div>
-                  <Modal
-                    id="showModal"
-                    isOpen={modal}
-                    toggle={toggle}
-                    centered
-                  ></Modal>
-                  <ToastContainer closeButton={false} limit={1} />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-    </React.Fragment>
+                  <div className="col-sm-auto">
+                    {hasPermission("Thêm bài viết") && (
+                      <Button
+                        type="button"
+                        className="btn btn-success add-btn"
+                        id="create-btn"
+                        onClick={() => nav("/admin/post/add")}
+                      >
+                        <i className="ri-add-line align-bottom me-1"></i> Thêm
+                        bài viết
+                      </Button>
+                    )}
+                  </div>
+                </Row>
+              </CardHeader>
+              <div className="card-body pt-0">
+                {isLoading ? (
+                  <Loader />
+                ) : hasPermission("Danh sách bài viết") ? (
+                  <TableContainer
+                    columns={columns}
+                    data={posts || []}
+                    isGlobalFilter={true}
+                    isAddUserList={false}
+                    customPageSize={8}
+                    divClass="table-responsive table-card mb-1"
+                    tableClass="align-middle table-nowrap dt-responsive"
+                    theadClass="table-light text-muted"
+                    SearchPlaceholder="Tìm kiếm bài viết..."
+                  />
+                ) : (
+                  <p>Bạn không có quyền xem danh sách bài viết.</p>
+                )}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

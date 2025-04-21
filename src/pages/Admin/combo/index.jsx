@@ -1,153 +1,234 @@
-import React, { useMemo, useState } from "react";
-import { Card, CardHeader, Col, Container, Modal, Row } from "reactstrap";
-
-import { Link } from "react-router-dom";
-
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  Card,
+  CardHeader,
+  Col,
+  Container,
+  Input,
+  Row,
+} from "reactstrap";
+import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { showConfirm } from "../../../Components/Common/showAlert";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import Loader from "../../../Components/Common/Loader";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
+import { formatVND } from "./../../../utils/Currency";
 
 const Combo = () => {
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
+  const { hasPermission } = useAuthContext();
+  const { data, isLoading } = useFetch(["combos"], "/combos");
+  const { patch, delete: deleteCombo } = useCRUD(["combos"]);
+  const nav = useNavigate();
+  const [combos, setCombos] = useState([]);
 
-  const toggle = () => setModal(!modal);
-  // Customers Column
-  const columns = useMemo(() => [
-    {
-      header: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Tên combo",
-      accessorKey: "customer",
-      enableColumnFilter: false,
-    },
+  useEffect(() => {
+    if (data?.data) {
+      setCombos(data.data);
+    }
+  }, [data]);
 
-    {
-      header: "Hình ảnh",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Thông tin",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Gía gốc",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Gía bán",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "date",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Action",
-      cell: (cellProps) => {
-        return (
-          <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
-          </ul>
-        );
+  const handleDeleteCombo = (combo) => {
+    if (hasPermission("Xóa combo")) {
+      showConfirm(
+        "Xóa Combo",
+        `Bạn có chắc muốn xóa combo ${combo.name} không?`,
+        () => {
+          deleteCombo.mutate(`/combos/${combo.id}`);
+        }
+      );
+    }
+  };
+
+  const handleUpdateActive = (combo) => {
+    if (hasPermission("Sửa combo")) {
+      showConfirm(
+        "Thay đổi trạng thái",
+        "Bạn có chắc muốn thay đổi trạng thái không?",
+        () => {
+          patch.mutate({
+            url: `/combos/${combo.id}`,
+            data: {
+              ...combo,
+              is_active: combo.is_active == 1 ? 0 : 1,
+            },
+          });
+        }
+      );
+    }
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
       },
-    },
-  ]);
+      {
+        header: "Tên",
+        accessorKey: "name",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Hình ảnh",
+        accessorKey: "img_thumbnail",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <img
+            src={cell.row.original.img_thumbnail}
+            alt={`image-${cell.row.original.name}`}
+            style={{
+              maxWidth: "120px",
+              maxHeight: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ),
+      },
+      {
+        header: "Thông tin",
+        accessorKey: "combo_foods",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const foods = cell.row.original.combo_foods || [];
+          return foods.map((food) => (
+            <div className="mb-2" key={food.id}>
+              <h5 className="fs-14">
+                <p className="mb-0 fw-bold">{food.name}</p>
+              </h5>
+              <p className="text-muted mb-0">
+                Số lượng: <span className="fw-medium">{food.quantity}</span>
+              </p>
+            </div>
+          ));
+        },
+      },
+      {
+        header: "Giá gốc",
+        accessorKey: "price",
+        enableColumnFilter: false,
+        cell: (cell) => formatVND(Number(cell.row.original.price)),
+      },
+      {
+        header: "Giá bán",
+        accessorKey: "discount_price",
+        enableColumnFilter: false,
+        cell: (cell) => formatVND(Number(cell.row.original.discount_price)),
+      },
+      {
+        header: "Hoạt động",
+        accessorKey: "is_active",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <div className="form-check form-switch form-check-right">
+            <Input
+              disabled={!hasPermission("Sửa combo")}
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id={`is_active_${cell.row.original.id}`}
+              checked={cell.row.original.is_active}
+              defaultChecked={cell.row.original.is_active}
+              onChange={() => {
+                handleUpdateActive(cell.row.original);
+              }}
+            />
+          </div>
+        ),
+      },
+      {
+        header: "Action",
+        cell: (cell) => (
+          <ul className="list-inline hstack gap-2 mb-0">
+            {hasPermission("Sửa combo") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    nav(`/admin/combo/${cell.row.original.id}/edit`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+            )}
+            {hasPermission("Xóa combo") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    handleDeleteCombo(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            )}
+          </ul>
+        ),
+      },
+    ],
+    [hasPermission, nav]
+  );
 
-  document.title = "Customers | Velzon - React Admin & Dashboard Template";
+  document.title = "Quản lý combo | Admin Dashboard";
+
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <Container fluid>
-          <BreadCrumb title="Quản lý đồ ăn" pageTitle="Quản lý" />
-          <Row>
-            <Col lg={12}>
-              <Card id="customerList">
-                <CardHeader className="border-0">
-                  <Row className="g-4 align-items-center">
-                    <div className="col-sm">
-                      <div>
-                        <h5 className="card-title mb-0">Danh sách đồ ăn</h5>
-                      </div>
-                    </div>
-                    <div className="col-sm-auto">
-                      <div>
-                        <button
-                          type="button"
-                          className="btn btn-success add-btn"
-                          id="create-btn"
-                          onClick={() => {
-                            setIsEdit(false);
-                            toggle();
-                          }}
-                        >
-                          <i className="ri-add-line align-bottom me-1"></i> Thêm
-                          đồ ăn
-                        </button>{" "}
-                      </div>
-                    </div>
-                  </Row>
-                </CardHeader>
-                <div className="card-body pt-0">
-                  <div>
-                    <TableContainer
-                      columns={columns}
-                      data={[]}
-                      isGlobalFilter={true}
-                      isAddUserList={false}
-                      customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
-                    />
+    <div className="page-content">
+      <Container fluid>
+        <BreadCrumb title="Quản lý combo" pageTitle="Quản lý" />
+        <Row>
+          <Col lg={12}>
+            <Card id="comboList">
+              <CardHeader className="border-0">
+                <Row className="g-4 align-items-center">
+                  <div className="col-sm">
+                    <h5 className="card-title mb-0">Danh sách combo</h5>
                   </div>
-                  <Modal
-                    id="showModal"
-                    isOpen={modal}
-                    toggle={toggle}
-                    centered
-                  ></Modal>
-                  <ToastContainer closeButton={false} limit={1} />
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-    </React.Fragment>
+                  <div className="col-sm-auto">
+                    {hasPermission("Thêm combo") && (
+                      <button
+                        type="button"
+                        className="btn btn-success add-btn"
+                        id="create-btn"
+                        onClick={() => nav("/admin/combo/add")}
+                      >
+                        <i className="ri-add-line align-bottom me-1"></i> Thêm
+                        combo
+                      </button>
+                    )}
+                  </div>
+                </Row>
+              </CardHeader>
+              <div className="card-body pt-0">
+                {isLoading ? (
+                  <Loader />
+                ) : hasPermission("Danh sách combo") ? (
+                  <TableContainer
+                    columns={columns}
+                    data={combos || []}
+                    isGlobalFilter={true}
+                    isAddUserList={false}
+                    customPageSize={10}
+                    divClass="table-responsive table-card mb-1"
+                    tableClass="align-middle table-nowrap dt-responsive"
+                    theadClass="table-light text-muted"
+                    SearchPlaceholder="Tìm kiếm combo..."
+                  />
+                ) : (
+                  <p>Bạn không có quyền xem danh sách combo.</p>
+                )}
+              </div>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

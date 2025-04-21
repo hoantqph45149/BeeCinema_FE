@@ -1,22 +1,16 @@
-import React, { useEffect } from "react";
+import { useLayoutEffect } from "react";
+import RoutesComponent from "./Routes";
 
-//import Scss
-
-import Route from "./routes";
-//imoprt Route
 function App() {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (location.pathname.startsWith("/admin")) {
       import("./assets/scss/themes.scss");
     } else {
       import("./index.css");
     }
-  }, [location.pathname]);
-  return (
-    <React.Fragment>
-      <Route />
-    </React.Fragment>
-  );
+  });
+
+  return <RoutesComponent />;
 }
 
 export default App;

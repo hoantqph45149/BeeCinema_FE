@@ -1,0 +1,104 @@
+import dayjs from "dayjs";
+import React from "react";
+import CountUp from "react-countup";
+import { Link } from "react-router-dom";
+import { Card, CardBody, Col } from "reactstrap";
+import PropTypes from "prop-types";
+import { formatVND } from "../../../../../utils/Currency";
+
+const Widgets = ({ data, date }) => {
+  const ecomWidgets = [
+    {
+      id: 1,
+      cardColor: "primary",
+      label: "Tổng sản phẩm đã bán",
+      badgeClass: "success",
+      counter: data?.total_sold,
+      link: `Sản phẩm bán ra từ ${dayjs(date.startDate).format(
+        "DD-MM-YYYY"
+      )} đến ${dayjs(date.endDate).format("DD-MM-YYYY")}`,
+      bgcolor: "success",
+      icon: "ri-ticket-2-line",
+    },
+    {
+      id: 2,
+      cardColor: "secondary",
+      label: "Sản phẩm bán chạy nhất",
+      badgeClass: "danger",
+      counter: data?.best_selling_food?.name,
+      link: `${data?.best_selling_food?.total_quantity} sản phẩm (${data?.best_selling_food?.type})`,
+      bgcolor: "info",
+      decimals: 2,
+      icon: "ri-calendar-2-line",
+    },
+    {
+      id: 3,
+      cardColor: "success",
+      label: "Sản phẩm có doanh thu cao nhất",
+      badgeClass: "success",
+      counter: data?.most_valuable_food?.name,
+      link: `${formatVND(Number(data?.most_valuable_food?.total_revenue))} (${
+        data?.most_valuable_food?.type
+      })`,
+      bgcolor: "warning",
+      icon: "ri-time-line",
+    },
+  ];
+  return (
+    <React.Fragment>
+      {ecomWidgets.map((item, key) => (
+        <Col xl={4} md={6} key={key}>
+          <Card className="card-animate">
+            <CardBody>
+              <div className="d-flex align-items-center">
+                <div className="flex-grow-1 overflow-hidden">
+                  <p className="text-uppercase fw-medium text-muted text-truncate mb-0">
+                    {item.label}
+                  </p>
+                </div>
+                <div className="avatar-sm flex-shrink-0">
+                  <span
+                    className={
+                      "avatar-title rounded fs-3 bg-" + item.bgcolor + "-subtle"
+                    }
+                  >
+                    <i className={`text-${item.bgcolor} ${item.icon}`}></i>
+                  </span>
+                </div>
+              </div>
+              <div className="d-flex align-items-end justify-content-between mt-2">
+                <div>
+                  <h4 className="fs-22 fw-semibold ff-secondary mb-4">
+                    <span className="counter-value" data-target="559.25">
+                      {typeof item.counter === "number" ? (
+                        <CountUp
+                          start={0}
+                          end={item.counter}
+                          decimals={item.decimals || 0}
+                          duration={4}
+                          separator=","
+                          suffix={item.suffix || ""}
+                        />
+                      ) : (
+                        item.counter
+                      )}
+                    </span>
+                  </h4>
+                  <Link to="#">{item.link}</Link>
+                </div>
+                <h5 className={"fs-14 mb-0 text-" + item.badgeClass}>
+                  {item.badge ? (
+                    <i className={"fs-13 align-middle " + item.badge}></i>
+                  ) : null}{" "}
+                  {item.percentage}
+                </h5>
+              </div>
+            </CardBody>
+          </Card>
+        </Col>
+      ))}
+    </React.Fragment>
+  );
+};
+
+export default Widgets;

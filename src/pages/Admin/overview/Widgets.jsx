@@ -2,68 +2,73 @@ import React from "react";
 import CountUp from "react-countup";
 import { Link } from "react-router-dom";
 import { Card, CardBody, Col } from "reactstrap";
+import { formatLargeNumber } from "./../../../utils/Currency";
 
-const Widgets = () => {
+const Widgets = ({ data, date }) => {
+  const { totalRevenue, ticketsSold, newCustomers, customerRetentionRate } =
+    data;
   const ecomWidgets = [
     {
       id: 1,
       cardColor: "primary",
-      label: "Total Earnings",
-      badge: "ri-arrow-right-up-line",
-      badgeClass: "success",
-      percentage: "+16.24",
-      counter: "559.25",
-      link: "View net earnings",
+      label: "Doanh thu",
+      badge:
+        totalRevenue?.change < 0
+          ? "ri-arrow-right-down-line"
+          : "ri-arrow-right-up-line",
+      badgeClass: totalRevenue?.change < 0 ? "danger" : "success",
+      percentage: `${totalRevenue?.change}%`,
+      counter: formatLargeNumber(totalRevenue?.value).value,
+      suffix: formatLargeNumber(totalRevenue?.value).suffix,
       bgcolor: "success",
       icon: "bx bx-dollar-circle",
+      link: "So với tháng trước",
       decimals: 2,
-      prefix: "$",
-      suffix: "k",
     },
     {
       id: 2,
       cardColor: "secondary",
-      label: "Orders",
-      badge: "ri-arrow-right-down-line",
-      badgeClass: "danger",
-      percentage: "-3.57",
-      counter: "36894",
-      link: "View all orders",
+      label: "Tổng vé",
+      badge:
+        ticketsSold?.change < 0
+          ? "ri-arrow-right-down-line"
+          : "ri-arrow-right-up-line",
+      badgeClass: ticketsSold?.change < 0 ? "danger" : "success",
+      percentage: `${ticketsSold?.change}%`,
+      counter: ticketsSold?.value,
       bgcolor: "info",
       icon: "bx bx-shopping-bag",
       decimals: 0,
-      prefix: "",
-      separator: ",",
-      suffix: "",
+      link: "So với tháng trước",
+      separator: ".",
     },
     {
       id: 3,
       cardColor: "success",
-      label: "Customers",
-      badge: "ri-arrow-right-up-line",
-      badgeClass: "success",
-      percentage: "+29.08",
-      counter: "183.35",
-      link: "See details",
+      label: "Khách hàng mới",
+      badge:
+        newCustomers?.change < 0
+          ? "ri-arrow-right-down-line"
+          : "ri-arrow-right-up-line",
+      badgeClass: newCustomers?.change < 0 ? "danger" : "success",
+      percentage: `${newCustomers?.change}%`,
+      counter: newCustomers?.value,
       bgcolor: "warning",
       icon: "bx bx-user-circle",
-      decimals: 2,
-      prefix: "",
-      suffix: "M",
+      link: "So với tháng trước",
+      separator: ".",
     },
     {
       id: 4,
       cardColor: "info",
-      label: "My Balance",
+      label: "Tỷ lệ khách hàng quay lại",
       badgeClass: "muted",
-      percentage: "+0.00",
-      counter: "165.89",
-      link: "Withdraw money",
+      counter: customerRetentionRate,
       bgcolor: "primary",
-      icon: "bx bx-wallet",
-      decimals: 2,
-      prefix: "$",
-      suffix: "k",
+      icon: "bx bx-user-circle",
+      prefix: "",
+      suffix: "%",
+      link: `Trong tháng ${date?.month}-${date?.year}`,
     },
   ];
   return (
@@ -78,16 +83,17 @@ const Widgets = () => {
                     {item.label}
                   </p>
                 </div>
-                <div className="flex-shrink-0">
-                  <h5 className={"fs-14 mb-0 text-" + item.badgeClass}>
-                    {item.badge ? (
-                      <i className={"fs-13 align-middle " + item.badge}></i>
-                    ) : null}{" "}
-                    {item.percentage} %
-                  </h5>
+                <div className="avatar-sm flex-shrink-0">
+                  <span
+                    className={
+                      "avatar-title rounded fs-3 bg-" + item.bgcolor + "-subtle"
+                    }
+                  >
+                    <i className={`text-${item.bgcolor} ${item.icon}`}></i>
+                  </span>
                 </div>
               </div>
-              <div className="d-flex align-items-end justify-content-between mt-4">
+              <div className="d-flex align-items-end justify-content-between mt-2">
                 <div>
                   <h4 className="fs-22 fw-semibold ff-secondary mb-4">
                     <span className="counter-value" data-target="559.25">
@@ -102,19 +108,14 @@ const Widgets = () => {
                       />
                     </span>
                   </h4>
-                  <Link to="#" className="text-decoration-underline">
-                    {item.link}
-                  </Link>
+                  <Link to="#">{item.link}</Link>
                 </div>
-                <div className="avatar-sm flex-shrink-0">
-                  <span
-                    className={
-                      "avatar-title rounded fs-3 bg-" + item.bgcolor + "-subtle"
-                    }
-                  >
-                    <i className={`text-${item.bgcolor} ${item.icon}`}></i>
-                  </span>
-                </div>
+                <h5 className={"fs-14 mb-0 text-" + item.badgeClass}>
+                  {item.badge ? (
+                    <i className={"fs-13 align-middle " + item.badge}></i>
+                  ) : null}{" "}
+                  {item.percentage}
+                </h5>
               </div>
             </CardBody>
           </Card>

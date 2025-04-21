@@ -7,32 +7,89 @@ import NonAuthLayout from "../Layouts/admin/NonAuthLayout";
 import VerticalLayout from "../Layouts/admin/index";
 
 //routes
-import { authProtectedRoutes, publicRoutes, clientRoutes } from "./allRoutes";
-import { AuthProtected } from "./AuthProtected";
+import {
+  authProtectedRoutes,
+  publicRoutesNonAuthLayout,
+  publicRoutes,
+  clientRoutes,
+  emailVerifiedRoutes,
+} from "./AllRoutes";
+import {
+  RequireAuth,
+  RejectIfAuthenticated,
+  RequireAdmin,
+  RequireVerifiedEmail,
+  RequirePermission,
+} from "./AuthProtected";
+import { ProtectedRoute } from "./AuthProtected";
 
 const Index = () => {
   return (
     <React.Fragment>
       <Routes>
         <Route>
+          {publicRoutesNonAuthLayout.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <RejectIfAuthenticated>
+                  <NonAuthLayout>{route.component}</NonAuthLayout>
+                </RejectIfAuthenticated>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+        {/* Đường dẫn client không cần login */}
+        <Route>
           {publicRoutes.map((route, idx) => (
             <Route
               path={route.path}
-              element={<NonAuthLayout>{route.component}</NonAuthLayout>}
+              element={
+                <ProtectedRoute>
+                  <LayoutClient>{route.component}</LayoutClient>
+                </ProtectedRoute>
+              }
               key={idx}
               exact={true}
             />
           ))}
         </Route>
 
+        {/* Đường dẫn admin cần login và phải lầ admin */}
         <Route>
           {authProtectedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={
-                <AuthProtected>
-                  <VerticalLayout>{route.component}</VerticalLayout>
-                </AuthProtected>
+                <ProtectedRoute>
+                  <VerticalLayout>
+                    <RequireAdmin>
+                      <RequirePermission permission={route.permission}>
+                        {route.component}
+                      </RequirePermission>
+                    </RequireAdmin>
+                  </VerticalLayout>
+                </ProtectedRoute>
+              }
+              key={idx}
+              exact={true}
+            />
+          ))}
+        </Route>
+
+        {/* Đường dẫn client cần login */}
+        <Route>
+          {clientRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={
+                <RequireAuth>
+                  <ProtectedRoute>
+                    <LayoutClient>{route.component}</LayoutClient>
+                  </ProtectedRoute>
+                </RequireAuth>
               }
               key={idx}
               exact={true}
@@ -41,13 +98,17 @@ const Index = () => {
         </Route>
 
         <Route>
-          {clientRoutes.map((route, idx) => (
+          {emailVerifiedRoutes.map((route, idx) => (
             <Route
               path={route.path}
               element={
-                <AuthProtected>
-                  <LayoutClient>{route.component}</LayoutClient>
-                </AuthProtected>
+                <RequireVerifiedEmail>
+                  <RequireAuth>
+                    <ProtectedRoute>
+                      <LayoutClient>{route.component}</LayoutClient>
+                    </ProtectedRoute>
+                  </RequireAuth>
+                </RequireVerifiedEmail>
               }
               key={idx}
               exact={true}

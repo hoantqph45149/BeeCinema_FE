@@ -1,115 +1,147 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
+  Button,
   Card,
+  CardBody,
   CardHeader,
   Col,
   Container,
-  Form,
   Input,
-  Label,
-  Modal,
-  ModalBody,
-  ModalHeader,
   Row,
 } from "reactstrap";
-
-import { Link, useNavigate } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
-
 import TableContainer from "../../../Components/Common/TableContainer";
-
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { showConfirm } from "../../../Components/Common/showAlert";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import Loader from "../../../Components/Common/Loader";
+import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
 const Cinema = () => {
+  const { hasPermission } = useAuthContext();
+  const { data, isLoading } = useFetch(["cinemas"], "/cinemas");
+  const { patch, delete: deleteCinema } = useCRUD(["cinemas"]);
   const nav = useNavigate();
-  const [isEdit, setIsEdit] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [cinemas, setCinemas] = useState([]);
 
-  const toggle = () => setModal(!modal);
-  // Customers Column
-  const columns = useMemo(() => [
-    {
-      header: (
-        <input
-          type="checkbox"
-          id="checkBoxAll"
-          className="form-check-input"
-          onClick={() => checkedAll()}
-        />
-      ),
-      cell: (cell) => {
-        return (
-          <input
-            type="checkbox"
-            className="customerCheckBox form-check-input"
-            value={cell.getValue()}
-            onChange={() => deleteCheckbox()}
-          />
-        );
+  useEffect(() => {
+    if (data) {
+      setCinemas(data);
+    }
+  }, [data]);
+
+  const handleDeleteCinema = (cinema) => {
+    if (hasPermission("Xóa rạp")) {
+      showConfirm(
+        "Xóa Rạp Chiếu",
+        `Bạn có chắc muốn xóa rạp ${cinema.name} không?`,
+        () => {
+          deleteCinema.mutate(`/cinemas/${cinema.id}`);
+        }
+      );
+    }
+  };
+
+  const handleUpdateActive = (cinema) => {
+    if (hasPermission("Sửa rạp")) {
+      showConfirm(
+        "Thay đổi trạng thái",
+        "Bạn có chắc muốn thay đổi trạng thái không",
+        () => {
+          patch.mutate({
+            url: `/cinemas/${cinema.id}`,
+            data: {
+              ...cinema,
+              is_active: cinema.is_active == 1 ? 0 : 1,
+            },
+          });
+        }
+      );
+    }
+  };
+
+  // Cột của Table
+  const columns = useMemo(
+    () => [
+      {
+        header: "#",
+        accessorKey: "id",
+        enableColumnFilter: false,
+        enableSorting: true,
       },
-      id: "#",
-      accessorKey: "id",
-      enableColumnFilter: false,
-      enableSorting: false,
-    },
-    {
-      header: "Tên rạp",
-      accessorKey: "customer",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Chi nhánh",
-      accessorKey: "email",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Địa chỉ",
-      accessorKey: "phone",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Hoạt động",
-      accessorKey: "date",
-      enableColumnFilter: false,
-    },
-    {
-      header: "Action",
-      cell: (cellProps) => {
-        return (
+      {
+        header: "Tên rạp",
+        accessorKey: "name",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Chi nhánh",
+        accessorKey: "branch.name",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Địa chỉ",
+        accessorKey: "address",
+        enableColumnFilter: false,
+      },
+      {
+        header: "Hoạt động",
+        accessorKey: "is_active",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <div className="form-check form-switch form-check-right">
+            <Input
+              disabled={!hasPermission("Sửa rạp")}
+              className="form-check-input"
+              type="checkbox"
+              role="switch"
+              id="flexSwitchCheckRightDisabled"
+              checked={cell.row.original.is_active == 1}
+              defaultChecked={cell.row.original.is_active == 1}
+              onChange={() => handleUpdateActive(cell.row.original)}
+            />
+          </div>
+        ),
+      },
+      {
+        header: "Action",
+        cell: (cell) => (
           <ul className="list-inline hstack gap-2 mb-0">
-            <li className="list-inline-item edit" title="Edit">
-              <Link
-                to="#"
-                className="text-primary d-inline-block edit-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  handleCustomerClick(customerData);
-                }}
-              >
-                <i className="ri-pencil-fill fs-16"></i>
-              </Link>
-            </li>
-            <li className="list-inline-item" title="Remove">
-              <Link
-                to="#"
-                className="text-danger d-inline-block remove-item-btn"
-                onClick={() => {
-                  const customerData = cellProps.row.original;
-                  onClickDelete(customerData);
-                }}
-              >
-                <i className="ri-delete-bin-5-fill fs-16"></i>
-              </Link>
-            </li>
+            {hasPermission("Sửa rạp") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    nav(`/admin/cinema/${cell.row.original.id}/update`);
+                  }}
+                >
+                  <i className="ri-pencil-fill"></i>
+                </Button>
+              </li>
+            )}
+            {hasPermission("Xóa rạp") && (
+              <li className="list-inline-item">
+                <Button
+                  color="primary"
+                  className="btn-sm"
+                  onClick={() => {
+                    handleDeleteCinema(cell.row.original);
+                  }}
+                >
+                  <i className="ri-delete-bin-5-fill"></i>
+                </Button>
+              </li>
+            )}
           </ul>
-        );
+        ),
       },
-    },
-  ]);
+    ],
+    [hasPermission, nav]
+  );
 
-  document.title = "Customers | Velzon - React Admin & Dashboard Template";
+  document.title = "Quản lý rạp chiếu";
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -117,16 +149,14 @@ const Cinema = () => {
           <BreadCrumb title="Quản lý rạp chiếu" pageTitle="Quản lý" />
           <Row>
             <Col lg={12}>
-              <Card id="customerList">
+              <Card id="cinemaList">
                 <CardHeader className="border-0">
                   <Row className="g-4 align-items-center">
                     <div className="col-sm">
-                      <div>
-                        <h5 className="card-title mb-0">Danh sách rạp chiếu</h5>
-                      </div>
+                      <h5 className="card-title mb-0">Danh sách rạp chiếu</h5>
                     </div>
                     <div className="col-sm-auto">
-                      <div>
+                      {hasPermission("Thêm rạp") && (
                         <button
                           type="button"
                           className="btn btn-success add-btn"
@@ -135,26 +165,30 @@ const Cinema = () => {
                         >
                           <i className="ri-add-line align-bottom me-1"></i> Thêm
                           Rạp chiếu
-                        </button>{" "}
-                      </div>
+                        </button>
+                      )}
                     </div>
                   </Row>
                 </CardHeader>
-                <div className="card-body pt-0">
-                  <div>
+                <CardBody>
+                  {isLoading ? (
+                    <Loader />
+                  ) : hasPermission("Danh sách rạp") ? (
                     <TableContainer
                       columns={columns}
-                      data={[]}
+                      data={cinemas}
                       isGlobalFilter={true}
                       isAddUserList={false}
                       customPageSize={8}
-                      className="custom-header-css"
-                      SearchPlaceholder="Search for customer, email, phone, status or something..."
+                      divClass="table-responsive table-card mb-1"
+                      tableClass="align-middle table-nowrap dt-responsive"
+                      theadClass="table-light text-muted"
+                      SearchPlaceholder="Tìm kiếm rạp chiếu..."
                     />
-                  </div>
-
-                  <ToastContainer closeButton={false} limit={1} />
-                </div>
+                  ) : (
+                    <p>Bạn không có quyền xem danh sách rạp chiếu.</p>
+                  )}
+                </CardBody>
               </Card>
             </Col>
           </Row>

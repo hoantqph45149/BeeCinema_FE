@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Dropdown,
@@ -6,15 +6,44 @@ import {
   DropdownMenu,
   DropdownToggle,
 } from "reactstrap";
-
-//import images
-import avatar1 from "../../assets/images/users/avatar-1.jpg";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
+import { useCRUD } from "../../Hooks/useCRUD";
 
 const ProfileDropdown = () => {
+  const { create: logout } = useCRUD(["logout"]);
+  const { authUser, setAuthUser, setPermissions, setRole, setRoles } =
+    useAuthContext();
   //Dropdown Toggle
   const [isProfileDropdown, setIsProfileDropdown] = useState(false);
   const toggleProfileDropdown = () => {
     setIsProfileDropdown(!isProfileDropdown);
+  };
+  const handleLogout = () => {
+    logout.mutate(
+      {
+        url: "/logout",
+        data: {},
+        shouldShowAlert: false,
+      },
+      {
+        onSuccess: () => {
+          window.location.href = "/login";
+          setAuthUser(null);
+          setPermissions(null);
+          setRole(null);
+          setRoles(null);
+        },
+        onError: (error) => {
+          if (error?.response?.data?.message == "Unauthenticated.") {
+            window.location.href = "/login";
+            setAuthUser(null);
+            setPermissions(null);
+            setRole(null);
+            setRoles(null);
+          }
+        },
+      }
+    );
   };
   return (
     <React.Fragment>
@@ -27,7 +56,7 @@ const ProfileDropdown = () => {
           <span className="d-flex align-items-center">
             <img
               className="rounded-circle header-profile-user"
-              src={avatar1}
+              src={authUser?.avatar || "/images/defaultavatar.jpg"}
               alt="Header Avatar"
             />
             <span className="text-start ms-xl-2">
@@ -35,7 +64,7 @@ const ProfileDropdown = () => {
                 Admin
               </span>
               <span className="d-none d-xl-block ms-1 fs-12 text-muted user-name-sub-text">
-                Founder
+                {authUser?.name}
               </span>
             </span>
           </span>
@@ -43,59 +72,23 @@ const ProfileDropdown = () => {
         <DropdownMenu className="dropdown-menu-end">
           <h6 className="dropdown-header">Welcome Admin</h6>
           <DropdownItem className="p-0">
-            <Link to="/profile" className="dropdown-item">
+            <a href="/" className="dropdown-item">
+              <i className="mdi mdi-home-circle text-muted fs-16 align-middle me-1"></i>
+              <span className="align-middle">Trang chủ</span>
+            </a>
+          </DropdownItem>
+          <DropdownItem className="p-0">
+            <Link to="/admin/account" className="dropdown-item">
               <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
-              <span className="align-middle">Profile</span>
+              <span className="align-middle">Hồ sơ</span>
             </Link>
           </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/apps-chat" className="dropdown-item">
-              <i className="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Messages</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="#" className="dropdown-item">
-              <i className="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Taskboard</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/pages-faqs" className="dropdown-item">
-              <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Help</span>
-            </Link>
-          </DropdownItem>
+
           <div className="dropdown-divider"></div>
           <DropdownItem className="p-0">
-            <Link to="/pages-profile" className="dropdown-item">
-              <i className="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">
-                Balance : <b>$5971.67</b>
-              </span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/pages-profile-settings" className="dropdown-item">
-              <span className="badge bg-success-subtle text-success mt-1 float-end">
-                New
-              </span>
-              <i className="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Settings</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/auth-lockscreen-basic" className="dropdown-item">
-              <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Lock screen</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/logout" className="dropdown-item">
-              <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle" data-key="t-logout">
-                Logout
-              </span>
+            <Link onClick={handleLogout} className="dropdown-item">
+              <i className="ri-logout-box-r-line text-muted fs-16 align-middle me-1"></i>
+              <span className="align-middle">Đăng Xuất</span>
             </Link>
           </DropdownItem>
         </DropdownMenu>

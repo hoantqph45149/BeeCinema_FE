@@ -2,22 +2,18 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Dropdown, DropdownToggle } from "reactstrap";
 
-//import images
-import logoDark from "../../assets/images/logo-dark.png";
-import logoLight from "../../assets/images/logo-light.png";
-import logoSm from "../../assets/images/logo-sm.png";
-
-//import Components
-import LightDark from "../../Components/Common/LightDark";
 import FullScreenDropdown from "../../Components/Common/FullScreenDropdown";
 import ProfileDropdown from "../../Components/Common/ProfileDropdown";
 
 import { useDispatch, useSelector } from "react-redux";
 import { createSelector } from "reselect";
+import ScanQRCode from "../../Components/Common/ScanQRCode";
+import { useAuthContext } from "../../Contexts/auth/UseAuth";
 import { changeSidebarVisibility } from "../../slices/thunks";
 
 const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
   const dispatch = useDispatch();
+  const { hasPermission } = useAuthContext();
 
   const selectDashboardData = createSelector(
     (state) => state.Layout,
@@ -25,7 +21,6 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
       sidebarVisibilitytype: state.sidebarVisibilitytype,
     })
   );
-  // Inside your component
   const { sidebarVisibilitytype } = useSelector(selectDashboardData);
 
   const [search, setSearch] = useState(false);
@@ -47,7 +42,6 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
         : document.body.classList.add("menu");
     }
 
-    //For collapse vertical and semibox menu
     if (
       sidebarVisibilitytype === "show" &&
       (document.documentElement.getAttribute("data-layout") === "vertical" ||
@@ -86,19 +80,35 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
               <div className="navbar-brand-box horizontal-logo">
                 <Link to="/" className="logo logo-dark">
                   <span className="logo-sm">
-                    <img src={logoSm} alt="" height="22" />
+                    <img
+                      src="/images/logo/beecinemaadmin-sm.png"
+                      alt="beecinemaadmin-sm"
+                      height="22"
+                    />
                   </span>
                   <span className="logo-lg">
-                    <img src={logoDark} alt="" height="17" />
+                    <img
+                      src="/images/logo/beecinemaadmin.png"
+                      alt="beecinemaadmin"
+                      height="17"
+                    />
                   </span>
                 </Link>
 
                 <Link to="/" className="logo logo-light">
                   <span className="logo-sm">
-                    <img src={logoSm} alt="" height="22" />
+                    <img
+                      src="/images/logo/beecinemaadmin-sm.png"
+                      alt="beecinemaadmin-sm"
+                      height="22"
+                    />
                   </span>
                   <span className="logo-lg">
-                    <img src={logoLight} alt="" height="17" />
+                    <img
+                      src="/images/logo/beecinemaadmin.png"
+                      alt="beecinemaadmin"
+                      height="17"
+                    />
                   </span>
                 </Link>
               </div>
@@ -132,14 +142,11 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
                 </DropdownToggle>
               </Dropdown>
 
+              {/* Scan QR Code */}
+              {hasPermission("Quét hóa đơn") && <ScanQRCode />}
+
               {/* FullScreenDropdown */}
               <FullScreenDropdown />
-
-              {/* Dark/Light Mode set */}
-              <LightDark
-                layoutMode={layoutModeType}
-                onChangeLayoutMode={onChangeLayoutMode}
-              />
 
               {/* ProfileDropdown */}
               <ProfileDropdown />
