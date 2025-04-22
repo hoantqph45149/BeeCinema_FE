@@ -47,7 +47,7 @@ const Contact = () => {
         />
       </div>
 
-      <div className="relative w-full max-w-7xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-10 mt-20">
+      <div className="relative w-full max-w-7xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-1 mt-20">
         <div className="w-full md:w-2/3 p-6 md:p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
             Gửi tin nhắn cho chúng tôi

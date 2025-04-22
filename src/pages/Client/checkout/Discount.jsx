@@ -20,6 +20,7 @@ const Discount = ({
   setTotalPayment,
   setPriceDiscount,
   slug,
+  dataPoint,
 }) => {
   const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
 
@@ -27,7 +28,7 @@ const Discount = ({
   const [clickVoucher, setClickVoucher] = useState(null);
   const location = useLocation();
   const [points, setPoints] = useState("");
-  const currentPoints = membership?.points ?? 0;
+  const currentPoints = dataPoint ?? 0;
   const conversionRate = 1;
   const [isPointConverted, setIsPointConverted] = useState(false);
 
