@@ -149,6 +149,12 @@ const MemberShip = () => {
                   {membership?.points.toLocaleString()} điểm
                 </span>
               </p>
+              <p className="text-sm sm:text-base">
+                Điểm sắp hết hạn:{" "}
+                <span className="font-bold">
+                  {membership?.expiringPoints.toLocaleString()} điểm
+                </span>
+              </p>
             </div>
 
             {/* Lưu ý */}
@@ -162,14 +168,6 @@ const MemberShip = () => {
                 <li>
                   Điểm đã sử dụng không thể hoàn lại sau khi quy đổi hoặc sử
                   dụng.
-                </li>
-                <li>
-                  Điểm hiện có có thể được sử dụng để đổi ưu đãi hoặc quà tặng
-                  theo quy định.
-                </li>
-                <li>
-                  Vui lòng kiểm tra thời hạn sử dụng của điểm để tránh mất điểm
-                  do hết hạn.
                 </li>
               </ul>
             </div>

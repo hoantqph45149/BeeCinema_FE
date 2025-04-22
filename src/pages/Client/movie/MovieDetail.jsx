@@ -1,22 +1,112 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useFetch } from "../../../Hooks/useCRUD";
-import MovieCard from "../../../Components/Common/MovieCard";
 import Button from "../../../Components/Common/Button";
-
-import TabShowtime from "../../../Components/Common/TabShowtime";
 import Modal from "../../../Components/Common/Modal";
-
+import MovieCard from "../../../Components/Common/MovieCard";
+import MovieRating from "../../../Components/Common/MovieRating";
+import TabShowtime from "../../../Components/Common/TabShowtime";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 const MovieDetail = () => {
   const { id } = useParams();
-  const { data } = useFetch(["movies"], `/movies/${id}`);
+  const { data } = useFetch(["movies", id], `/movies/${id}`);
+  const { data: dataReview } = useFetch(
+    ["check-status-review", id],
+    `/check-status-review/${id}`
+  );
+
+  const {
+    create: createReview,
+    patch: updateReview,
+    delete: deleteReview,
+  } = useCRUD(["movies"]);
+
   const [movie, setMovie] = useState({});
   const [openModalShowtimes, setOpenModalShowtimes] = useState(false);
+  const [ratingData, setRatingData] = useState({
+    totalReviews: 0,
+    averageRating: 0,
+    starCounts: {},
+  });
+  const [hasReview, setHasReview] = useState({
+    hasPurchased: false,
+    hasReviewed: false,
+  });
+  const [currentUserRating, setCurrentUserRating] = useState(null);
+
   useEffect(() => {
     if (data) {
       setMovie(data.movie);
+      setRatingData({
+        totalReviews: data.totalReviews,
+        averageRating: data.averageRating,
+        starCounts: data.starCounts,
+      });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (dataReview) {
+      setHasReview({
+        hasPurchased: dataReview.hasPurchased,
+        hasReviewed: dataReview.hasReviewed,
+      });
+      if (dataReview.hasReviewed && dataReview.review) {
+        setCurrentUserRating({
+          id: dataReview.review.id,
+          rating: dataReview.review.rating,
+          description: dataReview.review.description || "",
+        });
+      }
+    }
+  }, [dataReview]);
+
+  const handleSubmitRating = (userRating) => {
+    createReview.mutate(
+      {
+        url: "/movie-reviews",
+        data: {
+          ...userRating,
+          description: userRating.comment,
+          movie_id: id,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          setCurrentUserRating(data.review);
+          setHasReview({ ...hasReview, hasReviewed: true });
+        },
+      }
+    );
+  };
+
+  const handleUpdateRating = (updatedRating) => {
+    updateReview.mutate(
+      {
+        url: `/movie-reviews/${currentUserRating.id}`,
+        data: {
+          ...updatedRating,
+          description: updatedRating.comment,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          setCurrentUserRating(data.review);
+        },
+      }
+    );
+  };
+
+  const handleDeleteRating = () => {
+    deleteReview.mutate(`/movie-reviews/${currentUserRating.id}`, {
+      onSuccess: () => {
+        setCurrentUserRating(null);
+        setHasReview({ ...hasReview, hasReviewed: false });
+      },
+    });
+  };
+
   return (
     <div className="container my-6">
       <Modal
@@ -83,6 +173,7 @@ const MovieDetail = () => {
           </div>
         </div>
       </div>
+
       <div className="my-6 flex justify-center rounded-xl overflow-hidden">
         <iframe
           className="w-full min-h-[400px] xl:h-[600px]"
@@ -91,6 +182,15 @@ const MovieDetail = () => {
           title="Video"
         ></iframe>
       </div>
+      <MovieRating
+        ratingData={ratingData}
+        onSubmitRating={handleSubmitRating}
+        onUpdateRating={handleUpdateRating}
+        onDeleteRating={handleDeleteRating}
+        currentUserRating={currentUserRating}
+        hasPurchased={hasReview.hasPurchased}
+        reviewMessage={dataReview?.message}
+      />
     </div>
   );
 };

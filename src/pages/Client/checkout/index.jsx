@@ -22,8 +22,18 @@ const Checkout = () => {
   );
   const { data: membership, isLoading: isLoadingMembership } = useFetch(
     ["membership"],
-    "/user/membership"
+    "/user/membership",
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      refetchOnMount: false,
+    }
   );
+  const { data: dataPoints, isLoading: isLoadingPoints } = useFetch(
+    ["points"],
+    "/points/available"
+  );
+
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const location = useLocation();
   const [showtime, setShowtime] = useState({});
@@ -198,11 +208,13 @@ const Checkout = () => {
 
     if (data?.payment_url) {
       window.location.href = data?.payment_url;
-      setLoadingCheckout(false);
     }
   };
 
-  return isLoadingCheckout || isLoadingMembership || loadingCheckout ? (
+  return isLoadingCheckout ||
+    isLoadingMembership ||
+    loadingCheckout ||
+    isLoadingPoints ? (
     <div className="h-screen">
       <Loading />
     </div>
@@ -261,6 +273,7 @@ const Checkout = () => {
               setPriceDiscount={setPriceDiscount}
               setTotalPayment={setTotalPayment}
               slug={slug}
+              dataPoint={dataPoints?.available_points}
             />
           </div>
           <div className="py-4">
