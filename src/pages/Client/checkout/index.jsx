@@ -12,6 +12,7 @@ import TotalPriceSeat from "./TotalPriceSeat";
 import api from "../../../apis/axios";
 import Loading from "./../../../Components/Common/Loading";
 import isDayOff from "../../../utils/CheckDay";
+import { showAlert } from "../../../Components/Common/showAlert";
 
 const Checkout = () => {
   const { authUser } = useAuthContext();
@@ -33,6 +34,8 @@ const Checkout = () => {
     ["points"],
     "/points/available"
   );
+
+  const { create: checkout } = useCRUD(["payment"]);
 
   const { create: chooseSeat } = useCRUD(["chooseSeats"]);
   const location = useLocation();
@@ -203,12 +206,19 @@ const Checkout = () => {
       total_price: totalpayment,
       rank_at_booking: membership.rank.name,
     };
-
-    const { data } = await api.post("/payment", dataPost);
-
-    if (data?.payment_url) {
-      window.location.href = data?.payment_url;
-    }
+    checkout.mutate(
+      { url: "/payment", data: dataPost },
+      {
+        onSuccess: (data) => {
+          if (data?.payment_url) {
+            window.location.href = data?.payment_url;
+          }
+        },
+        onError: (err) => {
+          showAlert("Lỗi", err.response.data.message, "warning");
+        },
+      }
+    );
   };
 
   return isLoadingCheckout ||
