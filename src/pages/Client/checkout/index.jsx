@@ -215,7 +215,8 @@ const Checkout = () => {
           }
         },
         onError: (err) => {
-          showAlert("Lỗi", err.response.data.message, "warning");
+          showAlert("Cảnh báo", err.response.data.message, "warning");
+          setLoadingCheckout(false);
         },
       }
     );
