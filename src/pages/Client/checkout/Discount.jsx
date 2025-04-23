@@ -1,8 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { ArrowBigRight, Check, Clipboard } from "lucide-react";
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Button from "../../../Components/Common/Button";
 import Disclosure from "../../../Components/Common/Disclosure";
@@ -15,12 +14,12 @@ const Discount = ({
   handleCalculatePoint,
   setSelectVoucher,
   setPriceDiscountVoucher,
-  membership,
   totalAmount,
   setTotalPayment,
   setPriceDiscount,
   slug,
   dataPoint,
+  resetPoints,
 }) => {
   const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
 
@@ -31,6 +30,14 @@ const Discount = ({
   const currentPoints = dataPoint ?? 0;
   const conversionRate = 1;
   const [isPointConverted, setIsPointConverted] = useState(false);
+
+  useEffect(() => {
+    if (resetPoints) {
+      setPoints("");
+      setIsPointConverted(false);
+      handleCalculatePoint(0, true);
+    }
+  }, [resetPoints, handleCalculatePoint]);
 
   useEffect(() => {
     if (clickVoucher) {
@@ -248,6 +255,7 @@ const Discount = ({
                 className="outline-none border focus:border-accent rounded p-1"
                 value={points}
                 onChange={handleChange}
+                disabled={isPointConverted}
               />
             </div>
 
@@ -274,15 +282,5 @@ const Discount = ({
     </>
   );
 };
-Discount.propTypes = {
-  handleCalculatePoint: PropTypes.func.isRequired,
-  setSelectVoucher: PropTypes.func.isRequired,
-  setPriceDiscountVoucher: PropTypes.func.isRequired,
-  membership: PropTypes.object.isRequired,
-  totalAmount: PropTypes.number.isRequired,
-  setTotalPayment: PropTypes.func.isRequired,
-  setPriceDiscount: PropTypes.func.isRequired,
-  slug: PropTypes.string.isRequired,
-};
 
-export default Discount;
+export default memo(Discount);

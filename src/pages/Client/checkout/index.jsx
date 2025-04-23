@@ -1,20 +1,21 @@
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { showAlert } from "../../../Components/Common/showAlert";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
+import isDayOff from "../../../utils/CheckDay";
+import Loading from "./../../../Components/Common/Loading";
 import { formatVND } from "./../../../utils/Currency";
 import Combo from "./Combo";
 import Discount from "./Discount";
 import InforMovie from "./InforMovie";
 import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
-import api from "../../../apis/axios";
-import Loading from "./../../../Components/Common/Loading";
-import isDayOff from "../../../utils/CheckDay";
-import { showAlert } from "../../../Components/Common/showAlert";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Checkout = () => {
+  const queryClient = useQueryClient();
   const { authUser } = useAuthContext();
   const { slug } = useParams();
   const { data, isLoadingCheckout } = useFetch(
@@ -31,7 +32,7 @@ const Checkout = () => {
     }
   );
   const { data: dataPoints, isLoading: isLoadingPoints } = useFetch(
-    ["points"],
+    ["points-available"],
     "/points/available"
   );
 
@@ -53,7 +54,7 @@ const Checkout = () => {
   const [priceCombos, setPriceCombos] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
-  const [loadingCheckout, setLoadingCheckout] = useState(false);
+  const [resetPoints, setResetPoints] = useState(false);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
 
@@ -183,7 +184,6 @@ const Checkout = () => {
   };
 
   const handleCheckout = async () => {
-    setLoadingCheckout(true);
     const combo = combos.reduce((acc, item) => {
       acc[item.id] = item.quantity;
       return acc;
@@ -207,7 +207,7 @@ const Checkout = () => {
       rank_at_booking: membership.rank.name,
     };
     checkout.mutate(
-      { url: "/payment", data: dataPost },
+      { url: "/payment", data: dataPost, shouldShowAlert: false },
       {
         onSuccess: (data) => {
           if (data?.payment_url) {
@@ -215,17 +215,27 @@ const Checkout = () => {
           }
         },
         onError: (err) => {
+          queryClient.invalidateQueries({ queryKey: ["points-available"] });
+
+          // Đặt lại trạng thái điểm trong Checkout
+          setPoint(0);
+          setPriceDiscountPoint(0);
+          setPriceDiscount((prev) => prev - priceDiscountPoint);
+          setTotalPayment((prev) => prev + priceDiscountPoint);
+
+          // Kích hoạt đặt lại trạng thái điểm trong Discount
+          setResetPoints(true);
+
+          // Reset resetPoints sau khi sử dụng để tránh lặp lại
+          setTimeout(() => setResetPoints(false), 0);
+
           showAlert("Cảnh báo", err.response.data.message, "warning");
-          setLoadingCheckout(false);
         },
       }
     );
   };
 
-  return isLoadingCheckout ||
-    isLoadingMembership ||
-    loadingCheckout ||
-    isLoadingPoints ? (
+  return isLoadingCheckout || isLoadingMembership || isLoadingPoints ? (
     <div className="h-screen">
       <Loading />
     </div>
@@ -279,12 +289,12 @@ const Checkout = () => {
               handleCalculatePoint={handleCalculatePoint}
               setSelectVoucher={setSelectVoucher}
               setPriceDiscountVoucher={setPriceDiscountVoucher}
-              membership={membership}
               totalAmount={totalpayment}
               setPriceDiscount={setPriceDiscount}
               setTotalPayment={setTotalPayment}
               slug={slug}
               dataPoint={dataPoints?.available_points}
+              resetPoints={resetPoints}
             />
           </div>
           <div className="py-4">
