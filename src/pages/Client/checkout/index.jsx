@@ -13,10 +13,11 @@ import InforMovie from "./InforMovie";
 import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
 import { useQueryClient } from "@tanstack/react-query";
+import DiscountOffline from "./DiscountOffline";
 
 const Checkout = () => {
   const queryClient = useQueryClient();
-  const { authUser } = useAuthContext();
+  const { authUser, role } = useAuthContext();
   const { slug } = useParams();
   const { data, isLoadingCheckout } = useFetch(
     ["checkout", slug],
@@ -29,11 +30,15 @@ const Checkout = () => {
       staleTime: Infinity,
       cacheTime: Infinity,
       refetchOnMount: false,
+      enabled: role === "member",
     }
   );
   const { data: dataPoints, isLoading: isLoadingPoints } = useFetch(
     ["points-available"],
-    "/points/available"
+    "/points/available",
+    {
+      enabled: role === "member",
+    }
   );
 
   const { create: checkout } = useCRUD(["payment"]);
@@ -55,6 +60,7 @@ const Checkout = () => {
   const [totalAmount, setTotalAmount] = useState(0);
   const [totalpayment, setTotalPayment] = useState(0);
   const [resetPoints, setResetPoints] = useState(false);
+  const [codemembership, setCodeMembership] = useState(null);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
 
@@ -188,30 +194,55 @@ const Checkout = () => {
       acc[item.id] = item.quantity;
       return acc;
     }, {});
-    const dataPost = {
-      showtime_id: showtime.id,
-      seat_id: selectedSeatsRef.current.map((seat) => seat.seat_id),
-      combo,
-      combo_discount: priceDiscountCombo,
-      payment_name: paymentMethod,
-      voucher_id: selectVoucher?.id,
-      voucher_code: selectVoucher?.code,
-      voucher_discount: priceDiscountVoucher,
-      points: point,
-      point_discount: priceDiscountPoint,
-      price_combo: priceCombos,
-      price_seat: priceSeats,
-      total_price_before_discount: totalAmount,
-      total_discount: priceDiscount,
-      total_price: totalpayment,
-      rank_at_booking: membership.rank.name,
-    };
+    const dataPost =
+      role === "member"
+        ? {
+            showtime_id: showtime.id,
+            seat_id: selectedSeatsRef.current.map((seat) => seat.seat_id),
+            combo,
+            combo_discount: priceDiscountCombo,
+            payment_name: paymentMethod,
+            voucher_id: selectVoucher?.id,
+            voucher_code: selectVoucher?.code,
+            voucher_discount: priceDiscountVoucher,
+            points: point,
+            point_discount: priceDiscountPoint,
+            price_combo: priceCombos,
+            price_seat: priceSeats,
+            total_price_before_discount: totalAmount,
+            total_discount: priceDiscount,
+            total_price: totalpayment,
+            rank_at_booking: membership?.rank?.name,
+          }
+        : {
+            seat_id: selectedSeatsRef.current.map((seat) => seat.seat_id),
+            showtime_id: showtime.id,
+            total_price: totalpayment,
+            total_price_before_discount: totalAmount,
+            code: codemembership,
+            points: point,
+            combo,
+            price_combo: priceCombos,
+            price_seat: priceSeats,
+            combo_discount: priceDiscountCombo,
+            point_discount: priceDiscountPoint,
+            total_discount: priceDiscount,
+            voucher_id: null,
+            voucher_discount: 0,
+          };
+
+    const url = role === "member" ? "/payment" : "/payment/offline";
+
     checkout.mutate(
-      { url: "/payment", data: dataPost, shouldShowAlert: false },
+      { url, data: dataPost, shouldShowAlert: false },
       {
         onSuccess: (data) => {
-          if (data?.payment_url) {
-            window.location.href = data?.payment_url;
+          if (role === "member") {
+            if (data?.payment_url) {
+              window.location.href = data?.payment_url;
+            }
+          } else {
+            window.location.href = `/admin/ticket/detail/${data?.code}`;
           }
         },
         onError: (err) => {
@@ -243,32 +274,34 @@ const Checkout = () => {
     <>
       <div className="container grid grid-cols-1 md:grid-cols-6 gap-8 my-10 text-secondary">
         <div className="col-span-6 lg:col-span-4 divide-y-2">
-          <div className="pb-4">
-            <h2 className="text-sm md:text-lg font-semibold flex items-center gap-2 pb-4">
-              <span>
-                <img
-                  className="w-6 h-6 md:w-10 md:h-10"
-                  src="/images/user.png"
-                  alt="user"
-                />
-              </span>{" "}
-              THÔNG TIN THANH TOÁN
-            </h2>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center lg:gap-10 xl:gap-28 justify-start">
-              <p className="text-xs md:text-base">
-                <strong className="text-sm md:text-base">Họ Tên:</strong> <br />{" "}
-                {authUser?.name}
-              </p>
-              <p className="text-xs md:text-base">
-                <strong className="text-sm">Số điện thoại:</strong> <br />{" "}
-                {authUser?.phone}
-              </p>
-              <p className="text-xs md:text-base">
-                <strong className="text-sm md:text-base">Email:</strong> <br />{" "}
-                {authUser?.email}
-              </p>
+          {role === "member" && (
+            <div className="pb-4">
+              <h2 className="text-sm md:text-lg font-semibold flex items-center gap-2 pb-4">
+                <span>
+                  <img
+                    className="w-6 h-6 md:w-10 md:h-10"
+                    src="/images/user.png"
+                    alt="user"
+                  />
+                </span>{" "}
+                THÔNG TIN THANH TOÁN
+              </h2>
+              <div className="flex flex-col gap-4 md:flex-row md:items-center lg:gap-10 xl:gap-28 justify-start">
+                <p className="text-xs md:text-base">
+                  <strong className="text-sm md:text-base">Họ Tên:</strong>{" "}
+                  <br /> {authUser?.name}
+                </p>
+                <p className="text-xs md:text-base">
+                  <strong className="text-sm">Số điện thoại:</strong> <br />{" "}
+                  {authUser?.phone}
+                </p>
+                <p className="text-xs md:text-base">
+                  <strong className="text-sm md:text-base">Email:</strong>{" "}
+                  <br /> {authUser?.email}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-2 py-4">
             <TotalPriceSeat
@@ -284,19 +317,32 @@ const Checkout = () => {
             />
           </div>
 
-          <div className="py-4">
-            <Discount
-              handleCalculatePoint={handleCalculatePoint}
-              setSelectVoucher={setSelectVoucher}
-              setPriceDiscountVoucher={setPriceDiscountVoucher}
-              totalAmount={totalpayment}
-              setPriceDiscount={setPriceDiscount}
-              setTotalPayment={setTotalPayment}
-              slug={slug}
-              dataPoint={dataPoints?.available_points}
-              resetPoints={resetPoints}
-            />
-          </div>
+          {role === "member" ? (
+            <div className="py-4">
+              <Discount
+                handleCalculatePoint={handleCalculatePoint}
+                setSelectVoucher={setSelectVoucher}
+                setPriceDiscountVoucher={setPriceDiscountVoucher}
+                totalAmount={totalpayment}
+                setPriceDiscount={setPriceDiscount}
+                setTotalPayment={setTotalPayment}
+                slug={slug}
+                dataPoint={dataPoints?.available_points}
+                resetPoints={resetPoints}
+                role={role}
+              />
+            </div>
+          ) : (
+            <div className="py-4">
+              <DiscountOffline
+                handleCalculatePoint={handleCalculatePoint}
+                totalAmount={totalpayment}
+                resetPoints={resetPoints}
+                codeMembership={setCodeMembership}
+              />
+            </div>
+          )}
+
           <div className="py-4">
             <div className="flex flex-col items-end gap-4">
               <div className="flex items-center gap-2 text-sm md:text-base">
@@ -322,7 +368,7 @@ const Checkout = () => {
             </div>
           </div>
           <div className="py-4 flex flex-col gap-4">
-            <PaymentMethod paymentMethod={setPaymentMethod} />
+            <PaymentMethod paymentMethod={setPaymentMethod} role={role} />
           </div>
         </div>
         <div className="col-span-6 lg:col-span-2">

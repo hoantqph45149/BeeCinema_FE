@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import Button from "../../../Components/Common/Button";
 import { useFormik } from "formik";
-import { useCRUD } from "../../../Hooks/useCRUD";
+import React from "react";
 import * as Yup from "yup";
+import Button from "../../../Components/Common/Button";
+import { useCRUD } from "../../../Hooks/useCRUD";
 
 const Contact = () => {
-  const [contact, setContact] = useState();
-  const { create, patch, delete: deleteRanks } = useCRUD(["contacts"]);
+  const { create } = useCRUD(["contacts"]);
 
   const contactSchema = Yup.object().shape({
     name: Yup.string().required("Vui lòng nhập họ và tên"),
@@ -20,11 +19,11 @@ const Contact = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      name: (contact && contact?.name) || "",
-      email: (contact && contact?.email) || "",
-      address: (contact && contact?.address) || "",
-      phone: (contact && contact?.phone) || "",
-      message: (contact && contact?.message) || "",
+      name: "",
+      email: "",
+      address: "",
+      phone: "",
+      message: "",
     },
     validationSchema: contactSchema,
     onSubmit: (values, { resetForm }) => {

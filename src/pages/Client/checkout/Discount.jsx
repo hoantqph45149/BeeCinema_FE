@@ -20,9 +20,11 @@ const Discount = ({
   slug,
   dataPoint,
   resetPoints,
+  role,
 }) => {
-  const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers");
-
+  const { data: vouchers } = useFetch(["voucherUser"], "/user/vouchers", {
+    enabled: role === "member",
+  });
   const queryClient = useQueryClient();
   const [clickVoucher, setClickVoucher] = useState(null);
   const location = useLocation();
