@@ -1,11 +1,30 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { matchPath, Navigate, useNavigate } from "react-router-dom";
 import Loading from "../Components/Common/Loading";
 import { useAuthContext } from "../Contexts/auth/UseAuth";
 import { useFetch } from "../Hooks/useCRUD";
+import { publicRoutes } from "./AllRoutes";
+
+const convertPathToRegex = (path) => {
+  // Handle empty or invalid paths
+  if (!path || path === "") {
+    return new RegExp("^/?$"); // Match root or empty path
+  }
+
+  // Handle wildcard routes
+  if (path === "*") {
+    return new RegExp(".*"); // Match any path
+  }
+
+  // Replace dynamic segments (e.g., :id) with regex capture group
+  const regexPath = path
+    .replace(/:[^/]+/g, "([^/]+)") // Replace :param with ([^/]+)
+    .replace(/\*/g, ".*"); // Replace * with .*
+
+  return new RegExp(`^${regexPath}$`);
+};
 
 const ProtectedRoute = ({ children }) => {
-  const nav = useNavigate();
   const { setAuthUser, setRole, setPermissions, setRoles } = useAuthContext();
   const { data, isLoading, error } = useFetch(["user"], "/user", {
     staleTime: Infinity,
@@ -31,13 +50,20 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [data, dataRoles, setRoles, setAuthUser, setRole, setPermissions]);
 
-  if (error || errorRoles) {
-    if (error?.response?.status === 401) {
-      nav("/login");
-    }
+  const isPublicRoute = publicRoutes.some((route) => {
+    const regex = convertPathToRegex(route.path);
+    return window.location.pathname.match(regex) !== null;
+  });
 
-    if (errorRoles?.response?.status === 401) {
-      nav("/login");
+  if (error || errorRoles) {
+    if (
+      error?.response?.status === 401 ||
+      errorRoles?.response?.status === 401
+    ) {
+      if (!isPublicRoute) {
+        return <Navigate to="/login" />;
+      }
+      return <>{children}</>;
     }
   }
 

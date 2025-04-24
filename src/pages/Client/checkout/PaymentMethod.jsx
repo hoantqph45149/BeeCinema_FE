@@ -2,26 +2,38 @@ import React, { useEffect, useState } from "react";
 import Disclosure from "../../../Components/Common/Disclosure";
 import { ArrowBigRight } from "lucide-react";
 
-const PaymentMethod = ({ paymentMethod }) => {
+const PaymentMethod = ({ paymentMethod, role }) => {
   const paymentMethods = [
-    {
-      id: "VNPAY",
-      label: "Ví VNPay",
-      img: "/images/payment/vnpay.png",
-    },
-    // {
-    //   id: "MOMO",
-    //   label: "Ví MoMo",
-    //   img: "/images/payment/momo.png",
-    // },
-    {
-      id: "ZALOPAY",
-      label: "Ví ZaloPay",
-      img: "/images/payment/zalopay.png",
-    },
+    ...(role == "member"
+      ? [
+          {
+            id: "VNPAY",
+            label: "Ví VNPay",
+            img: "/images/payment/vnpay.png",
+          },
+          // {
+          //   id: "MOMO",
+          //   label: "Ví MoMo",
+          //   img: "/images/payment/momo.png",
+          // },
+          {
+            id: "ZALOPAY",
+            label: "Ví ZaloPay",
+            img: "/images/payment/zalopay.png",
+          },
+        ]
+      : [
+          {
+            id: "Tiền mặt",
+            label: "Tiền mặt",
+            img: "/images/payment/tienmat.png",
+          },
+        ]),
   ];
 
-  const [selectedPayment, setSelectedPayment] = useState("VNPAY");
+  const [selectedPayment, setSelectedPayment] = useState(
+    role == "member" ? "VNPAY" : "Tiền mặt"
+  );
 
   useEffect(() => {
     paymentMethod(selectedPayment);

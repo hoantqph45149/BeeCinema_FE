@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import Button from "../../../Components/Common/Button";
 import { useFormik } from "formik";
-import { useCRUD } from "../../../Hooks/useCRUD";
+import React from "react";
 import * as Yup from "yup";
+import Button from "../../../Components/Common/Button";
+import { useCRUD } from "../../../Hooks/useCRUD";
 
 const Contact = () => {
-  const [contact, setContact] = useState();
-  const { create, patch, delete: deleteRanks } = useCRUD(["contacts"]);
+  const { create } = useCRUD(["contacts"]);
 
   const contactSchema = Yup.object().shape({
     name: Yup.string().required("Vui lòng nhập họ và tên"),
@@ -20,11 +19,11 @@ const Contact = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      name: (contact && contact?.name) || "",
-      email: (contact && contact?.email) || "",
-      address: (contact && contact?.address) || "",
-      phone: (contact && contact?.phone) || "",
-      message: (contact && contact?.message) || "",
+      name: "",
+      email: "",
+      address: "",
+      phone: "",
+      message: "",
     },
     validationSchema: contactSchema,
     onSubmit: (values, { resetForm }) => {
@@ -47,7 +46,7 @@ const Contact = () => {
         />
       </div>
 
-      <div className="relative w-full max-w-7xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-10 mt-20">
+      <div className="relative w-full max-w-7xl bg-white shadow-lg rounded-lg flex flex-col md:flex-row overflow-hidden z-1 mt-20">
         <div className="w-full md:w-2/3 p-6 md:p-8">
           <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center md:text-left">
             Gửi tin nhắn cho chúng tôi

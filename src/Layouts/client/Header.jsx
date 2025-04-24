@@ -53,7 +53,7 @@ const Header = () => {
               <Link to={"/"}>
                 <img
                   src="/images/logo/beecinema.png"
-                  alt="Poly Cinemas"
+                  alt="Bee Cinemas"
                   className="h-[55px] mr-4"
                 />
               </Link>
