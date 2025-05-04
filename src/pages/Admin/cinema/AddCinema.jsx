@@ -23,10 +23,9 @@ const AddCinema = () => {
 
   //  Xác thực dữ liệu với Yup
   const validationSchema = Yup.object({
-    name: Yup.string().required("Tên rạp không được để trống"),
+    name: Yup.string().trim().required("Tên rạp không được để trống"),
     branch_id: Yup.string().required("Vui lòng chọn chi nhánh"),
-    address: Yup.string().required("Địa chỉ không được để trống"),
-    description: Yup.string().required("Mô tả không được để trống"),
+    address: Yup.string().trim().required("Địa chỉ không được để trống"),
   });
 
   //  Quản lý form với Formik

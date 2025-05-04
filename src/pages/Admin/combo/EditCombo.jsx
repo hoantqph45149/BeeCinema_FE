@@ -22,7 +22,7 @@ document.title = "";
 const EditCombo = () => {
   const { id } = useParams();
   const { data: foodsData } = useFetch(["foods"], "/foods");
-  const { data: comboData } = useFetch(["combos"], `/combos/${id}`);
+  const { data: comboData } = useFetch(["combos", id], `/combos/${id}`);
   const { patch: patchCombo } = useCRUD(["combos"]);
   const { uploadImage, loading: loadingImage } = useUploadImage();
   const nav = useNavigate();
@@ -76,7 +76,7 @@ const EditCombo = () => {
       is_active: true,
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Tên combo không được để trống"),
+      name: Yup.string().trim().required("Tên combo không được để trống"),
       price: Yup.number()
         .typeError("Giá phải là số")
         .positive("Giá phải lớn hơn 0")
@@ -86,7 +86,6 @@ const EditCombo = () => {
         .min(0, "Giá bán phải lớn hơn hoặc bằng 0")
         .max(Yup.ref("price"), "Giá bán phải nhỏ hơn giá gốc")
         .required("Giá bán không được để trống"),
-      description: Yup.string().required("Mô tả không được để trống"),
       img_thumbnail: Yup.mixed().required("Vui lòng chọn hình ảnh"),
     }),
     onSubmit: async (values) => {
@@ -116,7 +115,7 @@ const EditCombo = () => {
   return (
     <div className="page-content">
       <Container fluid>
-        <BreadCrumb title="Thêm mới suất chiếu" pageTitle="Thêm mới" />
+        <BreadCrumb title="Quản lý combo" pageTitle="Quản lý" />
         <Form onSubmit={formik.handleSubmit}>
           <Row>
             <Col lg={7} xl={8}>

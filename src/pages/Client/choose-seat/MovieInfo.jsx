@@ -7,7 +7,13 @@ import { replateName } from "../../../utils/ReplateName";
 import Button from "../../../Components/Common/Button";
 import dayjs from "dayjs";
 
-const MovieInfo = ({ movie, showtimeData, selectedSeats, handleCheckOut }) => {
+const MovieInfo = ({
+  movie,
+  showtimeData,
+  selectedSeats,
+  handleCheckOut,
+  loading,
+}) => {
   return (
     <>
       {" "}
@@ -119,11 +125,17 @@ const MovieInfo = ({ movie, showtimeData, selectedSeats, handleCheckOut }) => {
               </span>
             </div>
           </div>
-          <div className="text-center py-5">
-            <Button onClick={handleCheckOut} className="!w-[100px]">
-              Tiếp Tục
-            </Button>
-          </div>
+          {selectedSeats.length > 0 && (
+            <div className="text-center py-5">
+              <Button
+                disabled={loading}
+                onClick={handleCheckOut}
+                className="!w-[100px]"
+              >
+                Tiếp Tục
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </>

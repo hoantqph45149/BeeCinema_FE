@@ -30,15 +30,10 @@ const Permistion = () => {
   const columns = useMemo(
     () => [
       {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-        enableSorting: true,
-      },
-      {
         header: "Tên vai trò",
         accessorKey: "role",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Quyền",
@@ -79,6 +74,7 @@ const Permistion = () => {
           );
         },
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Action",

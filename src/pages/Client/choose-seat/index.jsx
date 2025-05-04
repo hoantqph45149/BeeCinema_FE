@@ -198,6 +198,7 @@ const ChooseSeat = () => {
           seat_id: selectSeat.id,
           showtime_id: selectSeat?.pivot?.showtime_id,
           action: selectSeat.pivot?.status === "available" ? "hold" : "release",
+          seat_name: selectSeat.name,
         },
         shouldShowLoadingAlert: false,
         shouldShowAlert: false,
@@ -207,6 +208,9 @@ const ChooseSeat = () => {
           if (holdExpiresAt === null) {
             setHoldExpiresAt(data?.seat?.hold_expires_at);
           }
+        },
+        onError: (error) => {
+          showAlert("Cảnh báo", error.response.data.message, "warning");
         },
       }
     );
@@ -251,6 +255,7 @@ const ChooseSeat = () => {
                 showtimeData={showtimeData}
                 selectedSeats={selectedSeats}
                 handleCheckOut={handleCheckOut}
+                loading={chooseSeat.isLoading}
               />
               {holdExpiresAt !== null && selectedSeats.length > 0 && (
                 <CountDown

@@ -36,13 +36,14 @@ const Food = () => {
 
   const foodSchema = Yup.object().shape({
     name: Yup.string()
+      .trim()
       .required("Tên đồ ăn không được để trống")
       .min(3, "Tên đồ ăn tối thiểu 3 ký tự"),
     type: Yup.string().required("Loại đồ ăn không được để trống"),
     price: Yup.number()
+      .typeError("Giá đồ ăn phải là số")
       .required("Giá đồ ăn không được để trống")
       .min(0, "Giá nhỏ nhất là 0"),
-    description: Yup.string().required("Mô tả không được để trống"),
     img_thumbnail: isEdit
       ? Yup.mixed()
       : Yup.mixed()
@@ -158,19 +159,16 @@ const Food = () => {
   const columns = useMemo(
     () => [
       {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-      },
-      {
         header: "Tên đồ ăn",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Loại đồ ăn",
         accessorKey: "type",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Hình ảnh",

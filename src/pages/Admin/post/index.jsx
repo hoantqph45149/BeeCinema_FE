@@ -67,6 +67,7 @@ const Post = () => {
         header: "#",
         accessorKey: "id",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Tiêu đề",
@@ -105,11 +106,13 @@ const Post = () => {
         header: "Người tạo",
         accessorKey: "user.name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Lượt xem",
         accessorKey: "view_count",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Ngày tạo",

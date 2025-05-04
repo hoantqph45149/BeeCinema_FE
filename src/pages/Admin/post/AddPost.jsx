@@ -59,7 +59,6 @@ const AddPost = () => {
   const formik = useFormik({
     initialValues: {
       title: "",
-
       description: "",
       content: "",
       img_post: "",
@@ -67,10 +66,11 @@ const AddPost = () => {
     },
     validationSchema: Yup.object({
       title: Yup.string()
+        .trim()
         .required("Tiêu đề không được để trống")
         .min(5, "Tiêu đề tối thiểu 5 ký tự")
         .max(255, "Tiêu đề tối đa 255 ký tự"),
-      description: Yup.string().required("Mô tả là bắt buộc"),
+      description: Yup.string().trim().required("Mô tả là bắt buộc"),
       content: Yup.string()
         .trim()
         .required("Nội dung không được để trống")

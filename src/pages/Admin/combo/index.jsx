@@ -63,14 +63,10 @@ const Combo = () => {
   const columns = useMemo(
     () => [
       {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-      },
-      {
         header: "Tên",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Hình ảnh",
@@ -156,7 +152,7 @@ const Combo = () => {
                 </Button>
               </li>
             )}
-            {hasPermission("Xóa combo") && (
+            {/* {hasPermission("Xóa combo") && (
               <li className="list-inline-item">
                 <Button
                   color="primary"
@@ -168,7 +164,7 @@ const Combo = () => {
                   <i className="ri-delete-bin-5-fill"></i>
                 </Button>
               </li>
-            )}
+            )} */}
           </ul>
         ),
       },

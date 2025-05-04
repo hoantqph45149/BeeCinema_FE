@@ -84,7 +84,7 @@ const SeeSeatMap = () => {
       <Container fluid>
         <BreadCrumb title="Xem sơ đồ ghế" pageTitle="Quản lý" />
         <Row>
-          <Col md={9}>
+          <Col lg={9}>
             <Card>
               <CardBody>
                 <div className="container py-4">
@@ -169,7 +169,7 @@ const SeeSeatMap = () => {
               </CardBody>
             </Card>
           </Col>
-          <Col md={4} lg={3}>
+          <Col lg={3}>
             <Card>
               <CardHeader>
                 <h5 className="card-title mb-0">Thông tin</h5>

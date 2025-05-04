@@ -209,15 +209,10 @@ const Room = () => {
   const columns = useMemo(
     () => [
       {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-        enableSorting: false,
-      },
-      {
         header: "Phòng chiếu",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
         cell: (cell) => (
           <div className="flex-grow-1">
             <h5 className="fs-14 mb-1">{cell.getValue()}</h5>
@@ -235,16 +230,19 @@ const Room = () => {
         header: "Rạp chiếu",
         accessorKey: "cinema.name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Loại Phòng",
         accessorKey: "type_room.name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Sức chứa",
         accessorKey: "totalSeats",
         enableColumnFilter: false,
+        enableSorting: true,
         cell: (cell) => {
           const seat = cell.getValue() - cell.row.original.brokenSeats;
           return <span>{`${seat} / ${cell.row.original.totalSeats}`} Ghế</span>;
@@ -254,6 +252,7 @@ const Room = () => {
         header: "Trạng thái",
         accessorKey: "is_publish",
         enableColumnFilter: false,
+        enableSorting: true,
         cell: (cell) =>
           cell.getValue() ? (
             <span className="badge text-uppercase bg-success text-white">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   Button,
   Card,
@@ -18,7 +18,7 @@ const RoomEdit = () => {
   const { id } = useParams();
   const { data: room } = useFetch(["rooms", { id }], `/rooms/${id}`);
   const { patch: patchRoom } = useCRUD(["rooms"]);
-
+  const nav = useNavigate();
   const [matrix, setMatrix] = useState({});
   const [seatsByRow, setSeatsByRow] = useState([]);
   const [isActive, setIsActive] = useState(null);
@@ -51,10 +51,17 @@ const RoomEdit = () => {
   };
 
   const handleUnPublish = () => {
-    patchRoom.mutate({
-      url: `/rooms/${id}`,
-      data: { ...room?.room, is_active: 0, is_publish: 0 },
-    });
+    patchRoom.mutate(
+      {
+        url: `/rooms/${id}`,
+        data: { ...room?.room, is_active: 0, is_publish: 0 },
+      },
+      {
+        onSuccess: () => {
+          nav("/admin/room");
+        },
+      }
+    );
   };
 
   const handleSeatSelect = (seat) => {
@@ -77,7 +84,7 @@ const RoomEdit = () => {
     <>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb title="Quản lý rạp chiếu" pageTitle="Quản lý" />
+          <BreadCrumb title="Quản lý phòng chiếu" pageTitle="Quản lý" />
           <Row>
             <Col lg={9}>
               <Card>

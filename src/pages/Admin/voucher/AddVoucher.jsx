@@ -36,6 +36,7 @@ const AddVoucher = () => {
   }, []);
   const validationSchema = Yup.object({
     code: Yup.string()
+      .trim()
       .required("Mã giảm giá không được để trống")
       .matches(/^[A-Z0-9]+$/, "Mã giảm giá chỉ chứa chữ in hoa và số"),
     quantity: Yup.number()
@@ -95,11 +96,13 @@ const AddVoucher = () => {
           schema.required("Vui lòng nhập số tiền giảm giá tối đa"),
         otherwise: (schema) => schema.notRequired(),
       }),
-    title: Yup.string().required("Tiêu đề không được để trống"),
+    title: Yup.string().trim().required("Tiêu đề không được để trống"),
     discount_type: Yup.string()
       .oneOf(["fixed", "percent"])
       .required("Vui lòng chọn loại giảm giá"),
-    description: Yup.string().max(255, "Mô tả không được vượt quá 255 ký tự"),
+    description: Yup.string()
+      .trim()
+      .max(255, "Mô tả không được vượt quá 255 ký tự"),
   });
 
   const formik = useFormik({

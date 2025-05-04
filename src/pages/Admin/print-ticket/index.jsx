@@ -6,6 +6,7 @@ import { showConfirm } from "../../../Components/Common/showAlert";
 import { useCRUD } from "../../../Hooks/useCRUD";
 
 export default function PrintTicket({ ticket }) {
+  document.title = `${ticket?.code}_${ticket?.user?.id}.pdf`;
   const { create: confirmTicket } = useCRUD(["tickets", ticket?.code]);
   const handlePrint = () => {
     if (ticket?.status === "Đã thanh toán") {

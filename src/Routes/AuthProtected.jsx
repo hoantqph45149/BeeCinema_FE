@@ -268,7 +268,8 @@ const RequireAdmin = ({ children }) => {
     }
 
     if (role && roles.length > 0 && !roles.includes(role)) {
-      return <Navigate to="/" replace />;
+      window.location.href = "/";
+      return null;
     }
   }
 

@@ -13,6 +13,8 @@ const Home = () => {
   const { cinema } = useBrancheContext();
   const { authUser } = useAuthContext();
   const [openModalVeryfiedEmail, setOpenModalVeryfiedEmail] = useState(false);
+  localStorage.removeItem("order_code");
+  localStorage.removeItem("payment_name");
 
   const { data, isLoading } = useFetch(
     cinema?.id ? ["movies-tab", cinema.id] : null,

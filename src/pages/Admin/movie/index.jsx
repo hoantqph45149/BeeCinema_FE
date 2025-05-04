@@ -118,6 +118,7 @@ const Movie = () => {
         header: "Thông tin phim",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
         cell: (cell) => {
           const movie = cell.row.original;
           return (

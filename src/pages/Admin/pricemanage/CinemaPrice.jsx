@@ -221,44 +221,44 @@ const CinemaPrice = () => {
   });
 
   const initialValues = {
-    cinema_id: selectedPriceRule?.cinema_id || 1,
-    type_room_id: selectedPriceRule?.type_room_id || 1,
+    cinema_id: selectedPriceRule?.cinema_id || "",
+    type_room_id: selectedPriceRule?.type_room_id || "",
     price: {
       Weekday: {
         Morning:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Weekday")
             ?.time_slots?.find((t) => t.time_slot === "Morning")?.base_price ||
-          45000,
+          0,
         Evening:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Weekday")
             ?.time_slots?.find((t) => t.time_slot === "Evening")?.base_price ||
-          50000,
+          0,
       },
       Weekend: {
         Morning:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Weekend")
             ?.time_slots?.find((t) => t.time_slot === "Morning")?.base_price ||
-          60000,
+          0,
         Evening:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Weekend")
             ?.time_slots?.find((t) => t.time_slot === "Evening")?.base_price ||
-          85000,
+          0,
       },
       Holiday: {
         Morning:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Holiday")
             ?.time_slots?.find((t) => t.time_slot === "Morning")?.base_price ||
-          70000,
+          0,
         Evening:
           selectedPriceRule?.day_types
             ?.find((d) => d.day_type === "Holiday")
             ?.time_slots?.find((t) => t.time_slot === "Evening")?.base_price ||
-          75000,
+          0,
       },
     },
     surcharge: {
@@ -268,24 +268,24 @@ const CinemaPrice = () => {
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekday")
               ?.time_slots?.find((t) => t.time_slot === "Morning")?.surcharge
-              ?.vip || 15000,
+              ?.vip || 0,
           double:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekday")
               ?.time_slots?.find((t) => t.time_slot === "Morning")?.surcharge
-              ?.double || 70000,
+              ?.double || 0,
         },
         Evening: {
           vip:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekday")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.vip || 10000,
+              ?.vip || 0,
           double:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekday")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.double || 65000,
+              ?.double || 0,
         },
       },
       Weekend: {
@@ -299,19 +299,19 @@ const CinemaPrice = () => {
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekend")
               ?.time_slots?.find((t) => t.time_slot === "Morning")?.surcharge
-              ?.double || 60000,
+              ?.double || 0,
         },
         Evening: {
           vip:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekend")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.vip || -20000,
+              ?.vip || 0,
           double:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Weekend")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.double || 15000,
+              ?.double || 0,
         },
       },
       Holiday: {
@@ -320,24 +320,24 @@ const CinemaPrice = () => {
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Holiday")
               ?.time_slots?.find((t) => t.time_slot === "Morning")?.surcharge
-              ?.vip || 15000,
+              ?.vip || 0,
           double:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Holiday")
               ?.time_slots?.find((t) => t.time_slot === "Morning")?.surcharge
-              ?.double || 50000,
+              ?.double || 0,
         },
         Evening: {
           vip:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Holiday")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.vip || 15000,
+              ?.vip || 0,
           double:
             selectedPriceRule?.day_types
               ?.find((d) => d.day_type === "Holiday")
               ?.time_slots?.find((t) => t.time_slot === "Evening")?.surcharge
-              ?.double || 40000,
+              ?.double || 0,
         },
       },
     },

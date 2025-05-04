@@ -21,9 +21,9 @@ import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 import Loader from "../../../Components/Common/Loader";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 
-// Định nghĩa Schema để validate dữ liệu nhập vào
 const branchSchema = Yup.object().shape({
   name: Yup.string()
+    .trim()
     .required("Tên chi nhánh không được để trống")
     .min(6, "Tên chi nhánh phải nhất 3 ký tự"),
 });
@@ -116,12 +116,6 @@ const Branch = () => {
   // Cấu hình cột cho bảng
   const columns = useMemo(
     () => [
-      {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-        enableSorting: false,
-      },
       {
         header: "Tên chi nhánh",
         accessorKey: "name",

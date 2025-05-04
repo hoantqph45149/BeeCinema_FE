@@ -47,10 +47,11 @@ const UpdatePost = () => {
   // Validation schema cho Formik
   const validationSchema = Yup.object({
     title: Yup.string()
+      .trim()
       .required("Tiêu đề không được để trống")
       .min(5, "Tiêu đề tối thiểu 5 ký tự")
       .max(255, "Tiêu đề tối đa 255 ký tự"),
-    description: Yup.string().required("Mô tả là bắt buộc"),
+    description: Yup.string().trim().required("Mô tả là bắt buộc"),
     content: Yup.string()
       .required("Nội dung không được để trống")
       .min(10, "Nội dung phải có ít nhất 10 ký tự"),

@@ -116,11 +116,13 @@ const Holiday = () => {
         header: "Tên",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Loại",
         accessorKey: "type",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Action",

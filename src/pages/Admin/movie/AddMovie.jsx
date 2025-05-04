@@ -58,9 +58,9 @@ const AddMovie = () => {
       trailer_url: "",
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Tên phim không được để trống"),
-      director: Yup.string().required("Đạo diễn không được để trống"),
-      cast: Yup.string().required("Diễn viên không được để trống"),
+      name: Yup.string().trim().required("Tên phim không được để trống"),
+      director: Yup.string().trim().required("Đạo diễn không được để trống"),
+      cast: Yup.string().trim().required("Diễn viên không được để trống"),
       release_date: Yup.date().required("Ngày khởi chiếu không được để trống"),
       end_date: Yup.date()
         .required("Ngày kết thúc không được để trống")
@@ -71,15 +71,15 @@ const AddMovie = () => {
           );
         }),
       duration: Yup.number()
+        .typeError("Thời lượng phải là số")
         .required("Thời lượng không được để trống")
         .positive("Thời lượng phải là số dương")
         .integer("Thời lượng phải là số nguyên"),
-      category: Yup.string().required("Danh mục không được để trống"),
+      category: Yup.string().trim().required("Danh mục không được để trống"),
       rating: Yup.string().required("Danh mục không được để trống"),
       versions: Yup.array()
         .min(1, "Chọn ít nhất một phiên bản")
         .required("Phiên bản không được để trống"),
-      description: Yup.string().required("Mô tả không được để trống"),
 
       img_thumbnail: Yup.mixed()
         .required("Vui lòng chọn ảnh")
@@ -95,7 +95,9 @@ const AddMovie = () => {
           "Dung lượng ảnh không được quá 2MB",
           (value) => value && value.size <= 2 * 1024 * 1024
         ),
-      trailer_url: Yup.string().required("URL trailer không được để trống"),
+      trailer_url: Yup.string()
+        .trim()
+        .required("URL trailer không được để trống"),
     }),
     onSubmit: async (values) => {
       try {
@@ -424,48 +426,6 @@ const AddMovie = () => {
                   </CardBody>
                 </Card>
               </div>
-              <Card>
-                <CardHeader>
-                  <div className="d-flex mb-3">
-                    <div className="flex-grow-1">
-                      <h5 className="fs-16">Phụ thu</h5>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardBody>
-                  <Row>
-                    <Col lg={12}>
-                      <div className="mb-3">
-                        <Label htmlFor="surcharge" className="form-label">
-                          Gía Phụ thu
-                        </Label>
-                        <Input
-                          id="surcharge"
-                          name="surcharge"
-                          type="text"
-                          className="form-control"
-                          placeholder="Nhập giá phụ thu"
-                          {...formik.getFieldProps("surcharge")}
-                        />
-                      </div>
-                    </Col>
-                    <Col lg={12}>
-                      <div>
-                        <Label htmlFor="surcharge_desc" className="form-label">
-                          Mô tả phụ thu
-                        </Label>
-                        <textarea
-                          className="form-control"
-                          name="surcharge_desc"
-                          id="surcharge_desc"
-                          rows="3"
-                          {...formik.getFieldProps("surcharge_desc")}
-                        ></textarea>
-                      </div>
-                    </Col>
-                  </Row>
-                </CardBody>
-              </Card>
             </Col>
 
             <Col xl={4} lg={5}>

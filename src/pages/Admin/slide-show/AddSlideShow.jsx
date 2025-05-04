@@ -34,7 +34,6 @@ const AddSlideShow = () => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Tiêu đề không được để trống"),
-      description: Yup.string().required("Mô tả không được để trống"),
     }),
     onSubmit: async (values) => {
       if (files.length < 3) {

@@ -248,11 +248,13 @@ const SeatTemplate = () => {
         header: "Mô tả",
         accessorKey: "description",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Ma trận ghế",
         accessorKey: "matrix_id.name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Trạng thái",

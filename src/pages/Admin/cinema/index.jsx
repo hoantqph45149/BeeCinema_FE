@@ -64,25 +64,22 @@ const Cinema = () => {
   const columns = useMemo(
     () => [
       {
-        header: "#",
-        accessorKey: "id",
-        enableColumnFilter: false,
-        enableSorting: true,
-      },
-      {
         header: "Tên rạp",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Chi nhánh",
         accessorKey: "branch.name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Địa chỉ",
         accessorKey: "address",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Hoạt động",

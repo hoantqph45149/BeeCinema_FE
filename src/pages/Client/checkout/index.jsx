@@ -1,6 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { showAlert } from "../../../Components/Common/showAlert";
 import { useAuthContext } from "../../../Contexts/auth/UseAuth";
 import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
@@ -9,20 +10,41 @@ import Loading from "./../../../Components/Common/Loading";
 import { formatVND } from "./../../../utils/Currency";
 import Combo from "./Combo";
 import Discount from "./Discount";
+import DiscountOffline from "./DiscountOffline";
 import InforMovie from "./InforMovie";
 import PaymentMethod from "./PaymentMethod";
 import TotalPriceSeat from "./TotalPriceSeat";
-import { useQueryClient } from "@tanstack/react-query";
-import DiscountOffline from "./DiscountOffline";
 
 const Checkout = () => {
   const queryClient = useQueryClient();
+  const nav = useNavigate();
   const { authUser, role } = useAuthContext();
   const { slug } = useParams();
   const { data, isLoadingCheckout } = useFetch(
     ["checkout", slug],
     `/userHoldSeats/${slug}`
   );
+
+  const orderCode = localStorage.getItem("order_code") || null;
+  const paymentName = localStorage.getItem("payment_name") || null;
+  const awaitingPaymentStatus =
+    localStorage.getItem("awaiting_payment_status") === "true";
+  const url = paymentName === "VNPAY" ? "/vnpay-status" : "/zalopay-status";
+
+  const {
+    data: dataCheckStatus,
+    isLoadingCheckStatus,
+    error: errorCheckStatus,
+  } = useFetch(["check-status"], `${url}/${orderCode}`, {
+    enabled:
+      orderCode !== null && paymentName !== null && awaitingPaymentStatus,
+    staleTime: 0,
+    refetchOnMount: true,
+  });
+
+  console.log(errorCheckStatus);
+  console.log(dataCheckStatus);
+
   const { data: membership, isLoading: isLoadingMembership } = useFetch(
     ["membership"],
     "/user/membership",
@@ -63,6 +85,61 @@ const Checkout = () => {
   const [codemembership, setCodeMembership] = useState(null);
   const now = dayjs();
   const selectedSeatsRef = useRef(data?.holdSeats);
+  useLayoutEffect(() => {
+    const clearPaymentStorage = () => {
+      localStorage.removeItem("order_code");
+      localStorage.removeItem("payment_name");
+      localStorage.removeItem("awaiting_payment_status");
+    };
+
+    const releaseSeats = async () => {
+      if (selectedSeatsRef.current.length > 0) {
+        try {
+          await Promise.all(
+            selectedSeatsRef.current.map((seat) =>
+              chooseSeat.mutateAsync({
+                url: "/update-seat",
+                data: {
+                  seat_id: seat.seat_id,
+                  showtime_id: seat.showtime_id,
+                  action: "release",
+                },
+                shouldShowLoadingAlert: false,
+                shouldShowAlert: false,
+              })
+            )
+          );
+        } catch (error) {
+          console.error("Failed to release seats:", error);
+        }
+      }
+    };
+
+    const handlePaymentStatus = async () => {
+      if (dataCheckStatus && typeof dataCheckStatus.status === "string") {
+        queryClient.removeQueries(["check-status"]);
+        if (dataCheckStatus.status === "failed") {
+          await releaseSeats();
+          clearPaymentStorage();
+          nav("/");
+        } else if (dataCheckStatus.status === "success") {
+          clearPaymentStorage();
+          nav("/success");
+        } else {
+          console.log("Payment status:", dataCheckStatus.status);
+        }
+      }
+
+      if (errorCheckStatus) {
+        queryClient.removeQueries(["check-status"]);
+        await releaseSeats();
+        clearPaymentStorage();
+        nav("/");
+      }
+    };
+
+    handlePaymentStatus();
+  }, [dataCheckStatus, errorCheckStatus, nav, queryClient, chooseSeat]);
 
   useEffect(() => {
     const handlePageLeave = () => {
@@ -240,9 +317,14 @@ const Checkout = () => {
           if (role === "member") {
             if (data?.payment_url) {
               window.location.href = data?.payment_url;
+              localStorage.setItem("order_code", data?.orderCode);
+              localStorage.setItem("payment_name", data?.paymentName);
+              localStorage.setItem("awaiting_payment_status", "true");
             }
           } else {
             window.location.href = `/admin/ticket/detail/${data?.code}`;
+            localStorage.removeItem("order_code");
+            localStorage.removeItem("payment_name");
           }
         },
         onError: (err) => {
@@ -266,7 +348,10 @@ const Checkout = () => {
     );
   };
 
-  return isLoadingCheckout || isLoadingMembership || isLoadingPoints ? (
+  return isLoadingCheckout ||
+    isLoadingMembership ||
+    isLoadingPoints ||
+    isLoadingCheckStatus ? (
     <div className="h-screen">
       <Loading />
     </div>

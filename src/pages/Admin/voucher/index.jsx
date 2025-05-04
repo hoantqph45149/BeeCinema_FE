@@ -60,6 +60,7 @@ const Voucher = () => {
         header: "Mã voucher",
         accessorKey: "code",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Số tiền tối thiểu",
@@ -101,16 +102,19 @@ const Voucher = () => {
         header: "Số lượng",
         accessorKey: "quantity",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Đã dùng",
         accessorKey: "used_count",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Giới hạn lượt sử dụng",
         accessorKey: "per_user_limit",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Hoạt động",

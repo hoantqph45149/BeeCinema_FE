@@ -394,7 +394,7 @@ const EditSeatTemplate = () => {
     <>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb title="Quản lý rạp chiếu" pageTitle="Quản lý" />
+          <BreadCrumb title="Quản lý sơ đồ ghế" pageTitle="Quản lý" />
           <Row>
             <Col md={8} lg={9}>
               <Card>

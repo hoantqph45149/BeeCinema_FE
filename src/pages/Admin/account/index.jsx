@@ -63,6 +63,7 @@ const Account = () => {
         header: "Họ và tên",
         accessorKey: "name",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Hình ảnh",
@@ -85,11 +86,13 @@ const Account = () => {
         header: "Email",
         accessorKey: "email",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       {
         header: "Vai trò",
         accessorKey: "role",
         enableColumnFilter: false,
+        enableSorting: true,
       },
       ...(activeTab === "1"
         ? [

@@ -3,24 +3,22 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   Col,
   Container,
   Form,
-  FormFeedback,
   Input,
   Label,
   Row,
 } from "reactstrap";
 import BreadCrumb from "../../../Components/Common/BreadCrumb";
 
-import Flatpickr from "react-flatpickr";
-import "flatpickr/dist/themes/material_blue.css";
-import { useNavigate, useParams } from "react-router-dom";
-import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
-import { useFormik } from "formik";
-import * as Yup from "yup";
 import dayjs from "dayjs";
+import "flatpickr/dist/themes/material_blue.css";
+import { useFormik } from "formik";
+import Flatpickr from "react-flatpickr";
+import { useNavigate, useParams } from "react-router-dom";
+import * as Yup from "yup";
+import { useCRUD, useFetch } from "../../../Hooks/useCRUD";
 
 document.title =
   "Quản lý mã giảm giá | Velzon - React Admin & Dashboard Template";
@@ -119,8 +117,10 @@ const EditVoucher = () => {
     discount_type: Yup.string()
       .oneOf(["fixed", "percent"])
       .required("Vui lòng chọn loại giảm giá"),
-    title: Yup.string().required("Tiêu đề không được để trống"),
-    description: Yup.string().max(255, "Mô tả không được vượt quá 255 ký tự"),
+    title: Yup.string().trim().required("Tiêu đề không được để trống"),
+    description: Yup.string()
+      .trim()
+      .max(255, "Mô tả không được vượt quá 255 ký tự"),
   });
   const formik = useFormik({
     enableReinitialize: true,
