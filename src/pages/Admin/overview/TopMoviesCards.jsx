@@ -24,7 +24,7 @@ export default function TopMoviesCards({ data }) {
   return (
     <React.Fragment>
       <h2 className="fs-4 fw-bold mb-4 text-center">
-        Top 6 Phim Có Doanh Thu Cao Nhất
+        Top 6 Phim Có số vé Cao Nhất
       </h2>
       <Row>
         {(Array.isArray(data) ? data : []).map((movie, index) => (

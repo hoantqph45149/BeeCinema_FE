@@ -33,6 +33,7 @@ const MovieDetail = () => {
     hasPurchased: false,
     hasReviewed: false,
   });
+  const [reviews, setReviews] = useState([]);
   const [currentUserRating, setCurrentUserRating] = useState(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const MovieDetail = () => {
         averageRating: data.averageRating,
         starCounts: data.starCounts,
       });
+      setReviews(data.reviews);
     }
   }, [data]);
 
@@ -190,6 +192,7 @@ const MovieDetail = () => {
         currentUserRating={currentUserRating}
         hasPurchased={hasReview.hasPurchased}
         reviewMessage={dataReview?.message}
+        reviews={reviews}
       />
     </div>
   );

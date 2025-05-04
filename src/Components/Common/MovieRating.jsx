@@ -4,6 +4,7 @@ import { Edit, Star, StarHalf, Trash2 } from "lucide-react"; // Thêm Trash2 đ�
 import { useEffect, useState } from "react";
 import { showConfirm } from "./showAlert";
 import { FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
+import ReviewDisplay from "../../pages/Client/movie/ReviewDisplay";
 
 const MovieRating = ({
   ratingData,
@@ -13,6 +14,7 @@ const MovieRating = ({
   currentUserRating,
   hasPurchased,
   reviewMessage,
+  reviews,
   ...props
 }) => {
   const [userRating, setUserRating] = useState(0);
@@ -242,6 +244,7 @@ const MovieRating = ({
           </div>
         )}
       </div>
+      {reviews && reviews.length > 0 && <ReviewDisplay reviews={reviews} />}
     </div>
   );
 };
